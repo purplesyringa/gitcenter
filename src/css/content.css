@@ -4,6 +4,14 @@
 	padding: 16px calc(50% - 512px);
 }
 
+.middle {
+	display: block;
+	width: 1024px;
+	padding: 16px calc(50% - 512px) 0;
+	background-color: #EEE;
+	border-bottom: 1px solid #888;
+}
+
 h1 {
 	margin: 8px 0;
 	font-size: 32px;
