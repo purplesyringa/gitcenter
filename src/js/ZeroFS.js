@@ -23,13 +23,13 @@ class ZeroFS {
 		return this.page.cmd("fileGet", [
 			file, // file
 			false, // required (wait until file exists)
-			"text", // text or base64
+			"base64", // text or base64
 			300 // timeout
 		]).then(res => {
 			if(res === null || res === false) {
 				return Promise.reject("File doesn't exist: " + file);
 			} else {
-				return Promise.resolve(res);
+				return Promise.resolve(this.fromBase64(res, true));
 			}
 		});
 	}
