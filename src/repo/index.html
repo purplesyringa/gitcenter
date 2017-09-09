@@ -11,18 +11,32 @@
 		<link rel="stylesheet" type="text/css" href="../css/buttons.css">
 		<link rel="stylesheet" type="text/css" href="../css/header.css">
 		<link rel="stylesheet" type="text/css" href="../css/content.css">
+		<link rel="stylesheet" type="text/css" href="css/tabs.css">
 	</head>
 	<body>
 		<header class="header">
 			<img src="../img/logo-white.svg" class="header-logo">
 			<div class="header-name">Git Center</div>
 		</header>
-		<main class="content">
+		<main class="middle">
 			<h1 id="repo_name"></h1>
+
+			<a class="tab tab-current">
+				<img src="../img/code.svg" width="16">
+				Code
+			</a>
+			<a class="tab">
+				<img src="../img/issue-opened.svg" width="16">
+				Issues
+			</a>
+			<a class="tab">
+				<img src="../img/pr-opened.svg" width="16">
+				Pull requests
+			</a>
 		</main>
 
 		<template id="edit_icon_tmpl">
-			<img src="../img/edit.svg" class="edit-icon" id="edit_icon">
+			<img src="../img/edit.svg" class="edit-icon" id="edit_icon" width="16" height="16">
 		</template>
 
 		<script type="text/javascript" src="../js/ZeroFrame.js"></script>
