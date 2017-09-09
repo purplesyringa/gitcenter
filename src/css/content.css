@@ -1,0 +1,19 @@
+.content {
+	display: block;
+	width: 1024px;
+	padding: 16px calc(50% - 512px);
+}
+
+h1 {
+	margin: 8px 0;
+	font-size: 32px;
+}
+
+p {
+	margin: 8px 0;
+	font-size: 16px;
+}
+
+.center {
+	text-align: center;
+}
