@@ -3,6 +3,15 @@ class Git {
 		this.root = root;
 		this.zeroPage = zeroPage;
 		this.zeroFS = new ZeroFS(zeroPage);
+
+		this.packedIndex = [];
+		this.findPackedObjects()
+			.then(objects => {
+				objects.forEach(object => {
+					this.loadPackedIndex(object.index);
+					this.loadPack(object.pack);
+				});
+			});
 	}
 
 	// Helper functions
@@ -12,6 +21,18 @@ class Git {
 			(str.charCodeAt(1) << 16) +
 			(str.charCodeAt(2) << 8) +
 			(str.charCodeAt(3) << 0)
+		);
+	}
+	unpackInt64(str) {
+		return (
+			(str.charCodeAt(0) << 56) +
+			(str.charCodeAt(1) << 48) +
+			(str.charCodeAt(2) << 40) +
+			(str.charCodeAt(3) << 32) +
+			(str.charCodeAt(4) << 24) +
+			(str.charCodeAt(5) << 16) +
+			(str.charCodeAt(6) << 8) +
+			(str.charCodeAt(7) << 0)
 		);
 	}
 
@@ -31,32 +52,22 @@ class Git {
 		return this.readFile("objects/" + id.substr(0, 2) + "/" + id.substr(2))
 			.then(object => this.inflate(object));
 	}
+
+	// Packed objects
 	findPackedObjects() {
 		return this.readDirectory("objects/pack")
 			.then(object => {
-				let index = object.find(name => name.indexOf(".idx") > -1);
-				let pack = object.find(name => name.indexOf(".pack") > -1);
-				return {
+				let indexes = object.filter(name => name.indexOf(".idx") > -1);
+				let packs = indexes.map(index => index.replace(".idx", ".pack"));
+				return indexes.map((index, i) => ({
 					index: "objects/pack/" + index,
-					pack: "objects/pack/" + pack
-				};
+					pack: "objects/pack/" + packs[i]
+				}));
 			});
 	}
-	readPackedObject(id) {
-		let intId = parseInt(id.substr(0, 2), 16);
-		let index, pack;
-
-		return this.findPackedObjects()
-			.then(paths => {
-				return Promise.all([
-					this.readFile(paths.index),
-					this.readFile(paths.pack)
-				]);
-			})
-			.then(data => {
-				index = data[0];
-				pack = data[1];
-
+	loadPackedIndex(path) {
+		return this.readFile(path)
+			.then(index => {
 				if(index.substr(0, 4) == "ÿtOc") { // New style index
 					// 4 bytes - magic string
 					// 4 bytes = 2
@@ -73,24 +84,75 @@ class Git {
 
 					let total = table[255];
 
-					let begin = (intId == 0 ? 0 : table[intId - 1]) * 20 + 1032;
-					let end = table[intId] * 20 + 1032;
+					for(let i = 0; i < total; i++) {
+						let part = index.substr(i * 20 + 1032, 20);
 
-					let children = index.slice(begin, end);
-					children = children.match(/.{20}/g).map(part => {
-						return part.split("").map(char => {
+						let id = part.split("").map(char => {
 							char = char.charCodeAt(0).toString(16);
 							char = "0".repeat(2 - char.length) + char;
 							return char;
 						}).join("");
-					});
-					let idOffset = (intId == 0 ? 0 : table[intId - 1]) + children.indexOf(id);
 
-					let packOffset = index.substr(1032 + total * 24 + idOffset * 4, 4);
-					packOffset = this.unpackInt32(packOffset);
+						let packOffset = index.substr(1032 + total * 24 + i * 4, 4);
+						packOffset = this.unpackInt32(packOffset);
 
-					console.log(pack.substr(packOffset));
+						if((packOffset >> 31) == 0) {
+							// Leave as is
+						} else {
+							packOffset = packOffset & 0x7FFFFFFF;
+							packOffset = index.substr(1032 + total * 28 + packOffset * 8, 8);
+							packOffset = this.unpackInt64(packOffset);
+						}
+
+						this.packedIndex.push({
+							id: id,
+							packOffset: packOffset
+						});
+					}
 				}
+			});
+	}
+	loadPack(path) {
+		return this.readFile(path)
+			.then(pack => {
+				this.packedIndex
+					.forEach((item, i) => {
+						let nextOffset = i == this.packedIndex.length - 1 ? pack.length : this.packedIndex[i + 1];
+						let val = pack.charCodeAt(item.packOffset);
+
+						let msb = val & 128;
+						let type = (val >> 4) & 7;
+						let length = val & 16;
+
+						let curOffset = item.packOffset + 1;
+						while(msb) {
+							let val = pack.charCodeAt(curOffset++);
+							length = (length << 7) + (val & 127);
+							msb = val & 128;
+						}
+
+						let data = pack.substr(curOffset, length);
+
+						if(type <= 3) {
+							if(data) {
+								data = this.inflate(data);
+							}
+							console.log(item.id, type, data);
+							if(type == 0) {
+								// tag
+							} else if(type == 1) {
+								// commit
+							} else if(type == 2) {
+								// tree
+							} else if(type == 3) {
+								// blob
+							}
+						} else if(type == 6) {
+							// OFS delta
+						} else if(type == 7) {
+							// REF delta
+						}
+					});
 			});
 	}
 };
