@@ -3,6 +3,8 @@ class Repository {
 		this.address = address;
 		this.zeroPage = zeroPage;
 		this.zeroFS = new ZeroFS(zeroPage);
+
+		this.git = new Git("merged-GitCenter/" + address + "/repo.git", zeroPage);
 	}
 
 	// Permission actions
