@@ -428,4 +428,26 @@ class Git {
 			description: this.arrayToString(description)
 		};
 	}
+
+	// Refs commands
+	getRef(ref) {
+		return this.readFile(ref)
+			.catch(() => {
+				return "Unknown ref " + ref;
+			})
+			.then(content => {
+				content = this.arrayToString(content);
+
+				if(content.indexOf("ref:") == 0) {
+					// Alias
+					return this.getRef(content.substr(4).trim());
+				} else {
+					// SHA
+					return content;
+				}
+			});
+	}
+	getBranchCommit(branch) {
+		return this.getRef("refs/heads/" + branch);
+	}
 };
