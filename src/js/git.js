@@ -9,7 +9,6 @@ class Git {
 			.then(objects => {
 				objects.forEach(object => {
 					this.loadPackedIndex(object.index);
-					this.loadPack(object.pack);
 				});
 			});
 	}
