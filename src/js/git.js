@@ -221,7 +221,10 @@ class Git {
 					// Find base
 					return this.readPackedObjectAt({pack: packed.pack, packOffset: baseOffset})
 						.then(base => {
-							return this.applyDelta(base, this.subArray(data, curOffset));
+							return {
+								type: base.type,
+								content: this.applyDelta(base.content, this.subArray(data, curOffset))
+							};
 						});
 				} else if(type == 7) {
 					// REF delta
@@ -251,7 +254,10 @@ class Git {
 					// Find base
 					return this.readObject(base)
 						.then(base => {
-							return this.applyDelta(base.content, this.subArray(data, curOffset));
+							return {
+								type: base.type,
+								content: this.applyDelta(base.content, this.subArray(data, curOffset))
+							};
 						});
 				}
 			});
