@@ -302,4 +302,130 @@ class Git {
 
 		return new Uint8Array(result);
 	}
+
+	// Object-type affected commands
+	readUnknownObject(id) {
+		return this.readObject(id)
+			.then(object => {
+				if(object.type == "blob") {
+					object.content = this.parseBlob(object);
+				} else if(object.type == "tree") {
+					object.content = this.parseTree(object);
+				} else if(object.type == "commit") {
+					object.content = this.parseCommit(object);
+				} else if(object.type == "tag") {
+					object.content = this.parseTag(object);
+				}
+
+				return object;
+			});
+	}
+	parseBlob(object) {
+		return object.content;
+	}
+	parseTree(object) {
+		let currentPos = 0;
+		let items = [];
+
+		while(currentPos < object.content.length) {
+			let spacePos = object.content.indexOf(" ".charCodeAt(0), currentPos);
+			let mode = this.arrayToString(this.subArray(object.content, currentPos, spacePos - currentPos));
+			currentPos = spacePos + 1;
+
+			let nulPos = object.content.indexOf(0, currentPos);
+			let name = this.arrayToString(this.subArray(object.content, currentPos, nulPos - currentPos));
+			currentPos = nulPos + 1;
+
+			let objectId = this.unpackSha(this.subArray(object.content, currentPos, 20));
+			currentPos += 20;
+
+			items.push({
+				mode: mode,
+				name: name,
+				id: objectId
+			});
+		}
+
+		return items;
+	}
+	parseCommit(object) {
+		let tree = "";
+		let parents = [];
+		let author = "";
+		let committer = "";
+
+		let currentPos = 0;
+		while(true) {
+			let end = object.content.indexOf("\n".charCodeAt(0), currentPos);
+			if(end == -1) {
+				break;
+			}
+
+			let line = this.arrayToString(this.subArray(object.content, currentPos, end - currentPos));
+			currentPos = end + 1;
+			let opcode = line.substr(0, line.indexOf(" "));
+
+			if(opcode == "tree") {
+				tree = line.substr(opcode.length).trim();
+			} else if(opcode == "parent") {
+				parents.push(line.substr(opcode.length).trim());
+			} else if(opcode == "author") {
+				author = line.substr(opcode.length).trim();
+			} else if(opcode == "committer") {
+				committer = line.substr(opcode.length).trim();
+			} else if(line == "") {
+				break;
+			}
+		}
+
+		let description = this.subArray(object.content, currentPos);
+
+		return {
+			tree: tree,
+			parents: parents,
+			author: author,
+			committer: committer,
+			description: this.arrayToString(description)
+		};
+	}
+	parseTag(object) {
+		let target = "";
+		let type = "";
+		let tag = "";
+		let tagger = "";
+
+		let currentPos = 0;
+		while(true) {
+			let end = object.content.indexOf("\n".charCodeAt(0), currentPos);
+			if(end == -1) {
+				break;
+			}
+
+			let line = this.arrayToString(this.subArray(object.content, currentPos, end - currentPos));
+			currentPos = end + 1;
+			let opcode = line.substr(0, line.indexOf(" "));
+
+			if(opcode == "object") {
+				target = line.substr(opcode.length).trim();
+			} else if(opcode == "type") {
+				type.push(line.substr(opcode.length).trim());
+			} else if(opcode == "tag") {
+				tag = line.substr(opcode.length).trim();
+			} else if(opcode == "tagger") {
+				tagger = line.substr(opcode.length).trim();
+			} else if(line == "") {
+				break;
+			}
+		}
+
+		let description = this.subArray(object.content, currentPos);
+
+		return {
+			target: target,
+			type: type,
+			tag: tag,
+			tagger: tagger,
+			description: this.arrayToString(description)
+		};
+	}
 };

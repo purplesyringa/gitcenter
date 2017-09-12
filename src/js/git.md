@@ -4,7 +4,7 @@
 
 ### How can I read some object?
 
-Simply use `readObject(sha)`.
+Simply use `readObject(sha)` or `readUnknownObject(sha)`. `readObject` will give you plain data, while `readUnknownObject` will return different content for different types (TypedArray for blob, object for tree, commit and tag).
 
 ## Getting loose objects
 
