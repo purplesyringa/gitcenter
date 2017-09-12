@@ -219,7 +219,7 @@ class Git {
 					} while(msb);
 
 					// Find base
-					return this.readPackedObjectAt({pack: pack, packOffset: baseOffset})
+					return this.readPackedObjectAt({pack: packed.pack, packOffset: baseOffset})
 						.then(base => {
 							return this.applyDelta(base, this.subArray(data, curOffset));
 						});
