@@ -48,6 +48,13 @@ class Git {
 
 	// Object commands
 	readObject(id) {
+		if(this.packedIndex.some(packed => packed.id == id)) {
+			return this.readPackedObject(id);
+		} else {
+			return this.readUnpackedObject(id);
+		}
+	}
+	readUnpackedObject(id) {
 		return this.readFile("objects/" + id.substr(0, 2) + "/" + id.substr(2))
 			.then(object => this.inflate(object));
 	}
