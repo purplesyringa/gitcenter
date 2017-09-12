@@ -197,7 +197,7 @@ class Git {
 					}
 					baseOffset = packed.packOffset - baseOffset;
 
-					data = this.inflate(this.subArray(data, 20));
+					data = this.inflate(this.subArray(data, curOffset));
 
 					curOffset = 0;
 					let baseLength = 0;
