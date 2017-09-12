@@ -302,6 +302,6 @@ class Git {
 			}
 		}
 
-		return result;
+		return new Uint8Array(result);
 	}
 };
