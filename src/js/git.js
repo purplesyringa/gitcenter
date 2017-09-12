@@ -51,6 +51,9 @@ class Git {
 	appendArray(source, destination) {
 		source.forEach(item => destination.push(item));
 	}
+	arrayToString(array) {
+		return Array.from(array).map(char => String.fromCharCode(char)).join("");
+	}
 
 	// FileSystem commands
 	readFile(path) {
@@ -79,7 +82,7 @@ class Git {
 			.then(object => this.inflate(object))
 			.then(object => {
 				return {
-					type: object.slice(0, object.indexOf(" ".charCodeAt(0))),
+					type: this.arrayToString(object.slice(0, object.indexOf(" ".charCodeAt(0)))),
 					content: object.slice(object.indexOf(0) + 1)
 				};
 			});
@@ -100,12 +103,7 @@ class Git {
 	loadPackedIndex(path) {
 		return this.readFile(path)
 			.then(index => {
-				if(
-					Array.from(this.subArray(index, 0, 4))
-						.map(char => String.fromCharCode(char))
-						.join("") ==
-					"ÿtOc"
-				) { // New style index
+				if(this.arrayToString(this.subArray(index, 0, 4)) == "ÿtOc") { // New style index
 					// 4 bytes - magic string
 					// 4 bytes = 2
 					// 256 * 4 bytes - fanout - numbers of objects in the corresponding pack, where first byte is <= N
