@@ -49,7 +49,15 @@ repo.addMerger()
 			.forEach(file => {
 				let tr = document.createElement("tr");
 				tr.onclick = () => {
-					location.href = "?" + address + "/" + (path ? path + "/" : "") + file.name;
+					if(file.type == "unknown") {
+						return;
+					}
+
+					location.href = (
+						(file.type == "file" ? "file/" : "") +
+						"?" + address +
+						"/" + (path ? path + "/" : "") + file.name
+					);
 				};
 
 				let name = document.createElement("td");
