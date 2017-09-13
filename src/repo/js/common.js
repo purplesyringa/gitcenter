@@ -17,6 +17,12 @@ function showBranches() {
 				branches.appendChild(option);
 			});
 
+			if(repo.git.isSha(branch)) {
+				let option = document.createElement("option");
+				option.textContent = branch;
+				branches.insertBefore(option, branches.firstChild);
+			}
+
 			branches.value = branch;
 
 			branches.onchange = () => {
