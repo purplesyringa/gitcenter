@@ -69,15 +69,8 @@ class Repository {
 
 	// Git actions
 	getFiles(branch, dir) {
-		return this.git.getBranchCommit(branch)
+		return this.git.readBranchCommit(branch)
 			.then(commit => {
-				return this.git.readUnknownObject(commit);
-			})
-			.then(commit => {
-				if(commit.type != "commit") {
-					return Promise.reject("Branch reference must be a commit");
-				}
-
 				return this.getTree(commit.content.tree, dir);
 			});
 	}
@@ -111,15 +104,8 @@ class Repository {
 			});
 	}
 	getFile(branch, path) {
-		return this.git.getBranchCommit(branch)
+		return this.git.readBranchCommit(branch)
 			.then(commit => {
-				return this.git.readUnknownObject(commit);
-			})
-			.then(commit => {
-				if(commit.type != "commit") {
-					return Promise.reject("Branch reference must be a commit");
-				}
-
 				return this.git.readTreeItem(commit.content.tree, path);
 			})
 			.then(blob => {
