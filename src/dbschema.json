@@ -1,0 +1,53 @@
+{
+	"db_name": "GitCenter",
+	"db_file": "merged-GitCenter/GitCenter.db",
+	"version": 3,
+	"maps": {
+		".+/data/users/.+/content.json": {
+			"to_json_table": ["cert_user_id"],
+			"file_name": "data.json"
+		},
+		".+/data/users/.+/data.json": {
+			"to_table": [
+				"issues",
+				"issue_comments"
+			]
+		}
+	},
+	"tables": {
+		"json": {
+			"cols": [
+				["json_id", "INTEGER PRIMARY KEY AUTOINCREMENT"],
+				["site", "TEXT"],
+				["directory", "TEXT"],
+				["file_name", "TEXT"],
+				["cert_user_id", "TEXT"]
+			],
+			"indexes": ["CREATE UNIQUE INDEX path ON json(directory, site, file_name)"],
+			"schema_changed": 1
+		},
+		"issues": {
+			"cols": [
+				["id", "INTEGER"],
+				["title", "TEXT"],
+				["body", "TEXT"],
+				["date_added", "INTEGER"],
+				["open", "INTEGER"],
+				["json_id", "INTEGER REFERENCES json (json_id)"]
+			],
+			"indexes": ["CREATE UNIQUE INDEX issues_key ON issues(json_id, id)"],
+			"schema_changed": 1
+		},
+		"issue_comments": {
+			"cols": [
+				["id", "INTEGER"],
+				["issue_id", "INTEGER"],
+				["body", "TEXT"],
+				["date_added", "INTEGER"],
+				["json_id", "INTEGER REFERENCES json (json_id)"]
+			],
+			"indexes": ["CREATE UNIQUE INDEX issue_comments_key ON issue_comments(json_id, id)"],
+			"schema_changed": 1
+		}
+	}
+}
