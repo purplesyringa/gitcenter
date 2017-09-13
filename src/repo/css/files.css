@@ -14,6 +14,9 @@
 	font-family: Helvetica, Arial, sans-serif;
 	font-size: 16px;
 }
+.files tr {
+	cursor: pointer;
+}
 .files tr:hover {
 	background-color: #EEF;
 }
@@ -26,7 +29,11 @@
 }
 
 .files-header {
+	cursor: default !important;
 	background-color: #DDF !important;
+}
+.files-header a {
+	color: #008;
 }
 
 .file-icon {

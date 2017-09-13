@@ -48,6 +48,9 @@ repo.addMerger()
 			.sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0)
 			.forEach(file => {
 				let tr = document.createElement("tr");
+				tr.onclick = () => {
+					location.href = "?" + address + "/" + (path ? path + "/" : "") + file.name;
+				};
 
 				let name = document.createElement("td");
 				name.textContent = file.name;
@@ -60,4 +63,31 @@ repo.addMerger()
 
 				table.appendChild(tr);
 			});
+
+		let filesBack = document.getElementById("files_back");
+		if(path == "" || path == "/") {
+			filesBack.style.display = "none";
+		} else {
+			filesBack.onclick = () => {
+				let parts = path.split("/").filter(part => part.length);
+				parts.pop();
+				location.href = "?" + address + "/" + parts.join("/");
+			};
+		}
+
+		document.getElementById("files_root").href = "?" + address;
+
+		let filesPath = document.getElementById("files_path");
+		let parts = path.split("/").filter(part => part.length);
+		parts.forEach((part, i) => {
+			let node = document.createElement("span");
+			node.textContent = " › ";
+
+			let link = document.createElement("a");
+			link.textContent = part;
+			link.href = "?" + address + "/" + parts.slice(0, i + 1).join("/");
+			node.insertBefore(link, node.firstChild);
+
+			filesPath.appendChild(node);
+		});
 	});
