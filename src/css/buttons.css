@@ -1,4 +1,4 @@
-.button {
+.button, .select {
 	display: inline-block;
 	padding: 3px 10px 3px 8px;
 	border: 1px solid #D5D5D5;
