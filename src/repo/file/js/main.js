@@ -45,7 +45,7 @@ repo.addMerger()
 	.then(blob => {
 		let fileContent = document.getElementById("file_content");
 		fileContent.textContent = repo.git.arrayToString(blob);
-		//hljs.highlightBlock(fileContent);
+		hljs.highlightBlock(fileContent);
 
 		// Show path
 		document.getElementById("files_root").href = "../?" + address;
