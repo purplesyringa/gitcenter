@@ -25,9 +25,9 @@ function showBranches() {
 		});
 }
 
-function showPath() {
+function showPath(isCurrentFile) {
 	// Show path
-	document.getElementById("files_root").href = "../?" + address;
+	document.getElementById("files_root").href = isCurrentFile ? "../?" + address : "?" + address;
 
 	let filesPath = document.getElementById("files_path");
 	let parts = path.split("/").filter(part => part.length);
@@ -37,7 +37,9 @@ function showPath() {
 
 		let link = document.createElement(i == parts.length - 1 ? "span" : "a");
 		link.textContent = part;
-		if(i < parts.length - 1) {
+		if(!isCurrentFile) {
+			link.href = "?" + address + "/" + parts.slice(0, i + 1).join("/");
+		} else if(i < parts.length - 1) {
 			link.href = "../?" + address + "/" + parts.slice(0, i + 1).join("/");
 		}
 		node.insertBefore(link, node.firstChild);
