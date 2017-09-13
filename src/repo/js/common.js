@@ -27,7 +27,7 @@ function showBranches() {
 
 function showPath(isCurrentFile) {
 	// Show path
-	document.getElementById("files_root").href = isCurrentFile ? "../?" + address : "?" + address;
+	document.getElementById("files_root").href = (isCurrentFile ? "../?" + address : "?" + address) + "@" + branch.replace(/@/g, "@@");
 
 	let filesPath = document.getElementById("files_path");
 	let parts = path.split("/").filter(part => part.length);
@@ -38,9 +38,9 @@ function showPath(isCurrentFile) {
 		let link = document.createElement(i == parts.length - 1 ? "span" : "a");
 		link.textContent = part;
 		if(!isCurrentFile) {
-			link.href = "?" + address + "/" + parts.slice(0, i + 1).join("/");
+			link.href = "?" + address + "/" + parts.slice(0, i + 1).join("/").replace(/@/g, "@@") + "@" + branch.replace(/@/g, "@@");
 		} else if(i < parts.length - 1) {
-			link.href = "../?" + address + "/" + parts.slice(0, i + 1).join("/");
+			link.href = "../?" + address + "/" + parts.slice(0, i + 1).join("/").replace(/@/g, "@@") + "@" + branch.replace(/@/g, "@@");
 		}
 		node.insertBefore(link, node.firstChild);
 
