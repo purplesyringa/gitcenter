@@ -1,3 +1,10 @@
+function showTabs(isCurrentFile) {
+	document.getElementById("code_link").href = (
+		(isCurrentFile ? "../" : "") +
+		"?" + address
+	);
+}
+
 function showTitle(title) {
 	let name = document.getElementById("repo_name");
 	name.textContent = title;
