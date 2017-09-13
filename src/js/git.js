@@ -432,9 +432,6 @@ class Git {
 	// Refs commands
 	getRef(ref) {
 		return this.readFile(ref)
-			.catch(() => {
-				return "Unknown ref " + ref;
-			})
 			.then(content => {
 				content = this.arrayToString(content);
 
@@ -445,6 +442,32 @@ class Git {
 					// SHA
 					return content.trim();
 				}
+			}, () => {
+				// Check packed-refs
+				return this.readFile("packed-refs")
+					.then(packedRefs => {
+						let packedRef = this.arrayToString(packedRefs)
+							.split("\n")
+							.filter(line => {
+								return line.trim()[0] != "#"; // Comment
+							})
+							.map(line => {
+								return {
+									id: line.substr(0, line.indexOf(" ")),
+									ref: line.substr(line.indexOf(" ") + 1)
+								};
+							})
+							.find(line => line.ref == ref);
+
+						if(!packedRef) {
+							return Promise.reject();
+						}
+
+						return packedRef.id;
+					})
+					.catch(() => {
+						return Promise.reject("Unknown ref " + ref);
+					});
 			});
 	}
 	getBranchCommit(branch) {
