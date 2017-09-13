@@ -14,25 +14,6 @@ if(address.indexOf("/") > -1) {
 
 let repo = new Repository(address, zeroPage);
 
-function showTitle(title) {
-	let name = document.getElementById("repo_name");
-	name.textContent = title;
-	name.innerHTML += document.getElementById("edit_icon_tmpl").innerHTML;
-
-	document.getElementById("edit_icon").onclick = renameRepo;
-}
-
-function renameRepo() {
-	let newName;
-	return zeroPage.prompt("New name:")
-		.then(n => {
-			newName = n;
-
-			return repo.rename(newName);
-		})
-		.then(() => showTitle(newName));
-}
-
 repo.addMerger()
 	.then(() => {
 		return repo.getContent();
@@ -83,19 +64,5 @@ repo.addMerger()
 			};
 		}
 
-		document.getElementById("files_root").href = "?" + address;
-
-		let filesPath = document.getElementById("files_path");
-		let parts = path.split("/").filter(part => part.length);
-		parts.forEach((part, i) => {
-			let node = document.createElement("span");
-			node.textContent = " › ";
-
-			let link = document.createElement("a");
-			link.textContent = part;
-			link.href = "?" + address + "/" + parts.slice(0, i + 1).join("/");
-			node.insertBefore(link, node.firstChild);
-
-			filesPath.appendChild(node);
-		});
+		showPath(false);
 	});

@@ -30,7 +30,7 @@ repo.addMerger()
 	.then(content => {
 		showTitle(content.title);
 		showBranches();
-		showPath();
+		showPath(true);
 
 		return repo.getFiles(branch, "");
 	})
