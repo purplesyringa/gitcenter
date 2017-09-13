@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Git Center</title>
+		<meta charset="utf-8">
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<base href="" target="_top" id="base">
+		<script>base.href = document.location.href.replace("/media", "").replace("index.html", "").replace(/[&?]wrapper=False/, "").replace(/[&?]wrapper_nonce=[A-Za-z0-9]+/, "")</script>
+
+		<link rel="stylesheet" type="text/css" href="../../css/main.css">
+		<link rel="stylesheet" type="text/css" href="../../css/buttons.css">
+		<link rel="stylesheet" type="text/css" href="../../css/header.css">
+		<link rel="stylesheet" type="text/css" href="../../css/content.css">
+		<link rel="stylesheet" type="text/css" href="../../hljs/default.min.css">
+		<link rel="stylesheet" type="text/css" href="../css/tabs.css">
+		<link rel="stylesheet" type="text/css" href="css/file.css">
+	</head>
+	<body>
+		<header class="header">
+			<img src="../../img/logo-white.svg" class="header-logo">
+			<div class="header-name">Git Center</div>
+		</header>
+		<main class="middle">
+			<h1 id="repo_name"></h1>
+
+			<a class="tab tab-current">
+				<img src="../../img/code.svg" width="16">
+				Code
+			</a>
+			<a class="tab">
+				<img src="../../img/issue-opened.svg" width="16">
+				Issues
+			</a>
+			<a class="tab">
+				<img src="../../img/pr-opened.svg" width="16">
+				Pull requests
+			</a>
+		</main>
+
+		<table id="files" class="files">
+			<tr class="files-header">
+				<td id="files_path">
+					<span><a id="files_root">Root</a> › </span>
+				</td>
+			</tr>
+			<tr>
+				<td class="file-content" id="file_content"></td>
+			</tr>
+		</table>
+
+		<template id="edit_icon_tmpl">
+			<img src="../../img/edit.svg" class="edit-icon" id="edit_icon" width="16" height="16">
+		</template>
+
+		<script type="text/javascript" src="../../js/ZeroFrame.js"></script>
+		<script type="text/javascript" src="../../js/ZeroPage.js"></script>
+		<script type="text/javascript" src="../../js/ZeroFS.js"></script>
+		<script type="text/javascript" src="../../js/pako.js"></script>
+		<script type="text/javascript" src="../../js/git.js"></script>
+		<script type="text/javascript" src="../../js/repo.js"></script>
+		<script type="text/javascript" src="../../hljs/highlight.min.js"></script>
+		<script type="text/javascript" src="js/main.js"></script>
+	</body>
+</html>

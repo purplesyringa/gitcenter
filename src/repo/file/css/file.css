@@ -1,0 +1,35 @@
+.files {
+	width: 1024px;
+	margin: 16px auto;
+	border-spacing: 0;
+
+	border: 1px solid #DDF;
+	border-radius: 4px;
+}
+
+.files td {
+	width: auto;
+	margin: 0;
+	padding: 8px;
+	font-size: 16px;
+}
+
+.files tr td {
+	border-top: 1px solid #DDF;
+}
+.files tr:first-child td {
+	border-top: none;
+}
+
+.files-header {
+	background-color: #DDF;
+	font-family: Helvetica, Arial, sans-serif;
+}
+.files-header a {
+	color: #008;
+}
+
+.file-content {
+	font-family: Consolas, "Courier New", monospace;
+	white-space: pre;
+}
