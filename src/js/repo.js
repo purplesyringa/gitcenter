@@ -130,4 +130,12 @@ class Repository {
 				return blob.content;
 			});
 	}
+	getBranches() {
+		return this.git.getRefList()
+			.then(refs => {
+				return refs
+					.filter(ref => ref.indexOf("refs/heads/") == 0)
+					.map(ref => ref.replace("refs/heads/", ""));
+			});
+	}
 };
