@@ -1,8 +1,12 @@
 function showLinks() {
-	repo.git.readBranchCommit(branch)
-		.then(commit => {
-			document.getElementById("permanent_link").href = "tree/?" + address + "/" + commit.content.tree;
-		});
+	if(repo.git.isSha(branch)) {
+		document.getElementById("permanent_link").style.display = "none";
+	} else {
+		repo.git.getBranchCommit(branch)
+			.then(commit => {
+				document.getElementById("permanent_link").href = "?" + address + "/" + path.replace(/@/g, "@@") + "@" + commit;
+			});
+	}
 }
 
 repo.addMerger()
