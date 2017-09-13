@@ -12,6 +12,15 @@ if(address.indexOf("/") > -1) {
 	address = address.substr(0, address.indexOf("/"));
 }
 
+let branch = "master";
+if(path.indexOf("@") > -1) {
+	let tempPath = path.replace(/@@/g, "\0"); // @ is escaped
+	path = tempPath.substr(0, tempPath.indexOf("@")).replace(/\0/g, "@");
+	branch = tempPath.substr(tempPath.indexOf("@") + 1).replace(/\0/g, "@");
+} else {
+	path = path.replace(/@@/g, "@");
+}
+
 let repo = new Repository(address, zeroPage);
 
 repo.addMerger()
@@ -20,6 +29,8 @@ repo.addMerger()
 	})
 	.then(content => {
 		showTitle(content.title);
+		showBranches();
+		showPath(false);
 
 		return repo.getFiles("master", path);
 	})
@@ -37,7 +48,8 @@ repo.addMerger()
 					location.href = (
 						(file.type == "file" ? "file/" : "") +
 						"?" + address +
-						"/" + (path ? path + "/" : "") + file.name
+						"/" + ((path ? path + "/" : "") + file.name).replace(/@/g, "@@") +
+						"@" + branch.replace(/@/g, "@@")
 					);
 				};
 
@@ -60,9 +72,7 @@ repo.addMerger()
 			filesBack.onclick = () => {
 				let parts = path.split("/").filter(part => part.length);
 				parts.pop();
-				location.href = "?" + address + "/" + parts.join("/");
+				location.href = "?" + address + "/" + parts.join("/").replace(/@/g, "@@") + "@" + branch.replace(/@/g, "@@");
 			};
 		}
-
-		showPath(false);
 	});
