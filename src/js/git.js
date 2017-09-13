@@ -54,6 +54,19 @@ class Git {
 	arrayToString(array) {
 		return Array.from(array).map(char => String.fromCharCode(char)).join("");
 	}
+	isSha(str) {
+		return (
+			str.length == 40 &&
+			str.split("").every(char => {
+				char = char.charCodeAt(0);
+
+				return (
+					(char >= "0".charCodeAt(0) && char <= "9".charCodeAt(0)) ||
+					(char >= "a".charCodeAt(0) && char <= "z".charCodeAt(0))
+				);
+			})
+		);
+	}
 
 	// FileSystem commands
 	readFile(path) {
@@ -497,6 +510,11 @@ class Git {
 			});
 	}
 	getBranchCommit(branch) {
+		// Fallback for branch id
+		if(this.isSha(branch)) {
+			return Promise.resolve(branch);
+		}
+
 		return this.getRef("refs/heads/" + branch);
 	}
 	readBranchCommit(branch) {
