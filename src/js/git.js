@@ -429,6 +429,32 @@ class Git {
 		};
 	}
 
+	readTreeItem(tree, path) {
+		if(typeof path == "string") {
+			path = path.split("/").filter(item => item.length);
+		}
+
+		if(path.length == 0) {
+			return this.readUnknownObject(tree);
+		}
+
+		return this.readUnknownObject(tree)
+			.then(tree => {
+				if(tree.type != "tree") {
+					return Promise.reject(tree + " is not a tree");
+				}
+
+				let file = tree.content.find(item => item.name == path[0]);
+
+				if(!file) {
+					return Promise.reject("Tree " + tree + " has no object named " + path[0]);
+				}
+
+				path.shift();
+				return this.readTreeItem(file.id, path);
+			});
+	}
+
 	// Refs commands
 	getRef(ref) {
 		return this.readFile(ref)

@@ -6,6 +6,10 @@
 
 Simply use `readObject(sha)` or `readUnknownObject(sha)`. `readObject` will give you plain data, while `readUnknownObject` will return different content for different types (TypedArray for blob, object for tree, commit and tag).
 
+### How can I get subtree content?
+
+You can either call `readUnknownObject` multiple times or run `readTreeItem(rootTree, "path/to/file/or/directory")`. Notice that `readTreeItem` accepts root tree, not commit, so you'll first have to call `readUnknownObject(commitId)` and then pass `commit.content.tree` property to `readTreeItem`.
+
 ## Getting loose objects
 
 For getting loose object, ZeroGit splits SHA to 2-and-18 parts, reads file `objects/01/23456789abcdefghij` and deflates it. The result is:
