@@ -3,6 +3,11 @@ function showTabs(isCurrentFile) {
 		(isCurrentFile ? "../" : "") +
 		"?" + address
 	);
+
+	document.getElementById("issues_link").href = (
+		(isCurrentFile ? "../issues/" : "issues/") +
+		"?" + address
+	);
 }
 
 function showTitle(title) {
