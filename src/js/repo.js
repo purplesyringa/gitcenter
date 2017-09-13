@@ -110,4 +110,24 @@ class Repository {
 				);
 			});
 	}
+	getFile(branch, path) {
+		return this.git.getBranchCommit(branch)
+			.then(commit => {
+				return this.git.readUnknownObject(commit);
+			})
+			.then(commit => {
+				if(commit.type != "commit") {
+					return Promise.reject("Branch reference must be a commit");
+				}
+
+				return this.git.readTreeItem(commit.content.tree, path);
+			})
+			.then(blob => {
+				if(blob.type != "blob") {
+					return Promise.reject("File content must be a blob");
+				}
+
+				return blob.content;
+			});
+	}
 };
