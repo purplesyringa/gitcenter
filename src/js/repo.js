@@ -78,11 +78,11 @@ class Repository {
 					return Promise.reject("Branch reference must be a commit");
 				}
 
-				return this.getTree(commit.content.tree);
+				return this.getTree(commit.content.tree, dir);
 			});
 	}
-	getTree(tree) {
-		return this.git.readUnknownObject(tree)
+	getTree(tree, dir) {
+		return this.git.readTreeItem(tree, dir)
 			.then(tree => {
 				if(tree.type != "tree") {
 					return Promise.reject("Commit tree must be a tree");
