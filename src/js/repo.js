@@ -66,4 +66,45 @@ class Repository {
 			})
 			.then(() => this.sign());
 	}
+
+	// Git actions
+	getFiles(branch, dir) {
+		return this.git.getBranchCommit(branch)
+			.then(commit => {
+				return this.git.readUnknownObject(commit);
+			})
+			.then(commit => {
+				if(commit.type != "commit") {
+					return Promise.reject("Branch reference must be a commit");
+				}
+
+				return this.git.readUnknownObject(commit.content.tree);
+			})
+			.then(tree => {
+				if(tree.type != "tree") {
+					return Promise.reject("Commit tree must be a tree");
+				}
+
+				return Promise.all(
+					tree.content.map(file => {
+						return this.git.readUnknownObject(file.id)
+							.then(object => {
+								if(object.type == "blob") {
+									file.type = "file";
+								} else if(object.type == "tree") {
+									file.type = "directory";
+								} else {
+									file.type = "unknown";
+								}
+
+								return file;
+							})
+							.catch(object => {
+								file.type = "error";
+								return file;
+							});
+					})
+				);
+			});
+	}
 };
