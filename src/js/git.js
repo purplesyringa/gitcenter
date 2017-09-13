@@ -499,6 +499,17 @@ class Git {
 	getBranchCommit(branch) {
 		return this.getRef("refs/heads/" + branch);
 	}
+	readBranchCommit(branch) {
+		return this.getBranchCommit(branch)
+			.then(commit => this.readUnknownObject(commit))
+			.then(commit => {
+				if(commit.type != "commit") {
+					return Promise.reject("Branch must reference to a commit, not a " + commit.type);
+				}
+
+				return commit;
+			});
+	}
 
 	getRefList() {
 		let refs;

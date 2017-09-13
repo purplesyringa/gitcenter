@@ -14,6 +14,10 @@ You can either call `readUnknownObject` multiple times or run `readTreeItem(root
 
 Use `getRefList` which returns an array like `["refs/remotes/origin/master", "refs/heads/master", "refs/remotes/origin/HEAD"]`. Note that the array is not ordered at all.
 
+### How can I use branches?
+
+Use `getBranchCommit("master")` to get commit the branch references or use `readBranchCommit("master")` to get commit object of a branch.
+
 ## Getting loose objects
 
 For getting loose object, ZeroGit splits SHA to 2-and-18 parts, reads file `objects/01/23456789abcdefghij` and deflates it. The result is:
