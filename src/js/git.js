@@ -499,4 +499,32 @@ class Git {
 	getBranchCommit(branch) {
 		return this.getRef("refs/heads/" + branch);
 	}
+
+	getRefList() {
+		let refs;
+		return this.readDirectory("refs", true)
+			.then(unpackedRefs => {
+				refs = unpackedRefs.map(ref => "refs/" + ref);
+
+				return this.readFile("packed-refs");
+			})
+			.then(packedRefs => {
+				packedRefs = this.arrayToString(packedRefs)
+					.split("\n")
+					.filter(line => {
+						return line.trim()[0] != "#"; // Comment
+					})
+					.filter(line => line.length)
+					.map(line => {
+						return line.substr(line.indexOf(" ") + 1);
+					})
+					.forEach(ref => {
+						if(refs.indexOf(ref) == -1) {
+							refs.push(ref);
+						}
+					});
+
+				return refs;
+			});
+	}
 };

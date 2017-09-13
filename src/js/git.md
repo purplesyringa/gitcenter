@@ -10,6 +10,10 @@ Simply use `readObject(sha)` or `readUnknownObject(sha)`. `readObject` will give
 
 You can either call `readUnknownObject` multiple times or run `readTreeItem(rootTree, "path/to/file/or/directory")`. Notice that `readTreeItem` accepts root tree, not commit, so you'll first have to call `readUnknownObject(commitId)` and then pass `commit.content.tree` property to `readTreeItem`.
 
+### How can I get ref list?
+
+Use `getRefList` which returns an array like `["refs/remotes/origin/master", "refs/heads/master", "refs/remotes/origin/HEAD"]`. Note that the array is not ordered at all.
+
 ## Getting loose objects
 
 For getting loose object, ZeroGit splits SHA to 2-and-18 parts, reads file `objects/01/23456789abcdefghij` and deflates it. The result is:
