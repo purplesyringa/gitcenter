@@ -439,12 +439,12 @@ class Git {
 		}
 
 		return this.readUnknownObject(tree)
-			.then(tree => {
-				if(tree.type != "tree") {
+			.then(treeObject => {
+				if(treeObject.type != "tree") {
 					return Promise.reject(tree + " is not a tree");
 				}
 
-				let file = tree.content.find(item => item.name == path[0]);
+				let file = treeObject.content.find(item => item.name == path[0]);
 
 				if(!file) {
 					return Promise.reject("Tree " + tree + " has no object named " + path[0]);
