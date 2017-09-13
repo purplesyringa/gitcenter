@@ -1,4 +1,5 @@
 .files {
+	table-layout: fixed;
 	width: 1024px;
 	margin: 16px auto;
 	border-spacing: 0;
@@ -32,4 +33,5 @@
 .file-content {
 	font-family: Consolas, "Courier New", monospace;
 	white-space: pre;
+	overflow: auto;
 }
