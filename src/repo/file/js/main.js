@@ -65,4 +65,15 @@ repo.addMerger()
 
 			filesPath.appendChild(node);
 		});
+
+		return repo.getBranches();
+	})
+	.then(list => {
+		// Show branch list
+		let branches = document.getElementById("branches");
+		list.forEach(branch => {
+			let option = document.createElement("option");
+			option.textContent = branch;
+			branches.appendChild(option);
+		});
 	});
