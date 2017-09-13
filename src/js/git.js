@@ -443,7 +443,7 @@ class Git {
 					return this.getRef(content.substr(4).trim());
 				} else {
 					// SHA
-					return content;
+					return content.trim();
 				}
 			});
 	}
