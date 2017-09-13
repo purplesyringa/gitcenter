@@ -31,3 +31,7 @@ p {
 	width: 1024px;
 	padding: 16px calc(50% - 512px);
 }
+.info-link {
+	margin-left: 16px;
+	font-size: 16px;
+}

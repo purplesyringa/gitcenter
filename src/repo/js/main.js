@@ -1,3 +1,10 @@
+function showLinks() {
+	repo.git.readBranchCommit(branch)
+		.then(commit => {
+			document.getElementById("permanent_link").href = "tree/?" + address + "/" + commit.content.tree;
+		});
+}
+
 repo.addMerger()
 	.then(() => {
 		return repo.getContent();
@@ -6,6 +13,7 @@ repo.addMerger()
 		showTitle(content.title);
 		showBranches();
 		showPath(false);
+		showLinks();
 
 		return repo.getFiles("master", path);
 	})
