@@ -1,14 +1,3 @@
-function showLinks() {
-	if(repo.git.isSha(branch)) {
-		document.getElementById("permanent_link").style.display = "none";
-	} else {
-		repo.git.getBranchCommit(branch)
-			.then(commit => {
-				document.getElementById("permanent_link").href = "?" + address + "/" + path.replace(/@/g, "@@") + "@" + commit;
-			});
-	}
-}
-
 repo.addMerger()
 	.then(() => {
 		return repo.getContent();

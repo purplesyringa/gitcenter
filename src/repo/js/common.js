@@ -54,6 +54,17 @@ function showPath(isCurrentFile) {
 	});
 }
 
+function showLinks() {
+	if(repo.git.isSha(branch)) {
+		document.getElementById("permanent_link").style.display = "none";
+	} else {
+		repo.git.getBranchCommit(branch)
+			.then(commit => {
+				document.getElementById("permanent_link").href = "?" + address + "/" + path.replace(/@/g, "@@") + "@" + commit;
+			});
+	}
+}
+
 function renameRepo() {
 	let newName;
 	return zeroPage.prompt("New name:")
