@@ -7,7 +7,7 @@ repo.addMerger()
 		showBranches();
 		showPath(false);
 		showLinks();
-		showTabs(false);
+		showTabs(0);
 
 		return repo.getFiles("master", path);
 	})

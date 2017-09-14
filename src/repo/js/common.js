@@ -1,11 +1,12 @@
-function showTabs(isCurrentFile) {
+function showTabs(level) {
 	document.getElementById("code_link").href = (
-		(isCurrentFile ? "../" : "") +
+		"../".repeat(level) +
 		"?" + address
 	);
 
 	document.getElementById("issues_link").href = (
-		(isCurrentFile ? "../issues/" : "issues/") +
+		"../".repeat(level) +
+		"issues/" +
 		"?" + address
 	);
 }
