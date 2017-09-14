@@ -61,6 +61,8 @@ class ZeroDB {
 						false // sign before publish
 					]
 				);
+
+				return row;
 			});
 	}
 	changeRow(dataFile, contentFile, table, f) {
