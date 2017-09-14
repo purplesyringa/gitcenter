@@ -3,6 +3,8 @@ class Repository {
 		this.address = address;
 		this.zeroPage = zeroPage;
 		this.zeroFS = new ZeroFS(zeroPage);
+		this.zeroAuth = new ZeroAuth(zeroPage);
+		this.zeroDB = new ZeroDB(zeroPage);
 
 		this.git = new Git("merged-GitCenter/" + address + "/repo.git", zeroPage);
 	}
@@ -122,6 +124,31 @@ class Repository {
 				return refs
 					.filter(ref => ref.indexOf("refs/heads/") == 0)
 					.map(ref => ref.replace("refs/heads/", ""));
+			});
+	}
+
+	// Issues
+	addIssue(title, content) {
+		return this.zeroAuth.requestAuth()
+			.then(auth => {
+				return this.zeroDB.insertRow(
+					"merged-GitCenter/" + this.address + "/data/users/" + auth.address + "/data.json",
+					"merged-GitCenter/" + this.address + "/data/users/" + auth.address + "/content.json",
+					"issues",
+					{
+						title: title,
+						body: content,
+						date_added: Date.now(),
+						open: 1
+					},
+					{
+						source: "next_issue_id",
+						column: "id"
+					}
+				);
+			})
+			.then(row => {
+				return row.id;
 			});
 	}
 };
