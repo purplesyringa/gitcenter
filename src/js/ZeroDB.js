@@ -53,7 +53,7 @@ class ZeroDB {
 				);
 			})
 			.then(() => {
-				_zeroPage.cmd(
+				this.page.cmd(
 					"sitePublish",
 					[
 						null, // private key
@@ -91,7 +91,7 @@ class ZeroDB {
 				);
 			})
 			.then(() => {
-				_zeroPage.cmd(
+				this.page.cmd(
 					"sitePublish",
 					[
 						null, // private key
@@ -128,7 +128,7 @@ class ZeroDB {
 				);
 			})
 			.then(() => {
-				_zeroPage.cmd(
+				this.page.cmd(
 					"sitePublish",
 					[
 						null, // private key
