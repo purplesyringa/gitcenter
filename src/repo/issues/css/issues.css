@@ -1,0 +1,43 @@
+.issues {
+	width: 1024px;
+	margin: 0 auto;
+	border-spacing: 0;
+
+	border: 1px solid #DDF;
+	border-radius: 4px;
+}
+
+.issues td {
+	width: auto;
+	margin: 0;
+	padding: 8px;
+	vertical-align: top;
+	font-family: Helvetica, Arial, sans-serif;
+	font-size: 16px;
+}
+.issues tr {
+	cursor: pointer;
+}
+.issues tr:hover {
+	background-color: #EEF;
+}
+
+.issues tr td {
+	border-top: 1px solid #DDF;
+}
+.issues tr:first-child td {
+	border-top: none;
+}
+
+.issues-right {
+	width: 256px !important;
+	max-width: 256px;
+	word-wrap: break-word;
+}
+
+.issue-icon {
+	height: auto;
+	width: 16px;
+	margin-right: 8px;
+	vertical-align: top;
+}
