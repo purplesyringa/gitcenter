@@ -8,8 +8,8 @@ repo.addMerger()
 
 		document.getElementById("submit").onclick = () => {
 			repo.addIssue(document.getElementById("title").value, document.getElementById("content").value)
-				.then(id => {
-					location.href = "../view/?" + address + "/" + id;
+				.then(issue => {
+					location.href = "../view/?" + address + "/" + issue.id + "@" + issue.json_id;
 				});
 		};
 	});
