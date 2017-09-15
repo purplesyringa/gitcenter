@@ -8,8 +8,8 @@ class ZeroDB {
 		this.fs = new ZeroFS(page);
 	}
 
-	query(query) {
-		return this.page.cmd("dbQuery", [query])
+	query(query, placeholders) {
+		return this.page.cmd("dbQuery", [query, placeholders])
 			.then(result => {
 				if(result.error) {
 					return Promise.reject(result.error);
@@ -136,6 +136,33 @@ class ZeroDB {
 						false // sign before publish
 					]
 				);
+			});
+	}
+
+	getJsonID(path, version) {
+		let where;
+		if(version == 1) {
+			where = {
+				path: path
+			};
+		} else if(version == 2) {
+			path = path.split("/");
+			where = {
+				directory: path.slice(0, -1).join("/"),
+				file_name: path.slice(-1)[0]
+			};
+		} else if(version == 3) {
+			path = path.split("/");
+			where = {
+				site: path[0],
+				directory: path.slice(1, -1).join("/"),
+				file_name: path.slice(-1)[0]
+			};
+		}
+
+		return this.query("SELECT * FROM json WHERE ?", where)
+			.then(json => {
+				return json.length ? json[0].json_id : -1;
 			});
 	}
 };
