@@ -129,8 +129,11 @@ class Repository {
 
 	// Issues
 	addIssue(title, content) {
+		let auth, row;
 		return this.zeroAuth.requestAuth()
-			.then(auth => {
+			.then(a => {
+				auth = a;
+
 				return this.zeroDB.insertRow(
 					"merged-GitCenter/" + this.address + "/data/users/" + auth.address + "/data.json",
 					"merged-GitCenter/" + this.address + "/data/users/" + auth.address + "/content.json",
@@ -147,8 +150,14 @@ class Repository {
 					}
 				);
 			})
-			.then(row => {
-				return row.id;
+			.then(r => {
+				row = r;
+
+				return this.zeroDB.getJsonID(this.address + "/data/users/" + auth.address + "/data.json", 3);
+			})
+			.then(json_id => {
+				row.json_id = json_id;
+				return row;
 			});
 	}
 };
