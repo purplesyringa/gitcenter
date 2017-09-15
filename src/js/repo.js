@@ -160,4 +160,23 @@ class Repository {
 				return row;
 			});
 	}
+	getIssues(page) {
+		return this.zeroDB.query("SELECT issues.*, json.cert_user_id FROM issues, json WHERE issues.json_id = json.json_id LIMIT " + (page * 10) + ", 11")
+			.then(issues => {
+				return {
+					issues: issues.slice(0, 10),
+					nextPage: issues.length > 10
+				};
+			});
+	}
+
+	translateDate(date) {
+		date = new Date(date);
+
+		return (
+			date.getFullYear() + "-" +
+			(date.getMonth() >= 9 ? "" : "0") + (date.getMonth() + 1) + "-" +
+			date.getDate()
+		);
+	}
 };
