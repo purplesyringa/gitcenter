@@ -70,7 +70,7 @@ class Git {
 
 	// FileSystem commands
 	readFile(path) {
-		return this.zeroFS.readFile(this.root + "/" + path)
+		return this.zeroFS.readFile(this.root + "/" + path, true)
 			.then(file => {
 				return new Uint8Array(file.split("").map(char => char.charCodeAt(0)));
 			});

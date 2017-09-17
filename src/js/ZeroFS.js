@@ -19,7 +19,7 @@ class ZeroFS {
 				return Promise.resolve(children.indexOf(basePath) > -1);
 			});
 	}
-	readFile(file) {
+	readFile(file, bytes) {
 		return this.page.cmd("fileGet", [
 			file, // file
 			false, // required (wait until file exists)
@@ -29,7 +29,7 @@ class ZeroFS {
 			if(res === null || res === false) {
 				return Promise.reject("File doesn't exist: " + file);
 			} else {
-				return Promise.resolve(this.fromBase64(res, true));
+				return Promise.resolve(this.fromBase64(res, bytes));
 			}
 		});
 	}
