@@ -216,6 +216,45 @@ class Repository {
 			id: id
 		});
 	}
+	addIssueComment(issueId, issueJsonId, content) {
+		let auth, row;
+		return this.zeroAuth.requestAuth()
+			.then(a => {
+				auth = a;
+
+				return this.zeroDB.insertRow(
+					"merged-GitCenter/" + this.address + "/data/users/" + auth.address + "/data.json",
+					"merged-GitCenter/" + this.address + "/data/users/" + auth.address + "/content.json",
+					"issue_comments",
+					{
+						issue_id: issueId,
+						issue_json_id: issueJsonId,
+						body: content,
+						date_added: Date.now(),
+						open: 1
+					},
+					{
+						source: "next_issue_comment_id",
+						column: "id"
+					}
+				);
+			})
+			.then(r => {
+				row = r;
+
+				return this.zeroDB.getJsonID(this.address + "/data/users/" + auth.address + "/data.json", 3);
+			})
+			.then(json_id => {
+				row.json_id = json_id;
+
+				return this.zeroDB.query("SELECT * FROM json WHERE json_id = :jsonId", {jsonId: json_id});
+			})
+			.then(jsonRow => {
+				row.cert_user_id = jsonRow[0].cert_user_id;
+
+				return row;
+			});
+	}
 
 	translateDate(date) {
 		date = new Date(date);
