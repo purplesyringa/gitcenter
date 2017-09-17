@@ -1,6 +1,6 @@
 .comment-title-edit, .comment-content-edit {
 	display: block;
-	width: calc(100% - 34px);
+	width: calc(100% - 18px);
 	padding: 8px;
 	margin-bottom: 8px;
 	box-sizing: content-box;
