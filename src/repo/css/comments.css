@@ -21,3 +21,7 @@
 	height: 256px;
 	resize: vertical;
 }
+
+.comment-submit {
+	float: right;
+}
