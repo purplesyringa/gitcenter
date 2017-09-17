@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Git Center</title>
+		<meta charset="utf-8">
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<base href="" target="_top" id="base">
+		<script>base.href = document.location.href.replace("/media", "").replace("index.html", "").replace(/[&?]wrapper=False/, "").replace(/[&?]wrapper_nonce=[A-Za-z0-9]+/, "")</script>
+
+		<link rel="stylesheet" type="text/css" href="../../../css/main.css">
+		<link rel="stylesheet" type="text/css" href="../../../css/buttons.css">
+		<link rel="stylesheet" type="text/css" href="../../../css/header.css">
+		<link rel="stylesheet" type="text/css" href="../../../css/content.css">
+		<link rel="stylesheet" type="text/css" href="../../css/tabs.css">
+		<link rel="stylesheet" type="text/css" href="../../css/info.css">
+		<link rel="stylesheet" type="text/css" href="../../css/comments.css">
+		<link rel="stylesheet" type="text/css" href="css/issue.css">
+	</head>
+	<body>
+		<header class="header">
+			<img src="../../../img/logo-white.svg" class="header-logo">
+			<div class="header-name">Git Center</div>
+		</header>
+		<main class="middle">
+			<h1 id="repo_name"></h1>
+
+			<a id="code_link" class="tab">
+				<img src="../../../img/code.svg" width="16">
+				Code
+			</a>
+			<a id="issues_link" class="tab tab-current">
+				<img src="../../../img/issue-opened.svg" width="16">
+				Issues
+			</a>
+			<a class="tab">
+				<img src="../../../img/pr-merged.svg" width="16">
+				Pull requests
+			</a>
+		</main>
+
+		<div class="info">
+			<div class="issue-status"><img src="../../../img/issue-opened-white.svg">Open</div>
+			<div class="issue-title">
+				<span id="issue_title"></span>
+				<span class="issue-id">
+					#<span id="issue_id"></span>@<span id="issue_json_id"></span>
+				</span>
+			</div>
+		</div>
+
+		<div class="comments" id="comments"></div>
+
+		<div class="comments">
+			<textarea class="comment-content-edit" id="comment_content" placeholder="Join the conversation!"></textarea>
+			<a class="button comment-submit" id="comment_submit">Submit</a>
+		</div>
+
+		<template id="edit_icon_tmpl">
+			<img src="../../../img/edit.svg" class="edit-icon" id="edit_icon" width="16" height="16">
+		</template>
+
+		<script type="text/javascript" src="../../../js/ZeroFrame.js"></script>
+		<script type="text/javascript" src="../../../js/ZeroPage.js"></script>
+		<script type="text/javascript" src="../../../js/ZeroFS.js"></script>
+		<script type="text/javascript" src="../../../js/ZeroAuth.js"></script>
+		<script type="text/javascript" src="../../../js/ZeroDB.js"></script>
+		<script type="text/javascript" src="../../../js/git.js"></script>
+		<script type="text/javascript" src="../../../js/repo.js"></script>
+		<script type="text/javascript" src="../../js/common.js"></script>
+		<script type="text/javascript" src="../../js/user_common.js"></script>
+		<script type="text/javascript" src="js/main.js"></script>
+	</body>
+</html>
