@@ -1,7 +1,8 @@
 .content {
 	display: block;
 	width: 1024px;
-	padding: 16px calc(50% - 512px);
+	padding: 0 calc(50% - 512px);
+	margin: 16px 0;
 }
 
 .middle {
@@ -29,7 +30,8 @@ p {
 .info {
 	display: block;
 	width: 1024px;
-	padding: 16px calc(50% - 512px);
+	padding: 0 calc(50% - 512px);
+	margin: 16px 0;
 }
 .info-link {
 	margin-left: 16px;
