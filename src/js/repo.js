@@ -180,7 +180,7 @@ class Repository {
 	}
 	getIssueComments(id, jsonId) {
 		return this.zeroDB.query("\
-			SELECT issues.id AS issue_id, -1 AS id, issues.body AS body, issues.date_added AS date_added, issues.json_id AS json_id, json.cert_user_id AS cert_user_id FROM issues, json WHERE issues.json_id = json.json_id AND issues.json_id = :jsonId AND issues.id = :id\
+			SELECT issues.id AS issue_id, -1 AS id, issues.body AS body, issues.date_added AS date_added, issues.json_id AS issue_json_id, issues.json_id AS json_id, json.cert_user_id AS cert_user_id FROM issues, json WHERE issues.json_id = json.json_id AND issues.json_id = :jsonId AND issues.id = :id\
 			UNION ALL\
 			SELECT issue_comments.*, json.cert_user_id AS cert_user_id FROM issue_comments, json WHERE issue_comments.json_id = json.json_id AND issue_comments.json_id = :jsonId AND issue_comments.issue_id = :id\
 			ORDER BY date_added ASC\

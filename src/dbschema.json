@@ -24,7 +24,7 @@
 				["cert_user_id", "TEXT"]
 			],
 			"indexes": ["CREATE UNIQUE INDEX path ON json(directory, site, file_name)"],
-			"schema_changed": 1
+			"schema_changed": 4
 		},
 		"issues": {
 			"cols": [
@@ -42,12 +42,13 @@
 			"cols": [
 				["id", "INTEGER"],
 				["issue_id", "INTEGER"],
+				["issue_json_id", "INTEGER REFERENCES json (json_id)"],
 				["body", "TEXT"],
 				["date_added", "INTEGER"],
 				["json_id", "INTEGER REFERENCES json (json_id)"]
 			],
 			"indexes": ["CREATE UNIQUE INDEX issue_comments_key ON issue_comments(json_id, id)"],
-			"schema_changed": 1
+			"schema_changed": 2
 		}
 	}
 }
