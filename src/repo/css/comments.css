@@ -1,0 +1,23 @@
+.comment-title-edit, .comment-content-edit {
+	display: block;
+	width: calc(100% - 34px);
+	padding: 8px;
+	margin-bottom: 8px;
+	box-sizing: content-box;
+
+	border: 1px solid #888;
+	border-radius: 4px;
+
+	background-color: #FBFBFB;
+	box-shadow: inset 0 0 4px #DDD;
+
+	font-size: 16px;
+	font-family: Helvetica, Arial, sans-serif;
+}
+.comment-title-edit {
+	height: 16px;
+}
+.comment-content-edit {
+	height: 256px;
+	resize: vertical;
+}
