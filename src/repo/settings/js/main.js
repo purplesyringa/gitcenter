@@ -17,14 +17,26 @@ repo.addMerger()
 			select.appendChild(option);
 		});
 
-		document.getElementById("maintainers_remove").onclick = () => {
+		let removeButton = document.getElementById("maintainers_remove");
+		removeButton.onclick = () => {
+			if(removeButton.classList.contains("button-disabled")) {
+				return;
+			}
+			if(!select.value) {
+				return;
+			}
+
 			zeroPage.confirm("Remove <b>" + select.value + "</b> from maintainers?", "Yes")
 				.then(() => {
-					return repo.removeMaintainer(select.value);
+					removeButton.classList.add("button-disabled");
+					return repo.removeMaintainer(select.value.replace(/@.*/, ""));
 				})
 				.then(() => {
 					let option = Array.prototype.slice.call(select.children).find(option => option.value == select.value);
 					select.removeChild(option);
+					removeButton.classList.remove("button-disabled");
+				}, () => {
+					removeButton.classList.remove("button-disabled");
 				});
 		};
 	});
