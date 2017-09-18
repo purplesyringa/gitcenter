@@ -25,13 +25,22 @@
 	margin-top: 4px;
 	margin-right: 16px;
 	padding: 4px 8px;
-	background-color: #2B3;
 	border-radius: 4px;
 	vertical-align: top;
 
 	font-size: 16px;
 	color: #FFF;
 }
+.issue-status-open {
+	background-color: #2B3;
+}
+.issue-status-closed {
+	background-color: #B23;
+}
+.issue-status-reopened {
+	background-color: #B2E;
+}
+
 .issue-status img {
 	display: inline-block;
 	height: 16px;
