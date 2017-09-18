@@ -28,7 +28,12 @@ class Repository {
 		return this.zeroFS.writeFile("merged-GitCenter/" + this.address + "/content.json", JSON.stringify(content));
 	}
 	sign() {
-		return this.zeroPage.cmd("siteSign");
+		return this.zeroPage.cmd("siteSign")
+			.cmd(res => {
+				if(res != "ok") {
+					return Promise.reject(res);
+				}
+			});
 	}
 
 	getSigners() {
