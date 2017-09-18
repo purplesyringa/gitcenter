@@ -296,6 +296,60 @@ class Repository {
 			});
 	}
 
+	// Maintainers
+	getUsers() {
+		let users;
+
+		return this.zeroFS.readFile("cors-1iD5ZQJMNXu43w1qLB8sfdHVKppVMduGz/data/users.json")
+			.then(u => {
+				users = JSON.parse(u).users;
+
+				return this.zeroFS.readFile("cors-1iD5ZQJMNXu43w1qLB8sfdHVKppVMduGz/data/users_archive.json");
+			})
+			.then(archived => {
+				archived = JSON.parse(archived).users;
+				users = Object.assign(users, archived);
+
+				Object.keys(users).forEach(name => {
+					let data = users[name].split(",");
+					users[name] = {
+						type: data[0],
+						id: data[1],
+						hash: data[2]
+					};
+				});
+
+				return users;
+			});
+	}
+	getMaintainers() {
+		let signers;
+
+		return this.getContent()
+			.then(content => {
+				signers = content.signers || [];
+
+				return this.getUsers();
+			})
+			.then(users => {
+				let userNames = Object.keys(users);
+				signers = signers
+					.map(id => {
+						let name = userNames.find(name => users[name].id == id);
+						if(!name) {
+							return false;
+						}
+
+						return Object.assign({
+							name: name
+						}, users[name]);
+					})
+					.filter(signer => signer);
+
+				return signers;
+			});
+	}
+
 	translateDate(date) {
 		date = new Date(date);
 
