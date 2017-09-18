@@ -142,7 +142,8 @@ class Repository {
 						title: title,
 						body: content,
 						date_added: Date.now(),
-						open: 1
+						open: 1,
+						reopened: 0
 					},
 					{
 						source: "next_issue_id",
@@ -230,8 +231,7 @@ class Repository {
 						issue_id: issueId,
 						issue_json_id: issueJsonId,
 						body: content,
-						date_added: Date.now(),
-						open: 1
+						date_added: Date.now()
 					},
 					{
 						source: "next_issue_comment_id",

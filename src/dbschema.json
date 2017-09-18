@@ -33,10 +33,11 @@
 				["body", "TEXT"],
 				["date_added", "INTEGER"],
 				["open", "INTEGER"],
+				["reopened", "INTEGER"],
 				["json_id", "INTEGER REFERENCES json (json_id)"]
 			],
 			"indexes": ["CREATE UNIQUE INDEX issues_key ON issues(json_id, id)"],
-			"schema_changed": 1
+			"schema_changed": 2
 		},
 		"issue_comments": {
 			"cols": [
