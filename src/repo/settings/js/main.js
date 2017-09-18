@@ -39,4 +39,34 @@ repo.addMerger()
 					removeButton.classList.remove("button-disabled");
 				});
 		};
+
+		let addButton = document.getElementById("maintainers_add");
+		addButton.onclick = () => {
+			if(addButton.classList.contains("button-disabled")) {
+				return;
+			}
+
+			let name;
+			zeroPage.prompt("What ZeroID to add?")
+				.then(n => {
+					name = n.replace(/@.*/, "");
+
+					if(!name) {
+						return;
+					}
+
+					addButton.classList.add("button-disabled");
+					return repo.addMaintainer(name);
+				})
+				.then(() => {
+					console.log(name);
+					let option = document.createElement("option");
+					option.textContent = name + "@zeroid.bit";
+					select.appendChild(option);
+
+					addButton.classList.remove("button-disabled");
+				}, e => {
+					addButton.classList.remove("button-disabled");
+				});
+		};
 	});

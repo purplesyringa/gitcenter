@@ -391,6 +391,30 @@ class Repository {
 				return this.signContent();
 			});
 	}
+	addMaintainer(name) {
+		let content, signers;
+
+		return this.getContent()
+			.then(c => {
+				content = c;
+				signers = content.signers || [];
+
+				return this.getUsers();
+			})
+			.then(users => {
+				if(!users[name]) {
+					return;
+				}
+
+				signers.push(users[name].id);
+				content.signers = signers;
+
+				return this.setContent(content);
+			})
+			.then(() => {
+				return this.signContent();
+			});
+	}
 
 	translateDate(date) {
 		date = new Date(date);
