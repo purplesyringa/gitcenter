@@ -29,7 +29,7 @@
 				Code
 			</a>
 			<a id="issues_link" class="tab tab-current">
-				<img src="../../../img/issue-opened.svg" width="16">
+				<img src="../../../img/issue-open.svg" width="16">
 				Issues
 			</a>
 			<a class="tab">
@@ -39,7 +39,10 @@
 		</main>
 
 		<div class="info">
-			<div class="issue-status"><img src="../../../img/issue-opened-white.svg">Open</div>
+			<div class="issue-status issue-status-open" id="issue_status">
+				<img id="issue_status_img" src="../../../img/issue-opened-white.svg">
+				<span id="issue_status_text">Open</span>
+			</div>
 			<div class="issue-title">
 				<span id="issue_title"></span>
 				<span class="issue-id">
@@ -52,7 +55,9 @@
 
 		<div class="comments">
 			<textarea class="comment-content-edit" id="comment_content" placeholder="Join the conversation!"></textarea>
-			<a class="button comment-submit" id="comment_submit">Submit</a>
+
+			<a class="button button-blue comment-submit" id="comment_submit">Comment</a>
+			<a class="button comment-submit-close" id="comment_submit_close">Comment</a>
 		</div>
 
 		<template id="edit_icon_tmpl">

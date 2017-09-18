@@ -10,7 +10,6 @@ if(isNaN(id) || isNaN(jsonId)) {
 }
 
 function showComment(comment) {
-	console.log(comment);
 	let node = document.createElement("div");
 	node.className = "comment" + (jsonId == comment.json_id ? " comment-owned" : "");
 
@@ -27,7 +26,18 @@ function showComment(comment) {
 	document.getElementById("comments").appendChild(node);
 }
 
+function drawIssueStatus() {
+	let statusText = issue.open ? (issue.reopened ? "reopened" : "open") : "closed";
 
+	document.getElementById("issue_status").className = "issue-status issue-status-" + statusText;
+	document.getElementById("issue_status_img").src = "../../../img/issue-" + statusText + "-white.svg";
+	document.getElementById("issue_status_text").innerHTML = statusText[0].toUpperCase() + statusText.substr(1);
+
+	document.getElementById("comment_submit_close").innerHTML = "Comment and " + (issue.open ? "close" : "reopen") + " issue";
+}
+
+
+let issue;
 repo.addMerger()
 	.then(() => {
 		return repo.getContent();
@@ -38,10 +48,14 @@ repo.addMerger()
 
 		return repo.getIssue(id, jsonId);
 	})
-	.then(issue => {
+	.then(i => {
+		issue = i;
+
 		document.getElementById("issue_title").textContent = issue.title;
 		document.getElementById("issue_id").textContent = id;
 		document.getElementById("issue_json_id").textContent = jsonId;
+
+		drawIssueStatus();
 
 		return repo.getIssueComments(id, jsonId);
 	})
@@ -50,7 +64,7 @@ repo.addMerger()
 
 		document.getElementById("comment_submit").onclick = () => {
 			let contentNode = document.getElementById("comment_content");
-			if(contentNode.disabled) {
+			if(contentNode.disabled || contentNode.value == "") {
 				return;
 			}
 
@@ -59,6 +73,42 @@ repo.addMerger()
 			repo.addIssueComment(id, jsonId, contentNode.value)
 				.then(comment => {
 					showComment(comment);
+
+					contentNode.value = "";
+					contentNode.disabled = false;
+				});
+		};
+
+		document.getElementById("comment_submit_close").onclick = () => {
+			let contentNode = document.getElementById("comment_content");
+			if(contentNode.disabled) {
+				return;
+			}
+
+			contentNode.disabled = true;
+
+			let promise;
+			if(contentNode.value == "") {
+				promise = Promise.resolve();
+			} else {
+				promise = repo.addIssueComment(id, jsonId, contentNode.value)
+					.then(comment => {
+						showComment(comment);
+					});
+			}
+
+			promise
+				.then(() => {
+					return repo.changeIssueStatus(id, jsonId, !issue.open);
+				})
+				.then(() => {
+					if(issue.open) {
+						issue.open = false;
+					} else {
+						issue.open = true;
+						issue.reopened = true;
+					}
+					drawIssueStatus();
 
 					contentNode.value = "";
 					contentNode.disabled = false;

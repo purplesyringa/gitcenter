@@ -83,3 +83,7 @@
 .comment-submit {
 	float: right;
 }
+.comment-submit-close {
+	float: right;
+	margin-right: 16px;
+}
