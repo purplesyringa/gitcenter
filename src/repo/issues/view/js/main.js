@@ -32,6 +32,8 @@ function drawIssueStatus() {
 	document.getElementById("issue_status").className = "issue-status issue-status-" + statusText;
 	document.getElementById("issue_status_img").src = "../../../img/issue-" + statusText + "-white.svg";
 	document.getElementById("issue_status_text").innerHTML = statusText[0].toUpperCase() + statusText.substr(1);
+
+	document.getElementById("comment_submit_close").innerHTML = "Comment and " + (issue.open ? "close" : "reopen") + " issue";
 }
 
 
@@ -52,8 +54,6 @@ repo.addMerger()
 		document.getElementById("issue_title").textContent = issue.title;
 		document.getElementById("issue_id").textContent = id;
 		document.getElementById("issue_json_id").textContent = jsonId;
-
-		document.getElementById("comment_submit_close").innerHTML = "Comment and " + (issue.open ? "close" : "reopen") + " issue";
 
 		drawIssueStatus();
 
