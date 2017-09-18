@@ -11,10 +11,18 @@ class Repository {
 
 	// Permission actions
 	addMerger() {
+		let siteInfo;
 		return this.zeroPage.getSiteInfo()
-			.then(siteInfo => {
+			.then(s => {
+				siteInfo = s;
+
 				if(siteInfo.settings.permissions.indexOf("Merger:GitCenter") == -1) {
 					return zeroPage.cmd("wrapperPermissionAdd", ["Merger:GitCenter"]);
+				}
+			})
+			.then(() => {
+				if(siteInfo.settings.permissions.indexOf("Cors:1iD5ZQJMNXu43w1qLB8sfdHVKppVMduGz") == -1) {
+					return zeroPage.cmd("corsPermission", ["1iD5ZQJMNXu43w1qLB8sfdHVKppVMduGz"]);
 				}
 			})
 			.then(() => {
