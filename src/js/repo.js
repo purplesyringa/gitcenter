@@ -11,7 +11,15 @@ class Repository {
 
 	// Permission actions
 	addMerger() {
-		return this.zeroPage.cmd("mergerSiteList")
+		return this.zeroPage.getSiteInfo()
+			.then(siteInfo => {
+				if(siteInfo.settings.permissions.indexOf("Merger:GitCenter") == -1) {
+					return zeroPage.cmd("wrapperPermissionAdd", ["Merger:GitCenter"]);
+				}
+			})
+			.then(() => {
+				return this.zeroPage.cmd("mergerSiteList");
+			})
 			.then(list => {
 				if(!list[this.address]) {
 					return this.zeroPage.cmd("mergerSiteAdd", [this.address]);
