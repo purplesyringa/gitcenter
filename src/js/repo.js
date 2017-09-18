@@ -255,6 +255,30 @@ class Repository {
 				return row;
 			});
 	}
+	changeIssueStatus(id, jsonId, open) {
+		return this.zeroAuth.requestAuth()
+			.then(auth => {
+				return this.zeroDB.changeRow(
+					"merged-GitCenter/" + this.address + "/data/users/" + auth.address + "/data.json",
+					"merged-GitCenter/" + this.address + "/data/users/" + auth.address + "/content.json",
+					"issues",
+					issue => {
+						if(issue.id != id) {
+							return issue;
+						}
+
+						if(open) {
+							issue.open = true;
+							issue.reopened = true;
+						} else {
+							issue.open = false;
+						}
+
+						return issue;
+					}
+				);
+			});
+	}
 
 	translateDate(date) {
 		date = new Date(date);
