@@ -349,6 +349,32 @@ class Repository {
 				return signers;
 			});
 	}
+	removeMaintainer(name) {
+		let content, signers;
+
+		return this.getContent()
+			.then(c => {
+				content = c;
+				signers = content.signers || [];
+
+				return this.getUsers();
+			})
+			.then(users => {
+				if(!users[name]) {
+					return;
+				}
+
+				let index = signers.indexOf(users[name].id);
+				if(index == -1) {
+					return;
+				}
+
+				signers.splice(index, 1);
+				content.signers = signers;
+
+				return this.setContent(content);
+			});
+	}
 
 	translateDate(date) {
 		date = new Date(date);
