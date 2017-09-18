@@ -41,3 +41,15 @@
 	margin-right: 8px;
 	vertical-align: top;
 }
+
+
+.navigation {
+	width: 1024px;
+	margin: 16px auto;
+}
+.navigation > * {
+	margin-left: 8px;
+}
+.navigation > *:first-child {
+	margin-left: 0;
+}

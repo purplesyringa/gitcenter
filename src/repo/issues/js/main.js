@@ -1,3 +1,5 @@
+let currentPage = Number.isSafeInteger(+additional) ? +additional : 0;
+
 repo.addMerger()
 	.then(() => {
 		return repo.getContent();
@@ -7,6 +9,7 @@ repo.addMerger()
 		showTabs(1);
 		document.getElementById("new_issue").href = "new/?" + address;
 
+		additional = +additional;
 		return repo.getIssues(Number.isSafeInteger(additional) ? additional : 0);
 	})
 	.then(issues => {
@@ -32,4 +35,16 @@ repo.addMerger()
 
 			document.getElementById("issues").appendChild(tr);
 		});
+
+		if(currentPage > 0) {
+			let button = document.getElementById("navigation_back");
+			button.classList.remove("button-disabled");
+			button.href = "?" + address + "/" + (currentPage - 1);
+		}
+
+		if(issues.nextPage) {
+			let button = document.getElementById("navigation_next");
+			button.classList.remove("button-disabled");
+			button.href = "?" + address + "/" + (currentPage + 1);
+		}
 	});
