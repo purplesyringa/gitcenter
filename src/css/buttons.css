@@ -40,6 +40,11 @@
 	background-image: linear-gradient(to top, #599BDC 0%, #3072B3 100%);
 }
 
+.button-blue.button-disabled, .button-blue.button-disabled:active {
+	cursor: not-allowed;
+	background-image: linear-gradient(to bottom, #005283 0%, #236EB4 100%);
+}
+
 .button-big {
 	padding: 4.5px 15px 4.5px 12px;
 	border-radius: 6px;
