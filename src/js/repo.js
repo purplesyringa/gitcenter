@@ -41,7 +41,7 @@ class Repository {
 			.then(content => JSON.parse(content));
 	}
 	setContent(content) {
-		return this.zeroFS.writeFile("merged-GitCenter/" + this.address + "/content.json", JSON.stringify(content));
+		return this.zeroFS.writeFile("merged-GitCenter/" + this.address + "/content.json", JSON.stringify(content, null, "\t"));
 	}
 	sign() {
 		return this.zeroPage.cmd("siteSign");
