@@ -43,8 +43,21 @@ class Repository {
 	setContent(content) {
 		return this.zeroFS.writeFile("merged-GitCenter/" + this.address + "/content.json", JSON.stringify(content, null, "\t"));
 	}
+	signContent(signStyle) {
+		return this.zeroPage.cmd("sitePublish", {inner_path: "merged-GitCenter/" + this.address + "/content.json", privatekey: signStyle == "site" ? "stored" : null})
+			.then(res => {
+				if(res != "ok") {
+					return Promise.reject(res);
+				}
+			});
+	}
 	sign() {
-		return this.zeroPage.cmd("siteSign");
+		return this.zeroPage.cmd("siteSign")
+			.cmd(res => {
+				if(res != "ok") {
+					return Promise.reject(res);
+				}
+			});
 	}
 
 	getSigners() {
@@ -373,6 +386,9 @@ class Repository {
 				content.signers = signers;
 
 				return this.setContent(content);
+			})
+			.then(() => {
+				return this.signContent();
 			});
 	}
 
