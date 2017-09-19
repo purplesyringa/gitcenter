@@ -391,7 +391,7 @@ class Repository {
 				return this.signContent();
 			});
 	}
-	addMaintainer(name) {
+	addMaintainer(name, signStyle) {
 		let content, signers;
 
 		return this.getContent()
@@ -412,7 +412,7 @@ class Repository {
 				return this.setContent(content);
 			})
 			.then(() => {
-				return this.signContent();
+				return this.signContent(signStyle);
 			});
 	}
 
