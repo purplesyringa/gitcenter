@@ -11,7 +11,7 @@ class Repository {
 
 	// Permission actions
 	addMerger() {
-		let siteInfo;
+		let siteInfo, list;
 		return this.zeroPage.getSiteInfo()
 			.then(s => {
 				siteInfo = s;
@@ -28,9 +28,15 @@ class Repository {
 			.then(() => {
 				return this.zeroPage.cmd("mergerSiteList");
 			})
-			.then(list => {
+			.then(l => {
+				list = l;
 				if(!list[this.address]) {
 					return this.zeroPage.cmd("mergerSiteAdd", [this.address]);
+				}
+			})
+			.then(() => {
+				if(!list["1iNDExENNBsfHc6SKmy1HaeasHhm3RPcL"]) {
+					return this.zeroPage.cmd("mergerSiteAdd", ["1iNDExENNBsfHc6SKmy1HaeasHhm3RPcL"]);
 				}
 			});
 	}
@@ -419,6 +425,76 @@ class Repository {
 			})
 			.then(() => {
 				return this.signContent(signStyle);
+			});
+	}
+
+	// Index
+	addToIndex() {
+		let auth;
+		return this.zeroAuth.requestAuth()
+			.then(a => {
+				auth = a;
+
+				return this.zeroFS.readFile("merged-GitCenter/1iNDExENNBsfHc6SKmy1HaeasHhm3RPcL/data/users/" + auth.address + "/data.json")
+					.then(data => JSON.parse(data))
+					.catch(() => { return {}; });
+			})
+			.then(data => {
+				if(!data.repo_index) {
+					data.repo_index = {};
+				}
+
+				data.repo_index[this.address] = {};
+
+				data = JSON.stringify(data, null, "\t");
+
+				return this.zeroFS.writeFile("merged-GitCenter/1iNDExENNBsfHc6SKmy1HaeasHhm3RPcL/data/users/" + auth.address + "/data.json", data);
+			})
+			.then(() => {
+				return this.zeroPage.cmd("sitePublish", {inner_path: "merged-GitCenter/1iNDExENNBsfHc6SKmy1HaeasHhm3RPcL/data/users/" + auth.address + "/content.json"})
+					.then(res => {
+						if(res != "ok" && res.error != "Port not opened.") {
+							return Promise.reject(res);
+						}
+					});
+			});
+	}
+	removeFromIndex() {
+		let auth;
+		return this.zeroAuth.requestAuth()
+			.then(a => {
+				auth = a;
+				return this.zeroFS.readFile("merged-GitCenter/1iNDExENNBsfHc6SKmy1HaeasHhm3RPcL/data/users/" + auth.address + "/data.json")
+					.then(data => JSON.parse(data))
+					.catch(() => {});
+			})
+			.then(data => {
+				if(!data.repo_index) {
+					data.repo_index = {};
+				}
+
+				delete data.repo_index[this.address];
+
+				data = JSON.stringify(data, null, "\t");
+
+				return this.zeroFS.writeFile("merged-GitCenter/1iNDExENNBsfHc6SKmy1HaeasHhm3RPcL/data/users/" + auth.address + "/data.json", data);
+			})
+			.then(() => {
+				return this.zeroPage.cmd("sitePublish", {inner_path: "merged-GitCenter/1iNDExENNBsfHc6SKmy1HaeasHhm3RPcL/data/users/" + auth.address + "/content.json"})
+					.then(res => {
+						if(res != "ok" && res.error != "Port not opened.") {
+							return Promise.reject(res);
+						}
+					});
+			})
+			.then(() => {
+				return this.zeroDB.query("SELECT repo_index.*, json.cert_user_id FROM repo_index, json WHERE repo_index.json_id = json.json_id AND repo_index.address = :address", {
+					address: this.address
+				});
+			})
+			.then(addresses => {
+				let indexers = addresses.map(address => address.cert_user_id);
+				return indexers.length ? indexers : false;
 			});
 	}
 
