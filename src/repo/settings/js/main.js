@@ -59,14 +59,38 @@ repo.addMerger()
 					return repo.addMaintainer(name);
 				})
 				.then(() => {
-					console.log(name);
 					let option = document.createElement("option");
 					option.textContent = name + "@zeroid.bit";
 					select.appendChild(option);
 
 					addButton.classList.remove("button-disabled");
-				}, e => {
+				}, () => {
 					addButton.classList.remove("button-disabled");
+				});
+		};
+
+		let restoreButton = document.getElementById("maintainers_restore");
+		restoreButton.onclick = () => {
+			let auth;
+			zeroPage.confirm("Do you want to run Restore Access procedure?<br>This way you can restore access if you have the private key of the site.<br>Otherwise, please ask other maintainers to do that.")
+				.then(() => {
+					return zeroAuth.requestAuth();
+				})
+				.then(a => {
+					auth = a;
+					restoreButton.classList.add("button-disabled");
+
+					return repo.addMaintainer(auth.user, "site");
+				})
+				.then(() => {
+					let option = document.createElement("option");
+					option.textContent = auth.user;
+					select.appendChild(option);
+
+					restoreButton.classList.remove("button-disabled");
+				}, error => {
+					zeroPage.error("Failed to change maintainers. Please stop ZeroNet and manually add private key to users.json.<br>" + error);
+					restoreButton.classList.remove("button-disabled");
 				});
 		};
 	});
