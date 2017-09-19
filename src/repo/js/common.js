@@ -9,6 +9,12 @@ function showTabs(level) {
 		"issues/" +
 		"?" + address
 	);
+
+	document.getElementById("settings_link").href = (
+		"../".repeat(level) +
+		"settings/" +
+		"?" + address
+	);
 }
 
 function showTitle(title) {

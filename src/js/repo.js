@@ -11,7 +11,23 @@ class Repository {
 
 	// Permission actions
 	addMerger() {
-		return this.zeroPage.cmd("mergerSiteList")
+		let siteInfo;
+		return this.zeroPage.getSiteInfo()
+			.then(s => {
+				siteInfo = s;
+
+				if(siteInfo.settings.permissions.indexOf("Merger:GitCenter") == -1) {
+					return zeroPage.cmd("wrapperPermissionAdd", ["Merger:GitCenter"]);
+				}
+			})
+			.then(() => {
+				if(siteInfo.settings.permissions.indexOf("Cors:1iD5ZQJMNXu43w1qLB8sfdHVKppVMduGz") == -1) {
+					return zeroPage.cmd("corsPermission", ["1iD5ZQJMNXu43w1qLB8sfdHVKppVMduGz"]);
+				}
+			})
+			.then(() => {
+				return this.zeroPage.cmd("mergerSiteList");
+			})
 			.then(list => {
 				if(!list[this.address]) {
 					return this.zeroPage.cmd("mergerSiteAdd", [this.address]);
@@ -25,7 +41,15 @@ class Repository {
 			.then(content => JSON.parse(content));
 	}
 	setContent(content) {
-		return this.zeroFS.writeFile("merged-GitCenter/" + this.address + "/content.json", JSON.stringify(content));
+		return this.zeroFS.writeFile("merged-GitCenter/" + this.address + "/content.json", JSON.stringify(content, null, "\t"));
+	}
+	signContent(signStyle) {
+		return this.zeroPage.cmd("sitePublish", {inner_path: "merged-GitCenter/" + this.address + "/content.json", privatekey: signStyle == "site" ? "stored" : null})
+			.then(res => {
+				if(res != "ok" && res.error != "Port not opened.") {
+					return Promise.reject(res);
+				}
+			});
 	}
 	sign() {
 		return this.zeroPage.cmd("siteSign")
@@ -282,6 +306,113 @@ class Repository {
 						return issue;
 					}
 				);
+			});
+	}
+
+	// Maintainers
+	getUsers() {
+		let users;
+
+		return this.zeroFS.readFile("cors-1iD5ZQJMNXu43w1qLB8sfdHVKppVMduGz/data/users.json")
+			.then(u => {
+				users = JSON.parse(u).users;
+
+				return this.zeroFS.readFile("cors-1iD5ZQJMNXu43w1qLB8sfdHVKppVMduGz/data/users_archive.json");
+			})
+			.then(archived => {
+				archived = JSON.parse(archived).users;
+				users = Object.assign(users, archived);
+
+				Object.keys(users).forEach(name => {
+					let data = users[name].split(",");
+					users[name] = {
+						type: data[0],
+						id: data[1],
+						hash: data[2]
+					};
+				});
+
+				return users;
+			});
+	}
+	getMaintainers() {
+		let signers;
+
+		return this.getContent()
+			.then(content => {
+				signers = content.signers || [];
+
+				return this.getUsers();
+			})
+			.then(users => {
+				let userNames = Object.keys(users);
+				signers = signers
+					.map(id => {
+						let name = userNames.find(name => users[name].id == id);
+						if(!name) {
+							return false;
+						}
+
+						return Object.assign({
+							name: name
+						}, users[name]);
+					})
+					.filter(signer => signer);
+
+				return signers;
+			});
+	}
+	removeMaintainer(name) {
+		let content, signers;
+
+		return this.getContent()
+			.then(c => {
+				content = c;
+				signers = content.signers || [];
+
+				return this.getUsers();
+			})
+			.then(users => {
+				if(!users[name]) {
+					return;
+				}
+
+				let index = signers.indexOf(users[name].id);
+				if(index == -1) {
+					return;
+				}
+
+				signers.splice(index, 1);
+				content.signers = signers;
+
+				return this.setContent(content);
+			})
+			.then(() => {
+				return this.signContent();
+			});
+	}
+	addMaintainer(name, signStyle) {
+		let content, signers;
+
+		return this.getContent()
+			.then(c => {
+				content = c;
+				signers = content.signers || [];
+
+				return this.getUsers();
+			})
+			.then(users => {
+				if(!users[name]) {
+					return;
+				}
+
+				signers.push(users[name].id);
+				content.signers = signers;
+
+				return this.setContent(content);
+			})
+			.then(() => {
+				return this.signContent(signStyle);
 			});
 	}
 

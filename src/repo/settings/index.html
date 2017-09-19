@@ -13,7 +13,7 @@
 		<link rel="stylesheet" type="text/css" href="../../css/content.css">
 		<link rel="stylesheet" type="text/css" href="../css/tabs.css">
 		<link rel="stylesheet" type="text/css" href="../css/info.css">
-		<link rel="stylesheet" type="text/css" href="css/issues.css">
+		<link rel="stylesheet" type="text/css" href="css/settings.css">
 	</head>
 	<body>
 		<header class="header">
@@ -27,7 +27,7 @@
 				<img src="../../img/code.svg" width="16">
 				Code
 			</a>
-			<a id="issues_link" class="tab tab-current">
+			<a id="issues_link" class="tab">
 				<img src="../../img/issue-open.svg" width="16">
 				Issues
 			</a>
@@ -35,21 +35,39 @@
 				<img src="../../img/pr-merged.svg" width="16">
 				Pull requests
 			</a>
-			<a id="settings_link" class="tab">
+			<a id="settings_link" class="tab tab-current">
 				<img src="../../img/settings.svg" width="16">
 				Settings
 			</a>
 		</main>
 
 		<div class="info">
-			<a class="button button-blue" id="new_issue">New issue</a>
+			<h2 class="settings-header">Visibility settings</h2>
 		</div>
 
-		<table id="issues" class="issues"></table>
+		<div class="entry">
+			<div class="entry-title">Visibility</div>
+			<div class="entry-value">
+				<select class="select">
+					<option>Visible (the repository is listed in index)</option>
+					<option>Hidden (the repository is not listed, but accessable by link)</option>
+				</select>
+			</div>
+		</div>
 
-		<div class="navigation">
-			<a class="button button-disabled" id="navigation_back">&#8592; Back</a>
-			<a class="button button-disabled" id="navigation_next">Next &#8594;</a>
+		<div class="entry">
+			<div class="entry-title">Maintainers</div>
+			<div class="entry-value">
+				<select class="select" id="maintainers_select">
+					<option>Fetching maintainers...</option>
+				</select>
+				<a class="button entry-value-margin" id="maintainers_remove">Remove</a>
+
+				<div class="entry-value-separator"></div>
+
+				<a class="button button-blue" id="maintainers_add">Add</a>
+				<a class="button entry-value-margin" id="maintainers_restore" title="This option can be used if you have accidentally removed yourself from maintainers list. Restoring access is possible if you have private key of your repository.">Restore access</a>
+			</div>
 		</div>
 
 		<template id="edit_icon_tmpl">
