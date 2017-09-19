@@ -502,7 +502,7 @@ class Repository {
 			address: this.address
 		})
 			.then(addresses => {
-				return address.length > 0;
+				return addresses;
 			});
 	}
 
