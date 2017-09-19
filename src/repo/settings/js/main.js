@@ -80,7 +80,7 @@ repo.addMerger()
 					auth = a;
 					restoreButton.classList.add("button-disabled");
 
-					return repo.addMaintainer(auth.user, "site");
+					return repo.addMaintainer(auth.user.replace(/@.*/, ""), "site");
 				})
 				.then(() => {
 					let option = document.createElement("option");
