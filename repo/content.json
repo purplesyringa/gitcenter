@@ -461,7 +461,7 @@
    "size": 33
   }
  },
- "ignore": "",
+ "ignore": "data/.*",
  "includes": {
   "data/users/content.json": {
    "sigenrs_required": 1,
