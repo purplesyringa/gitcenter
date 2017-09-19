@@ -497,6 +497,14 @@ class Repository {
 				return indexers.length ? indexers : false;
 			});
 	}
+	isInIndex() {
+		return this.zeroDB.query("SELECT repo_index.*, json.cert_user_id FROM repo_index, json WHERE repo_index.json_id = json.json_id AND repo_index.address = :address", {
+			address: this.address
+		})
+			.then(addresses => {
+				return address.length > 0;
+			});
+	}
 
 	translateDate(date) {
 		date = new Date(date);
