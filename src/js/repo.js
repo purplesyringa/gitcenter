@@ -191,7 +191,9 @@ class Repository {
 			});
 	}
 	getIssues(page) {
-		return this.zeroDB.query("SELECT issues.*, json.cert_user_id FROM issues, json WHERE issues.json_id = json.json_id LIMIT " + (page * 10) + ", 11")
+		return this.zeroDB.query("SELECT issues.*, json.cert_user_id FROM issues, json WHERE issues.json_id = json.json_id AND json.site = :address LIMIT " + (page * 10) + ", 11", {
+			address: this.address
+		})
 			.then(issues => {
 				return {
 					issues: issues.slice(0, 10),
@@ -200,9 +202,10 @@ class Repository {
 			});
 	}
 	getIssue(id, jsonId) {
-		return this.zeroDB.query("SELECT issues.*, json.cert_user_id FROM issues, json WHERE issues.json_id == json.json_id AND issues.json_id == :jsonId AND issues.id == :id", {
+		return this.zeroDB.query("SELECT issues.*, json.cert_user_id FROM issues, json WHERE issues.json_id = json.json_id AND issues.json_id = :jsonId AND issues.id = :id AND json.site = :address", {
 			jsonId: jsonId,
-			id: id
+			id: id,
+			address: this.address
 		})
 			.then(issue => {
 				return issue[0];
@@ -221,8 +224,9 @@ class Repository {
 			FROM issues, json\
 			WHERE\
 				issues.json_id = json.json_id AND\
-				issues.json_id = :jsonId\
-				AND issues.id = :id\
+				issues.json_id = :jsonId AND\
+				issues.id = :id AND\
+				json.site = :address\
 			\
 			UNION ALL\
 			\
@@ -238,12 +242,14 @@ class Repository {
 			WHERE\
 				issue_comments.json_id = json.json_id AND\
 				issue_comments.json_id = :jsonId AND\
-				issue_comments.issue_id = :id\
+				issue_comments.issue_id = :id AND\
+				json.site = :address\
 			\
 			ORDER BY date_added ASC\
 		", {
 			jsonId: jsonId,
-			id: id
+			id: id,
+			address: this.address
 		});
 	}
 	addIssueComment(issueId, issueJsonId, content) {
