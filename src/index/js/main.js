@@ -11,7 +11,7 @@ zeroDB.query("SELECT repo_index.*, json.cert_user_id FROM repo_index, json WHERE
 
 			let title = document.createElement("div");
 			title.className = "repo-title";
-			title.textContent = repo.address;
+			title.textContent = repo.description;
 			node.appendChild(title);
 
 			let address = document.createElement("div");
