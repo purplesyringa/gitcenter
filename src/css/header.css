@@ -43,3 +43,6 @@
 .header-item:hover {
 	color: #DDD;
 }
+.header-item-active, .header-item-active:hover {
+	color: #FFF;
+}
