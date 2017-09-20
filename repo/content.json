@@ -5,7 +5,7 @@
  "clone_root": "template-new",
  "cloneable": true,
  "cloned_from": "1HeLLo4uzjaLetFx6NH3PMwFP3qbRbTf3D",
- "description": "Default repository for Git Center projects",
+ "description": "Default Git Center Repo",
  "favicon": "img/logo-red.svg",
  "files": {
   "img/logo-red.svg": {
@@ -464,17 +464,18 @@
  "ignore": "data/.*",
  "includes": {
   "data/users/content.json": {
-   "sigenrs_required": 1,
-   "signers": []
+   "signers": [],
+   "signers_required": 1
   }
  },
  "inner_path": "content.json",
  "merged_type": "GitCenter",
- "modified": 1505395363,
+ "modified": 1505889891,
  "postmessage_nonce_security": true,
- "signers_sign": "HIbkXHjK35NbjH6FiPXQ6yWz6FagbYVIRVKKA+XdtHUwbgSErgTMH5KoEiJSm3UbygccjfySXI/qIH6C4I+xLAc=",
+ "signers": ["1CvyxRucf7BbDvGtFe5LayTS2qX88VN7Er"],
+ "signers_sign": "G75GFpR8le/JsvXgE+xPcDi2Sy3DVBnREXj22m9FMchpSHYIURiljwHAiYvaCxDMsY53yz3hBIH0CL9eiIXs56w=",
  "signs": {
-  "1RepoXU8bQE9m7ssNwL4nnxBnZVejHCc6": "HNK0RxkdUfQ3VS71GL9h0clLCOM0rk7/eat0tOLyvWrdFL3WDkHE4mGxtfvenroK4/4ku8IEpsIJuY3jEwUyBnQ="
+  "1CvyxRucf7BbDvGtFe5LayTS2qX88VN7Er": "G5Ek90sG4b6zzmFE5+P/mqaQ+zeS1HgsPX6e2TFOHluRVqe6BFEMzS6gxvNFyLhXmJSHlc10Y3pOp7AGumM9emY="
  },
  "signs_required": 1,
  "title": "Git Center Repo",
