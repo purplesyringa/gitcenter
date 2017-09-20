@@ -111,6 +111,23 @@ class Repository {
 			})
 			.then(() => this.sign());
 	}
+	install() {
+		let content;
+		return this.getContent()
+			.then(c => {
+				content = c;
+
+				return this.zeroAuth.requestAuth();
+			})
+			.then(auth => {
+				content.signers = [auth.address];
+				content.installed = true;
+				return this.setContent(content);
+			})
+			.then(() => {
+				return this.signContent("site");
+			});
+	}
 
 	// Git actions
 	getFiles(branch, dir) {
