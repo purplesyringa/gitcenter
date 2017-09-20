@@ -15,6 +15,25 @@ repo.addMerger()
 		showTitle(content.title);
 		showTabs(1);
 
+		// Description
+		let input = document.getElementById("description");
+		let button = document.getElementById("description_save");
+
+		input.value = content.description;
+		button.onclick = () => {
+			if(button.classList.contains("button-disabled")) {
+				return;
+			}
+
+			button.classList.add("button-disabled");
+			repo.changeDescription(input.value)
+				.then(() => {
+					button.classList.remove("button-disabled");
+				}, () => {
+					button.classList.remove("button-disabled");
+				});
+		};
+
 		// Load indexation
 		return repo.isInIndex();
 	})

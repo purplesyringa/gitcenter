@@ -103,6 +103,14 @@ class Repository {
 			})
 			.then(() => this.sign());
 	}
+	changeDescription(description) {
+		return this.getContent()
+			.then(content => {
+				content.description = description;
+				return this.setContent(content);
+			})
+			.then(() => this.sign());
+	}
 
 	// Git actions
 	getFiles(branch, dir) {
