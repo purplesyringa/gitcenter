@@ -9,72 +9,76 @@
  "favicon": "img/logo-red.svg",
  "files": {
   "content.json-default": {
-   "sha512": "a9165348e270f5306e41c291ca9bf0de803419cabd0e9c0ee5f65517c46cda4e",
-   "size": 3198
+   "sha512": "b8a1277990caa42bb809d47bbece1a2fc73346e2ffae37ccbd3d318c36cc598e",
+   "size": 3220
   },
   "img/logo-red.svg": {
    "sha512": "9f5481798d939ab8018a4e8a8baebf094e070eebd41b3ec5dd305e55430df5e3",
    "size": 888
   },
   "index.html": {
-   "sha512": "785f6767cf7a2f3992502308bbee06a43fc5d7bed5c47be6f69472a4a62b55b1",
-   "size": 627
+   "sha512": "f05f08df94e7bd7f1638cbdd5cdc5e56a4f769a38e88fb599e519cf29ac4ff9c",
+   "size": 1064
+  },
+  "js/ZeroFrame.js": {
+   "sha512": "090a43d18dcd1aa836b0d160631fe958f9fabd761af712e8eed6f7e010c0dd76",
+   "size": 2409
   },
   "repo.git-default/HEAD": {
-   "sha512": "dd92eb021911490e737e6cbbd7bbbe40872e93dbf79b6bcd99afcd5c8c577cfb",
-   "size": 24
+   "sha512": "76b199f1bffdc6d21547895431b0f85f3857df400225cbd1ae55e7ded09786a8",
+   "size": 23
   },
   "repo.git-default/config": {
    "sha512": "192677c0b786738f8345637660febaa5fded96187ada4d0851eeae29421b66ce",
    "size": 110
   },
   "repo.git-default/description": {
-   "sha512": "8186b41b9db3a867d65688267c8a9cde2f161c57dda993a6c7e555c73026357d",
-   "size": 74
+   "sha512": "f7e152f75b124c3e1c5d12f00427729d9eec4e2c1bf70d7606440a6600d00336",
+   "size": 73
   },
   "repo.git-default/hooks/applypatch-msg.sample": {
-   "sha512": "46cabf81ac3904798427cf4f5ced760d209c1718c0e72e19ed923b3b6c28a9a5",
-   "size": 493
+   "sha512": "536cce804d84e25813993efdd240537b52d00ce9cdcecf1982f85096d56a5212",
+   "size": 478
   },
   "repo.git-default/hooks/commit-msg.sample": {
-   "sha512": "3ade4403378d5c7b86a2a89c0d4ee03cb4ba109893001c7aa8b9ebc0d2633410",
-   "size": 920
+   "sha512": "d6bb7fa747f4625adf1877f546565cbe812ca7dd4168f7e9068e6732555d8737",
+   "size": 896
   },
   "repo.git-default/hooks/post-update.sample": {
-   "sha512": "84a98ba9226dff037bc934c8ee63e7360cfbb6526cfe1ca9574fd2963663424f",
-   "size": 197
+   "sha512": "473ad124642571656276bf83b9ff63ab1804d3c23a5bdae52391c6f70a894849",
+   "size": 189
   },
   "repo.git-default/hooks/pre-applypatch.sample": {
-   "sha512": "e56a57b7445803f1c18dce2f876b8279fe3457fd33bab8ef866879a6a364f5a1",
-   "size": 438
+   "sha512": "cb78aa7e9b9c146e5db65d86dd83f04e2b6942a06fab50c704a0fd900683f3b6",
+   "size": 424
   },
   "repo.git-default/hooks/pre-commit.sample": {
-   "sha512": "b3d50bbbb631caeec3ffa46c5c39b3f6786777b606f727d533a8b9002c574947",
-   "size": 1691
+   "sha512": "4a7ac2ed2ffe50d2a997c3477b5855c3d19423c295a82f7d660be3418217a183",
+   "size": 1642
   },
   "repo.git-default/hooks/pre-push.sample": {
-   "sha512": "2a2ef8179f6601cdc64b683d509d819035a55e47e3da820578906f2b1b70de6f",
-   "size": 1401
+   "sha512": "37cd20a090494acb16c2255fe93dadeb409f2553afddc409dad5b5e99c9f5612",
+   "size": 1348
   },
   "repo.git-default/hooks/pre-rebase.sample": {
-   "sha512": "2882099abbc691b40643488a1a9e58743c537003c2ca64e8650bd5a94be8156a",
-   "size": 5120
+   "sha512": "de9bdf513f383b3215e467c025ca851a0f2661b91811bfd441486b678e4d45e4",
+   "size": 4951
   },
   "repo.git-default/hooks/pre-receive.sample": {
-   "sha512": "8bd9a5aa14ae797f70c5f118e83afeb07948006b0f37f2fc1d973b74887cd15c",
-   "size": 568
+   "sha512": "ee08c11fab7e896b2e09c241954ba7640338b12c75cd8040daf053c31b2f2223",
+   "size": 544
   },
   "repo.git-default/hooks/prepare-commit-msg.sample": {
-   "sha512": "ad820b9512b2677f5adbfaef436b3288e01ea9eda73874ba363676040808e004",
-   "size": 1275
+   "sha512": "fbf15f12136a413dd590e57392e6122714d67456beed50d9ef285e40076a138a",
+   "size": 1239
   },
   "repo.git-default/hooks/update.sample": {
-   "sha512": "6aeb4dec64af8a37b02ad5f4d68644fd8a99c3fcbca66c011b656f81c895362c",
-   "size": 3738
+   "sha512": "759abd33e5d1dda9b3e3d3116c47b23f616320d70cd66d567b1c4eeefeb6d785",
+   "size": 3610
   },
   "repo.git-default/info/exclude": {
-   "sha512": "c7be24c0636bce9c355bde577653a7c1cf427fecfc15d7c485d998f692f4bad8",
-   "size": 246
+   "sha512": "9828c6ecdf91bf117416e17f4ee9caee2e1e37b6fb00b9ff04035ace17a3089b",
+   "size": 240
   },
   "repo.git-default/objects/4b/825dc642cb6eb9a060e54bf8d69288fbee4904": {
    "sha512": "20f2df3641c9830fce6af6af53f9f0ef89a59c3eb224feda882f1aa0aa79c852",
@@ -160,11 +164,11 @@
  "ignore": "",
  "inner_path": "content.json",
  "merged_type": "GitCenter",
- "modified": 1505912723,
+ "modified": 1505917744,
  "postmessage_nonce_security": true,
  "signers_sign": "HIbkXHjK35NbjH6FiPXQ6yWz6FagbYVIRVKKA+XdtHUwbgSErgTMH5KoEiJSm3UbygccjfySXI/qIH6C4I+xLAc=",
  "signs": {
-  "1RepoXU8bQE9m7ssNwL4nnxBnZVejHCc6": "HKkO79ZqWnZLZAX8lQNZ94lGkWQ3jb/l9FbIqYcVxlADZYJiI1ZdYUy+UAmDgC9F0kUEfBNytoUnv+DXUK+hckg="
+  "1RepoXU8bQE9m7ssNwL4nnxBnZVejHCc6": "HPAmb17FWFwHxftYpJkLPknrpMAgUzFV4MKEzErC8tOVLbGjcvuGN8lJhXRwXy/XIdT8N/O4CwLlUtg/bPxcqFk="
  },
  "signs_required": 1,
  "title": "Default Git Center Repo",
