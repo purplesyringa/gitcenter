@@ -105,6 +105,8 @@ function showLinks() {
 				publish.classList.remove("button-disabled");
 			});
 	};
+
+	document.getElementById("git_url").value = "git clone $path_to_zeronet/data/" + address + "/repo.git";
 }
 
 function renameRepo() {
