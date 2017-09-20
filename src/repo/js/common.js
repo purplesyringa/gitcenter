@@ -82,6 +82,8 @@ function showLinks() {
 				document.getElementById("permanent_link").href = "?" + address + "/" + path.replace(/@/g, "@@") + "@" + commit;
 			});
 	}
+
+	document.getElementById("fork").href = "fork/?" + address;
 }
 
 function renameRepo() {
