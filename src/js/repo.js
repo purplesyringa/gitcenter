@@ -103,6 +103,14 @@ class Repository {
 			})
 			.then(() => this.sign());
 	}
+	changeDescription(description) {
+		return this.getContent()
+			.then(content => {
+				content.description = description;
+				return this.setContent(content);
+			})
+			.then(() => this.sign());
+	}
 
 	// Git actions
 	getFiles(branch, dir) {
@@ -430,8 +438,13 @@ class Repository {
 
 	// Index
 	addToIndex() {
-		let auth;
-		return this.zeroAuth.requestAuth()
+		let content, auth;
+		return this.getContent()
+			.then(c => {
+				content = c;
+
+				return this.zeroAuth.requestAuth();
+			})
 			.then(a => {
 				auth = a;
 
@@ -444,7 +457,7 @@ class Repository {
 					data.repo_index = {};
 				}
 
-				data.repo_index[this.address] = {};
+				data.repo_index[this.address] = content.description;
 
 				data = JSON.stringify(data, null, "\t");
 
