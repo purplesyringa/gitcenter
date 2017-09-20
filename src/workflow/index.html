@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Workflow - Git Center</title>
+		<meta charset="utf-8">
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<base href="" target="_top" id="base">
+		<script>base.href = document.location.href.replace("/media", "").replace("index.html", "").replace(/[&?]wrapper=False/, "").replace(/[&?]wrapper_nonce=[A-Za-z0-9]+/, "")</script>
+
+		<link rel="stylesheet" type="text/css" href="../css/main.css">
+		<link rel="stylesheet" type="text/css" href="../css/buttons.css">
+		<link rel="stylesheet" type="text/css" href="../css/header.css">
+		<link rel="stylesheet" type="text/css" href="../css/content.css">
+	</head>
+	<body>
+		<header class="header">
+			<a href="..">
+				<img src="../img/logo-white.svg" class="header-logo">
+				<div class="header-name">Git Center</div>
+			</a>
+			<a href="../index/">
+				<div class="header-item">Repository Index</div>
+			</a>
+			<a href="../myrepos/">
+				<div class="header-item">My Repos</div>
+			</a>
+			<a href="../workflow/">
+				<div class="header-item header-item-active">Git Center workflow</div>
+			</a>
+		</header>
+
+		<div class="info">
+			<h1>Git Center workflow</h1>
+
+			<p>
+				Today you'll learn how to:
+			</p>
+			<ul>
+				<li>Create and use a repo</li>
+				<li>Use issues</li>
+				<li>Configurate your repository</li>
+			</ul>
+
+			<hr>
+
+			<h2>What is Git Center?</h2>
+			<p>
+				Git Center is a Git repository hosting and a collaboration system. Using <code>git</code> while completing this tutorial will be also helpful.
+			</p>
+
+			<hr>
+
+			<h2>Creating a repo</h2>
+			<p>
+				Git Center repositories are just sites. ZeroNet doesn't offer a simple way to clone a zite, so please <a href="/">go to ZeroHello</a> and clone <b>Default Git Center Repo</b> (it should be under <b>MERGED: GIT CENTER</b> group)
+			</p>
+			<p>
+				After cloning you will be redirected back to Git Center and installation progress will begin. It can ask you to log in to ZeroID if you haven't done it yet. Installation usually doesn't take much time.
+			</p>
+			<p>
+				Finally you will be redirected to your repo root on Git Center zite. (Remember to give others <i>http://127.0.0.1/your_repo_address</i> instead of <i>http://127.0.0.1/1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t/repo/?your_repo_address</i> because that adds more flexibility and makes changing Git Center source code easier.) 
+			</p>
+			<p>
+				Here you can change your repository title by pressing a pencil icon next to <b>my new repository</b>.
+			</p>
+
+			<hr>
+
+			<h2>git clone</h2>
+			<p>
+				To clone your repo, simply copy <code>git clone ...</code> link from repository home page (next to <a class="button button-blue">Sign &amp; Publish changes</a> button) and replace <code>$path_to_zeronet</code> with ZeroNet's home directory. This works like cloning a local repo.
+			</p>
+
+			<hr>
+
+			<h2>Fetching and publishing changes</h2>
+			<ul>
+				<li>
+					<code>git fetch</code><br>
+					There is nothing hard in <code>fetch</code>ing Git Center repositories. You will only need to leave ZeroNet open and run <code>git fetch</code> as usual.
+				</li>
+				<li>
+					<code>git push</code><br>
+					<code>Push</code>ing is a bit difficult. First of all you <code>git push</code> as usual, and then you have to open repository page and press <a class="button button-blue">Sign &amp; Publish changes</a>.
+				</li>
+			</ul>
+
+			<hr>
+
+			<h2>Collaborating</h2>
+			<p>
+				It's OK that you can fetch and push your own changes, but what about collaborating? First of all, you must grant users with <b>maintainer</b> permission. To do that:
+			</p>
+			<ol>
+				<li>
+					Open <b>Settings</b> tab of your repository. It may hang a bit because it loads all ZeroID.
+				</li>
+				<li>
+					You will see yourself in <b>Maintainers</b> list. Press <a class="button button-blue">Add</a>.
+				</li>
+				<li>
+					You will be asked to enter ZeroID. Enter the user you want to give <b>maintainer</b> permission (eg. <code>ivanq@zeroid.bit</code>).
+				</li>
+				<li>
+					Wait a bit. You will see a new maintainer in the list.
+				</li>
+			</ol>
+			<p>
+				Now <code>ivanq@zeroid.bit</code> can publish changes using <a class="button button-blue">Sign &amp; Publish changes</a>. Note that your data may be overwritten if you <code>git push</code> without publishing changes right after that.
+			</p>
+
+			<hr>
+
+			<h2>Indexation</h2>
+			<p>
+				Right now you can share your repository by giving your friend a link to it. Git Center offers another way. You can <b>index</b> your repo.
+			</p>
+			<ul>
+				<li>
+					First, open <b>Settings</b> tab.
+				</li>
+				<li>
+					You will see <b>two red crosses: <code>X | X</code></b> after in <b>Indexation</b>. First cross means that <b>you</b> didn't index the repo and the second one means that <b>somebody else</b> didn't index the repo.
+				</li>
+				<li>
+					Press <a class="button">Index</a> to add the repo to index. You will notice <code>V | X</code>.
+				</li>
+				<li>
+					If you want to unindex your repository, press <a class="button">Unindex</a>. <i>Note that you cannot completely remove your repository from index if somebody else has indexed it.</i>
+				</li>
+				<li>
+					Also notice <b>Description</b> parameter. It is used to: <i>a)</i> indentify your repository in index and <i>b)</i> to set site description in <code>content.json</code>.
+				</li>
+			</ul>
+
+			<hr>
+
+			<h2>Communication</h2>
+			<p>
+				To let people speak about some project, Git Center added support for issues. You can see them on <b>Issues</b> tab, create them by pressing <a class="button button-blue">New issue</a> and then comment it. Other people can post comments then.
+			</p>
+		</div>
+	</body>
+</html>
