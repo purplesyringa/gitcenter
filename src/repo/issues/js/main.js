@@ -9,6 +9,10 @@ repo.addMerger()
 		return repo.getContent();
 	})
 	.then(content => {
+		if(!content.installed) {
+			location.href = "../../install/?" + address;
+		}
+
 		showTitle(content.title);
 		showTabs(1);
 		document.getElementById("new_issue").href = "new/?" + address;
