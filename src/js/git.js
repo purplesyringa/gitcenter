@@ -535,7 +535,7 @@ class Git {
 			.then(unpackedRefs => {
 				refs = unpackedRefs.map(ref => "refs/" + ref);
 
-				return this.readFile("packed-refs");
+				return this.readFile("packed-refs").catch(() => "");
 			})
 			.then(packedRefs => {
 				packedRefs = this.arrayToString(packedRefs)
