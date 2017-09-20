@@ -58,8 +58,8 @@ class Repository {
 			});
 	}
 	sign() {
-		return this.zeroPage.cmd("siteSign")
-			.cmd(res => {
+		return this.zeroPage.cmd("siteSign", {inner_path: "merged-GitCenter/" + this.address + "/content.json"})
+			.then(res => {
 				if(res != "ok") {
 					return Promise.reject(res);
 				}
