@@ -10,6 +10,12 @@ function showTabs(level) {
 		"?" + address
 	);
 
+	document.getElementById("pull_requests_link").href = (
+		"../".repeat(level) +
+		"pull-requests/" +
+		"?" + address
+	);
+
 	document.getElementById("settings_link").href = (
 		"../".repeat(level) +
 		"settings/" +
