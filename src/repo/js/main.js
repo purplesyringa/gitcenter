@@ -9,7 +9,10 @@ repo.addMerger()
 		showLinks();
 		showTabs(0);
 
-		return repo.getFiles("master", path);
+		return repo.git.getHead();
+	})
+	.then(head => {
+		return repo.getFiles(head, path);
 	})
 	.then(files => {
 		let table = document.getElementById("files");
