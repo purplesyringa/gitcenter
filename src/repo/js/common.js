@@ -84,6 +84,21 @@ function showLinks() {
 	}
 
 	document.getElementById("fork").href = "fork/?" + address;
+
+	let publish = document.getElementById("publish");
+	publish.onclick = () => {
+		if(publish.classList.contains("button-disabled")) {
+			return;
+		}
+
+		publish.classList.add("button-disabled");
+
+		repo.signContent()
+			.catch(() => {})
+			.then(() => {
+				publish.classList.remove("button-disabled");
+			});
+	};
 }
 
 function renameRepo() {
