@@ -9,7 +9,8 @@
 	</head>
 	<body>
 		<script type="text/javascript">
-			location.href = "/1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t/default/";
+			let address = location.pathname.replace(/^\//, "").replace(/\/.*/, "");
+			location.href = "/1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t/repo/?" + address;
 		</script>
 	</body>
 </html>
