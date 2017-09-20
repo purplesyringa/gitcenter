@@ -9,7 +9,7 @@ repo.addMerger()
 		showLinks();
 		showTabs(0);
 
-		return repo.git.getHead();
+		return branch || repo.git.getHead();
 	})
 	.then(head => {
 		return repo.getFiles(head, path);
