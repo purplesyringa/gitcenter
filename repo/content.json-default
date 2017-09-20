@@ -90,7 +90,7 @@
   "1RepoXU8bQE9m7ssNwL4nnxBnZVejHCc6": "G0gLBO4lFsVB9/Zu79rYA81zJCZ+gDbml+Z7V1XmQtKvULnufc3f7KdSOUMkOV5x62f0b8/LzTUpglpKRnuULus="
  },
  "signs_required": 1,
- "title": " new Repo",
+ "title": " new repository",
  "translate": ["js/all.js"],
  "zeronet_version": "0.5.7"
 }
