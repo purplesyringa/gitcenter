@@ -20,59 +20,59 @@
    "sha512": "785f6767cf7a2f3992502308bbee06a43fc5d7bed5c47be6f69472a4a62b55b1",
    "size": 627
   },
-  "repo.git/HEAD": {
+  "repo.git-default/HEAD": {
    "sha512": "76b199f1bffdc6d21547895431b0f85f3857df400225cbd1ae55e7ded09786a8",
    "size": 23
   },
-  "repo.git/config": {
+  "repo.git-default/config": {
    "sha512": "66e25d9c89a674fbc1675430d159d4e43b0a4e36d129750516d8054a1a082fc2",
    "size": 104
   },
-  "repo.git/description": {
+  "repo.git-default/description": {
    "sha512": "f7e152f75b124c3e1c5d12f00427729d9eec4e2c1bf70d7606440a6600d00336",
    "size": 73
   },
-  "repo.git/hooks/applypatch-msg.sample": {
+  "repo.git-default/hooks/applypatch-msg.sample": {
    "sha512": "536cce804d84e25813993efdd240537b52d00ce9cdcecf1982f85096d56a5212",
    "size": 478
   },
-  "repo.git/hooks/commit-msg.sample": {
+  "repo.git-default/hooks/commit-msg.sample": {
    "sha512": "d6bb7fa747f4625adf1877f546565cbe812ca7dd4168f7e9068e6732555d8737",
    "size": 896
   },
-  "repo.git/hooks/post-update.sample": {
+  "repo.git-default/hooks/post-update.sample": {
    "sha512": "473ad124642571656276bf83b9ff63ab1804d3c23a5bdae52391c6f70a894849",
    "size": 189
   },
-  "repo.git/hooks/pre-applypatch.sample": {
+  "repo.git-default/hooks/pre-applypatch.sample": {
    "sha512": "cb78aa7e9b9c146e5db65d86dd83f04e2b6942a06fab50c704a0fd900683f3b6",
    "size": 424
   },
-  "repo.git/hooks/pre-commit.sample": {
+  "repo.git-default/hooks/pre-commit.sample": {
    "sha512": "4a7ac2ed2ffe50d2a997c3477b5855c3d19423c295a82f7d660be3418217a183",
    "size": 1642
   },
-  "repo.git/hooks/pre-push.sample": {
+  "repo.git-default/hooks/pre-push.sample": {
    "sha512": "37cd20a090494acb16c2255fe93dadeb409f2553afddc409dad5b5e99c9f5612",
    "size": 1348
   },
-  "repo.git/hooks/pre-rebase.sample": {
+  "repo.git-default/hooks/pre-rebase.sample": {
    "sha512": "de9bdf513f383b3215e467c025ca851a0f2661b91811bfd441486b678e4d45e4",
    "size": 4951
   },
-  "repo.git/hooks/pre-receive.sample": {
+  "repo.git-default/hooks/pre-receive.sample": {
    "sha512": "ee08c11fab7e896b2e09c241954ba7640338b12c75cd8040daf053c31b2f2223",
    "size": 544
   },
-  "repo.git/hooks/prepare-commit-msg.sample": {
+  "repo.git-default/hooks/prepare-commit-msg.sample": {
    "sha512": "fbf15f12136a413dd590e57392e6122714d67456beed50d9ef285e40076a138a",
    "size": 1239
   },
-  "repo.git/hooks/update.sample": {
+  "repo.git-default/hooks/update.sample": {
    "sha512": "759abd33e5d1dda9b3e3d3116c47b23f616320d70cd66d567b1c4eeefeb6d785",
    "size": 3610
   },
-  "repo.git/info/exclude": {
+  "repo.git-default/info/exclude": {
    "sha512": "9828c6ecdf91bf117416e17f4ee9caee2e1e37b6fb00b9ff04035ace17a3089b",
    "size": 240
   }
@@ -86,12 +86,12 @@
  },
  "inner_path": "content.json",
  "merged_type": "GitCenter",
- "modified": 1505903720,
+ "modified": 1505905210,
  "postmessage_nonce_security": true,
  "signers": [],
  "signers_sign": "HIbkXHjK35NbjH6FiPXQ6yWz6FagbYVIRVKKA+XdtHUwbgSErgTMH5KoEiJSm3UbygccjfySXI/qIH6C4I+xLAc=",
  "signs": {
-  "1RepoXU8bQE9m7ssNwL4nnxBnZVejHCc6": "HGjrRC8/i0SjtiDlFZT9+65XtZRSEYN6fdYy+VWlEHm4YbelxUPb1LN6Q+x915JArLX9tqV8Ctq05oYm2ujkccQ="
+  "1RepoXU8bQE9m7ssNwL4nnxBnZVejHCc6": "G1kFrRSqiu1YSL9U4YgfAExmlIy+2NJO61d3/Q7lp2AREn0SO0Z6UD53v3EvzUKTuzs1yAxL9plMNAevwSKGn1E="
  },
  "signs_required": 1,
  "title": "Default Git Center Repo",
