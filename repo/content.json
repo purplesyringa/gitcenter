@@ -9,8 +9,12 @@
  "favicon": "img/logo-red.svg",
  "files": {
   "content.json-default": {
-   "sha512": "b8a1277990caa42bb809d47bbece1a2fc73346e2ffae37ccbd3d318c36cc598e",
-   "size": 3220
+   "sha512": "079103ca57004699f00cf57cdc949b1ee9e298bdeaddda6745032bcf9af332e3",
+   "size": 6565
+  },
+  "data-default/users/content.json-default": {
+   "sha512": "091029acc8d6ba0f1c8c19dbb0df97ec810b454d690668bbb844c334fae396c4",
+   "size": 541
   },
   "img/logo-red.svg": {
    "sha512": "9f5481798d939ab8018a4e8a8baebf094e070eebd41b3ec5dd305e55430df5e3",
@@ -21,8 +25,8 @@
    "size": 1064
   },
   "js/ZeroFrame.js": {
-   "sha512": "090a43d18dcd1aa836b0d160631fe958f9fabd761af712e8eed6f7e010c0dd76",
-   "size": 2409
+   "sha512": "672291eadcac614188b41e2df665cacf0c3b1b1d775cbf8291abab2d9e669f9d",
+   "size": 2502
   },
   "repo.git-default/HEAD": {
    "sha512": "76b199f1bffdc6d21547895431b0f85f3857df400225cbd1ae55e7ded09786a8",
@@ -164,11 +168,11 @@
  "ignore": "",
  "inner_path": "content.json",
  "merged_type": "GitCenter",
- "modified": 1505917744,
+ "modified": 1505932100,
  "postmessage_nonce_security": true,
  "signers_sign": "HIbkXHjK35NbjH6FiPXQ6yWz6FagbYVIRVKKA+XdtHUwbgSErgTMH5KoEiJSm3UbygccjfySXI/qIH6C4I+xLAc=",
  "signs": {
-  "1RepoXU8bQE9m7ssNwL4nnxBnZVejHCc6": "HPAmb17FWFwHxftYpJkLPknrpMAgUzFV4MKEzErC8tOVLbGjcvuGN8lJhXRwXy/XIdT8N/O4CwLlUtg/bPxcqFk="
+  "1RepoXU8bQE9m7ssNwL4nnxBnZVejHCc6": "G/+LWXPNiEnQFhShwqGZNt5mt/vdyXzFdJ5GaQ432mjUYOOuC8w+vEyRR79zZ6Z+Q7wCakVyq6lL4M6GTfeXXec="
  },
  "signs_required": 1,
  "title": "Default Git Center Repo",
