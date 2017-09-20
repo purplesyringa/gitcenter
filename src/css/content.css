@@ -22,7 +22,7 @@ h2 {
 	font-size: 24px;
 }
 
-p, ul {
+p, ul, ol {
 	margin: 8px 0;
 	font-size: 16px;
 }
