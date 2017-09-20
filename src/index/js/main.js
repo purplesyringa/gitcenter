@@ -5,8 +5,9 @@ let zeroDB = new ZeroDB(zeroPage);
 zeroDB.query("SELECT repo_index.*, json.cert_user_id FROM repo_index, json WHERE repo_index.json_id = json.json_id")
 	.then(index => {
 		index.forEach(repo => {
-			let node = document.createElement("div");
+			let node = document.createElement("a");
 			node.className = "repo";
+			node.href = "/" + repo.address;
 
 			let title = document.createElement("div");
 			title.className = "repo-title";
@@ -21,11 +22,3 @@ zeroDB.query("SELECT repo_index.*, json.cert_user_id FROM repo_index, json WHERE
 			document.getElementById("repos").appendChild(node);
 		});
 	});
-
-
-/*
-<div class="repo">
-	<div class="repo-title">Git Center Source</div>
-	<div class="repo-address">1RepoXU8bQE9m7ssNwL4nnxBnZVejHCc6</div>
-</div>
-*/
