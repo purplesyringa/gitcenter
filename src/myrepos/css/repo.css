@@ -1,0 +1,25 @@
+.repo {
+	display: block;
+	margin-top: 16px;
+	padding: 3px 10px 3px 8px;
+	border: 1px solid #D5D5D5;
+	border-radius: 4px;
+	cursor: pointer;
+
+	box-shadow: 0 4px 4px #DDD;
+	background-image: linear-gradient(to bottom, #FCFCFC 0%, #EEE 100%);
+	background-repeat: no-repeat;
+
+	font-size: 16px;
+	line-height: 24px;
+	text-decoration: none;
+}
+
+.repo-title {
+	font-size: 24px;
+	line-height: 32px;
+}
+
+.repo-address {
+	color: #888;
+}
