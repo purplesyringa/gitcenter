@@ -51,12 +51,20 @@
 		</div>
 
 		<div class="entry">
-			<div class="entry-title">Visibility</div>
+			<div class="entry-title">Indexation</div>
 			<div class="entry-value">
-				<select class="select">
-					<option>Visible (the repository is listed in index)</option>
-					<option>Hidden (the repository is not listed, but accessable by link)</option>
-				</select>
+				<table id="indexation_table" class="indexation-table">
+					<tr>
+						<td>
+							<img id="indexation_you" height="16">
+						</td>
+						<td>
+							<img id="indexation_other" height="16">
+						</td>
+					</tr>
+				</table>
+				<a id="indexation_index" class="button entry-value-margin">Index</a>
+				<a id="indexation_unindex" class="button entry-value-margin">Unindex</a>
 			</div>
 		</div>
 

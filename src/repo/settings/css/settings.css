@@ -32,3 +32,17 @@
 
 	background-color: #888;
 }
+
+
+.indexation-table {
+	display: inline-table;
+	vertical-align: top;
+	border: 1px solid #888;
+	border-collapse: collapse;
+}
+.indexation-table tbody, .indexation-table tr, .indexation-table td {
+	border: inherit;
+}
+.indexation-table td {
+	padding: 6px;
+}

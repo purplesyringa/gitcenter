@@ -498,15 +498,26 @@ class Repository {
 			});
 	}
 	isInIndex() {
-		// 0 - not indexed
-		// 1 - indexed
-		// 2 - indexed by current user
+		// 0b01
+		//   ^^ indexed by somebody else
+		//   | indexed by you
 		return this.zeroDB.query("SELECT repo_index.*, json.cert_user_id FROM repo_index, json WHERE repo_index.json_id = json.json_id AND repo_index.address = :address", {
 			address: this.address
 		})
 			.then(addresses => {
 				let auth = this.zeroAuth.getAuth();
-				return (auth && addresses.length == 1 && addresses[0].cert_user_id == auth.user) ? 2 : addresses.length > 0 ? 1 : 0;
+				let indexedByYou = auth && addresses.some(address => address.cert_user_id == auth.user);
+				let indexedBySomebody = addresses.length > (indexedByYou ? 1 : 0);
+
+				return (indexedByYou << 1) | indexedBySomebody;
+			});
+	}
+	getIndexers() {
+		return this.zeroDB.query("SELECT repo_index.*, json.cert_user_id FROM repo_index, json WHERE repo_index.json_id = json.json_id AND repo_index.address = :address", {
+			address: this.address
+		})
+			.then(addresses => {
+				return addresses.map(address => address.cert_user_id);
 			});
 	}
 
