@@ -18,6 +18,10 @@ Use `getRefList` which returns an array like `["refs/remotes/origin/master", "re
 
 Use `getBranchCommit("master")` to get commit the branch references or use `readBranchCommit("master")` to get commit object of a branch.
 
+### How can I get HEAD ref?
+
+Use `getHead()`.
+
 ## Getting loose objects
 
 For getting loose object, ZeroGit splits SHA to 2-and-18 parts, reads file `objects/01/23456789abcdefghij` and deflates it. The result is:

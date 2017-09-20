@@ -556,4 +556,13 @@ class Git {
 				return refs;
 			});
 	}
+
+	getHead() {
+		return this.readFile("HEAD")
+			.then(head => {
+				return this.arrayToString(head).replace(/^ref:\s*refs\/heads\//, "").trim();
+			}, () => {
+				return Promise.reject("No HEAD ref");
+			});
+	}
 };
