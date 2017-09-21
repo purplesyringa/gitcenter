@@ -10,7 +10,9 @@
 		".+/data/users/.+/data.json": {
 			"to_table": [
 				"issues",
-				"issue_comments"
+				"issue_comments",
+				"pull_requests",
+				"pull_request_comments"
 			]
 		},
 		"1iNDExENNBsfHc6SKmy1HaeasHhm3RPcL/data/users/.+/data.json": {
@@ -55,6 +57,32 @@
 			],
 			"indexes": ["CREATE UNIQUE INDEX issue_comments_key ON issue_comments(json_id, id)"],
 			"schema_changed": 2
+		},
+		"pull_requests": {
+			"cols": [
+				["id", "INTEGER"],
+				["title", "TEXT"],
+				["body", "TEXT"],
+				["date_added", "INTEGER"],
+				["merged", "INTEGER"],
+				["fork_address", "TEXT"],
+				["fork_branch", "TEXT"],
+				["json_id", "INTEGER REFERENCES json (json_id)"]
+			],
+			"indexes": ["CREATE UNIQUE INDEX pull_requests_key ON pull_requests(json_id, id)"],
+			"schema_changed": 1
+		},
+		"pull_request_comments": {
+			"cols": [
+				["id", "INTEGER"],
+				["pull_request_id", "INTEGER"],
+				["pull_request_json_id", "INTEGER REFERENCES json (json_id)"],
+				["body", "TEXT"],
+				["date_added", "INTEGER"],
+				["json_id", "INTEGER REFERENCES json (json_id)"]
+			],
+			"indexes": ["CREATE UNIQUE INDEX pull_request_comments_key ON pull_request_comments(json_id, id)"],
+			"schema_changed": 1
 		},
 		"repo_index": {
 			"cols": [
