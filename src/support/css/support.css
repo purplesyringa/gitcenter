@@ -1,0 +1,48 @@
+.support-item {
+	display: inline-block;
+	width: 32%;
+	height: 64px;
+	padding: 8px;
+	margin-bottom: 8px;
+	box-sizing: border-box;
+
+	border: 1px solid #D5D5D5;
+	border-radius: 4px;
+
+	background-image: linear-gradient(to bottom, #FCFCFC 0%, #EEE 100%);
+	background-repeat: no-repeat;
+
+	color: #FFF;
+	text-decoration: none;
+}
+.support-item-margin {
+	margin-right: 1%;
+}
+
+.support-icon {
+	display: inline-block;
+	width: 64px;
+	float: left;
+	margin-right: 16px;
+}
+
+.support-info {
+	display: block;
+	font-size: 16px;
+}
+
+.support-item-zerome {
+	background-image: linear-gradient(to bottom, #F8A520 0%, #E7257D 100%);
+}
+.support-item-zeroid {
+	background-image: linear-gradient(to bottom, #3F51B5 0%, #1D3798 100%);
+}
+.support-item-zerotalk {
+	background-image: linear-gradient(to bottom, #DB3207 0%, #BD2302 100%);
+}
+.support-item-zeromail {
+	background-image: linear-gradient(to bottom, #FF5E3B 0%, #DB3207 100%);
+}
+.support-item-kaffieid {
+	background-image: linear-gradient(to bottom, #16A61E 0%, #048200 100%);
+}
