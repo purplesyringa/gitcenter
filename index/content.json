@@ -5,8 +5,12 @@
  "clone_root": "template-new",
  "cloned_from": "1HeLLo4uzjaLetFx6NH3PMwFP3qbRbTf3D",
  "description": "Repository Index for Git Center",
- "favicon": "img/logo.svg",
+ "favicon": "img/logo-yellow.svg",
  "files": {
+  "img/logo-yellow.svg": {
+   "sha512": "c5e05d25c8bed9925de835319365b168d3d7ad66876a04303481fb5f91a4db66",
+   "size": 888
+  },
   "index.html": {
    "sha512": "50aebc27e8ab33f5e7c91f6492052ff3e30818d9f311ae6dea85fd01eb4dbf19",
    "size": 542
@@ -21,11 +25,11 @@
  },
  "inner_path": "content.json",
  "merged_type": "GitCenter",
- "modified": 1505973559,
+ "modified": 1505973768,
  "postmessage_nonce_security": true,
  "signers_sign": "HKsMy57y3iIsurfPDcV9HfdYOu86640QOMlbssnj1zwmU613xBIl1JNl7Wy5Gf67C3cZa8VgvP9j6O3in4LjJHU=",
  "signs": {
-  "1iNDExENNBsfHc6SKmy1HaeasHhm3RPcL": "G8UX1OexKh8Uwpxq+l4AqkPsruIKeEXF3qv5T6N9c4qOHPaUVXTJrMEXg5Crr2YGA96RMKquhb9nfUQ1Fip6kwQ="
+  "1iNDExENNBsfHc6SKmy1HaeasHhm3RPcL": "HPMcRIDYZJiNplUIfZjngAmmMoWQXJgB9FgX7bTHi1x+NE3XL//Ldio4xuxlXb17iFw1/vvf8Kqnjmuc0ha3P2k="
  },
  "signs_required": 1,
  "title": "Git Center Index",
