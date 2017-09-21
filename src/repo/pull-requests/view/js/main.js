@@ -62,6 +62,8 @@ repo.addMerger()
 		document.getElementById("pull_request_title").textContent = pullRequest.title;
 		document.getElementById("pull_request_id").textContent = id;
 		document.getElementById("pull_request_json_id").textContent = jsonId;
+		document.getElementById("pull_request_fork_address").textContent = pullRequest.fork_address;
+		document.getElementById("pull_request_fork_branch").textContent = pullRequest.fork_branch;
 
 		drawPullRequestStatus();
 
