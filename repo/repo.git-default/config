@@ -4,3 +4,5 @@
 	bare = true
 	symlinks = false
 	ignorecase = true
+[receive]
+	advertisePushOptions = true

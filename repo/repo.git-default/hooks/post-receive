@@ -18,6 +18,8 @@ if [ -z "$python_path" ]; then
 	exit 0
 fi
 
+################################################################################
+
 echo "Retrieving data directory..."
 data_dir=`"$python_path" "$zeronet_home/zeronet.py" --silent getDataDir`
 
