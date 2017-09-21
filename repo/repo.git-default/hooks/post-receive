@@ -1,0 +1,40 @@
+#!/bin/bash
+zeronet_home=`git config --get zeronet.home`
+if [ -z "$zeronet_home" ]; then
+	echo "zeronet.home not set, rejecting to sign & publish."
+	echo "Run 'git config --global zeronet.home path_to_zeronet'"
+	exit 0
+fi
+
+site=`basename $(realpath "$GIT_DIR/..")`
+
+python_path=`command -v python`
+if [ -z "$python_path" ]; then
+	python_path=`command -v python2`
+fi
+
+if [ -z "$python_path" ]; then
+	echo "Python not installed, rejecting to sign & publish."
+	exit 0
+fi
+
+echo "Retrieving data directory..."
+data_dir=`"$python_path" "$zeronet_home/zeronet.py" --silent getDataDir`
+
+privatekey=`cat "$data_dir/users.json" | "$python_path" -c "import sys, json; users = json.load(sys.stdin); print users[users.keys()[0]]['certs']['zeroid.bit']['auth_privatekey']"`
+if [ $? -ne 0 ]; then
+	echo "Failed to get signing key, rejecting to sign & publish."
+	exit 0
+fi
+
+echo "Signing..."
+"$python_path" "$zeronet_home/zeronet.py" siteSign "$site" "$privatekey" 2>&1 | grep "Private key invalid" >/dev/null 2>&1
+if [ $? -eq 0 ]; then
+	echo "Failed to sign, invalid private key."
+	exit 0
+fi
+
+echo "Publishing..."
+"$python_path" "$zeronet_home/zeronet.py" sitePublish "$site" >/dev/null 2>&1
+
+echo "Signed & published successfully"
