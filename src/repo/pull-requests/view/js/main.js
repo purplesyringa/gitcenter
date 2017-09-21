@@ -37,7 +37,7 @@ function drawPullRequestStatus() {
 	document.getElementById("pull_request_status_img").src = "../../../img/pr-" + statusText + "-white.svg";
 	document.getElementById("pull_request_status_text").innerHTML = statusText[0].toUpperCase() + statusText.substr(1);
 
-	document.getElementById("comment_submit_close").innerHTML = "Comment and " + (pullRequest.open ? "close" : "reopen") + " pull request";
+	document.getElementById("comment_submit_close").innerHTML = "Comment and " + (pullRequest.merged ? "reopen" : "mark") + " pull request" + (pullRequest.merged ? "" : " as merged");
 }
 
 
@@ -110,12 +110,7 @@ repo.addMerger()
 					return repo.changePullRequestStatus(id, jsonId, !pullRequest.open);
 				})
 				.then(() => {
-					if(pullRequest.open) {
-						pullRequest.open = false;
-					} else {
-						pullRequest.open = true;
-						pullRequest.reopened = true;
-					}
+					pullRequest.merged = !pullRequest.merged;
 					drawPullRequestStatus();
 
 					contentNode.value = "";

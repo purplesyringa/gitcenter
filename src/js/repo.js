@@ -490,7 +490,7 @@ class Repository {
 					"pull_requests",
 					pullRequest => {
 						if(pullRequest.id != id) {
-							return issue;
+							return pullRequest;
 						}
 
 						pullRequest.merged = merged;
