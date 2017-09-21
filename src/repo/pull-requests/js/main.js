@@ -32,7 +32,7 @@ repo.addMerger()
 			tr.appendChild(title);
 
 			let icon = document.createElement("img");
-			icon.src = "../../img/pr-" + (pullRequest.open ? (pullRequest.reopened ? "reopened" : "open") : "closed") + ".svg";
+			icon.src = "../../img/pr-" + (pullRequest.merged ? "merged" : "opened") + ".svg";
 			icon.className = "pull-request-icon";
 			title.insertBefore(icon, title.firstChild);
 

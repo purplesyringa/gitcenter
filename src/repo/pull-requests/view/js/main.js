@@ -31,7 +31,7 @@ function showComment(comment) {
 }
 
 function drawPullRequestStatus() {
-	let statusText = pullRequest.open ? (pullRequest.reopened ? "reopened" : "open") : "closed";
+	let statusText = pullRequest.merged ? "merged" : "opened";
 
 	document.getElementById("pull_request_status").className = "pull-request-status pull-request-status-" + statusText;
 	document.getElementById("pull_request_status_img").src = "../../../img/pr-" + statusText + "-white.svg";

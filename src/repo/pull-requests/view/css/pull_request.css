@@ -31,13 +31,10 @@
 	font-size: 16px;
 	color: #FFF;
 }
-.pull-request-status-open {
+.pull-request-status-opened {
 	background-color: #2B3;
 }
-.pull-request-status-closed {
-	background-color: #B23;
-}
-.pull-request-status-reopened {
+.pull-request-status-merged {
 	background-color: #B2E;
 }
 
