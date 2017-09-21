@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>Pull requests - Git Center</title>
+		<title>Git Center</title>
 		<meta charset="utf-8">
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<base href="" target="_top" id="base">
@@ -13,7 +13,7 @@
 		<link rel="stylesheet" type="text/css" href="../../css/content.css">
 		<link rel="stylesheet" type="text/css" href="../css/tabs.css">
 		<link rel="stylesheet" type="text/css" href="../css/info.css">
-		<link rel="stylesheet" type="text/css" href="css/issues.css">
+		<link rel="stylesheet" type="text/css" href="css/pull-requests.css">
 	</head>
 	<body>
 		<header class="header">
@@ -56,9 +56,14 @@
 		</main>
 
 		<div class="info">
-			<p>
-				<b>Pull Requests</b> are currently only Work In Progress and aren't open therefore.
-			</p>
+			<a class="button button-blue" id="new_pull_request">New pull request</a>
+		</div>
+
+		<table id="pull_requests" class="pull-requests"></table>
+
+		<div class="navigation">
+			<a class="button button-disabled" id="navigation_back">&#8592; Back</a>
+			<a class="button button-disabled" id="navigation_next">Next &#8594;</a>
 		</div>
 
 		<template id="edit_icon_tmpl">
