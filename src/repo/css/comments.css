@@ -56,7 +56,7 @@
 }
 
 
-.comment-title-edit, .comment-content-edit {
+.comment-title-edit, .comment-content-edit, .comment-info-edit {
 	display: block;
 	width: calc(100% - 18px);
 	padding: 8px;
@@ -78,6 +78,9 @@
 .comment-content-edit {
 	height: 256px;
 	resize: vertical;
+}
+.comment-info-edit {
+	height: 16px;
 }
 
 .comment-submit {
