@@ -1,35 +1,34 @@
 {
-	"address": "1iNDExENNBsfHc6SKmy1HaeasHhm3RPcL",
-	"address_index": 80074647,
-	"background-color": "#FFF",
-	"clone_root": "template-new",
-	"cloned_from": "1HeLLo4uzjaLetFx6NH3PMwFP3qbRbTf3D",
-	"description": "Repository Index for Git Center",
-	"favicon": "img/logo.svg",
-	"files": {
-		"index.html": {
-			"sha512": "cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce",
-			"size": 0
-		}
-	},
-	"ignore": "",
-	"includes": {
-		"data/users/content.json": {
-			"signers": [],
-			"signers_required": 1
-		}
-	},
-	"inner_path": "content.json",
-	"modified": 1505844347,
-	"postmessage_nonce_security": true,
-	"signers_sign": "HKsMy57y3iIsurfPDcV9HfdYOu86640QOMlbssnj1zwmU613xBIl1JNl7Wy5Gf67C3cZa8VgvP9j6O3in4LjJHU=",
-	"signs": {
-		"1iNDExENNBsfHc6SKmy1HaeasHhm3RPcL": "HOEaDo+d9v0roC2a87gA8T2HTRHfth5vXbmj9QBLsLkeGP3ZLWkSVkO5JCupoLgxnPUYWCB+hHhDyQ4U8JEc6wo="
-	},
-	"signs_required": 1,
-	"title": "Git Center Index",
-	"translate": [
-		"js/all.js"
-	],
-	"zeronet_version": "0.5.7"
+ "address": "1iNDExENNBsfHc6SKmy1HaeasHhm3RPcL",
+ "address_index": 80074647,
+ "background-color": "#FFF",
+ "clone_root": "template-new",
+ "cloned_from": "1HeLLo4uzjaLetFx6NH3PMwFP3qbRbTf3D",
+ "description": "Repository Index for Git Center",
+ "favicon": "img/logo.svg",
+ "files": {
+  "index.html": {
+   "sha512": "50aebc27e8ab33f5e7c91f6492052ff3e30818d9f311ae6dea85fd01eb4dbf19",
+   "size": 542
+  }
+ },
+ "ignore": "",
+ "includes": {
+  "data/users/content.json": {
+   "signers": [],
+   "signers_required": 1
+  }
+ },
+ "inner_path": "content.json",
+ "merged_type": "GitCenter",
+ "modified": 1505973559,
+ "postmessage_nonce_security": true,
+ "signers_sign": "HKsMy57y3iIsurfPDcV9HfdYOu86640QOMlbssnj1zwmU613xBIl1JNl7Wy5Gf67C3cZa8VgvP9j6O3in4LjJHU=",
+ "signs": {
+  "1iNDExENNBsfHc6SKmy1HaeasHhm3RPcL": "G8UX1OexKh8Uwpxq+l4AqkPsruIKeEXF3qv5T6N9c4qOHPaUVXTJrMEXg5Crr2YGA96RMKquhb9nfUQ1Fip6kwQ="
+ },
+ "signs_required": 1,
+ "title": "Git Center Index",
+ "translate": ["js/all.js"],
+ "zeronet_version": "0.5.7"
 }
