@@ -50,7 +50,7 @@ repo.addMerger()
 			button.href = "?" + address + "/" + (currentPage - 1);
 		}
 
-		if(issues.nextPage) {
+		if(pullRequests.nextPage) {
 			let button = document.getElementById("navigation_next");
 			button.classList.remove("button-disabled");
 			button.href = "?" + address + "/" + (currentPage + 1);
