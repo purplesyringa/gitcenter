@@ -7,7 +7,7 @@ then
 		eval "value=\$GIT_PUSH_OPTION_$i"
 		case "$value" in
 		no-fetch)
-			echo "Not fetching ZeroNet."
+			echo "no-fetch cancels fetching, returning."
 			exit 0
 			;;
 		esac
