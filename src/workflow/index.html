@@ -61,7 +61,7 @@
 				After cloning you will be redirected back to Git Center and installation progress will begin. It can ask you to log in to ZeroID if you haven't done it yet. Installation usually doesn't take much time.
 			</p>
 			<p>
-				Finally you will be redirected to your repo root on Git Center zite. (Remember to give others <i>http://127.0.0.1/your_repo_address</i> instead of <i>http://127.0.0.1/1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t/repo/?your_repo_address</i> because that adds more flexibility and makes changing Git Center source code easier.) 
+				Finally you will be redirected to your repo root on Git Center zite. (Remember to give others <i>http://127.0.0.1/your_repo_address</i> instead of <i>http://127.0.0.1/1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t/repo/?your_repo_address</i> because that adds more flexibility and makes changing Git Center source code easier.)
 			</p>
 			<p>
 				Here you can change your repository title by pressing a pencil icon next to <b>my new repository</b>.
@@ -80,13 +80,16 @@
 			<ul>
 				<li>
 					<code>git fetch</code><br>
-					There is nothing hard in <code>fetch</code>ing Git Center repositories. You will only need to leave ZeroNet open and run <code>git fetch</code> as usual.
+					There is nothing hard in <code>fetch</code>ing Git Center repositories. You can simply run <code>git fetch</code>. You have to leave ZeroNet open to let it download changes introduced by other maintainers.
 				</li>
 				<li>
 					<code>git push</code><br>
-					<code>Push</code>ing is a bit difficult. First of all you <code>git push</code> as usual, and then you have to open repository page and press <a class="button button-blue">Sign &amp; Publish changes</a>.
+					Pushing is not so hard, too. Git Center adds some hooks which sign (disabled by <code>git push -o no-sign</code> which implies <code>no-publish</code>) and publish (disabled by <code>git push -o no-publish</code>) changes after pushing. These hooks also download the newest version from ZeroNet to prevent overwriting work (disabled by <code>git push -o no-fetch</code>). Join these <code>-o</code> options like <code>git push -o no-sign -o no-fetch</code> (multiple <code>-o</code>).
 				</li>
 			</ul>
+			<p>
+				Note that sometimes <code>git push</code> hangs after <code>Fetching ZeroNet...</code> Cancel pushing and run <code>git push -o no-fetch</code> then.
+			</p>
 
 			<hr>
 
