@@ -55,6 +55,9 @@ class Git {
 	arrayToString(array) {
 		return Array.from(array).map(char => String.fromCharCode(char)).join("");
 	}
+	stringToArray(string) {
+		return string.split("").map(char => char.charCodeAt(0));
+	}
 	isSha(str) {
 		return (
 			str.length == 40 &&
