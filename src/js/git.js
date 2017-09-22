@@ -528,6 +528,15 @@ class Git {
 	writeTreeRecursive(items) {
 		let content = items.map(item => {
 			if(item.type == "tree") {
+				if(item.id) {
+					// Use existing tree
+					return Promise.resolve({
+						mode: "040000",
+						name: item.name,
+						id: item.id
+					});
+				}
+
 				return this.writeTreeRecursive(item.content)
 					.then(id => {
 						return {
@@ -537,6 +546,15 @@ class Git {
 						};
 					});
 			} else if(item.type == "blob") {
+				if(item.id) {
+					// Use existing blob
+					return Promise.resolve({
+						mode: "100644",
+						name: item.name,
+						id: item.id
+					});
+				}
+
 				return this.writeBlob(item.content)
 					.then(id => {
 						return {
