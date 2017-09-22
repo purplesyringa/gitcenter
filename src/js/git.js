@@ -41,6 +41,20 @@ class Git {
 			return char;
 		}).join("");
 	}
+	packSha(str) {
+		let items = str.split("").map(char => {
+			if(char >= "0" && char <= "9") {
+				return char.charCodeAt(0) - "0".charCodeAt(0);
+			} else if(char >= "a" && char <= "z") {
+				return char.charCodeAt(0) - "a".charCodeAt(0) + 10;
+			}
+		});
+		let result = [];
+		for(let i = 0; i < items.length; i += 2) {
+			result.push(items[i] * 16 + items[i + 1]);
+		}
+		return result;
+	}
 	subArray(array, begin, length) {
 		if(length === undefined) {
 			return array.slice(begin);
