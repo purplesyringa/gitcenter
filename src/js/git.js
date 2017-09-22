@@ -514,6 +514,63 @@ class Git {
 			});
 	}
 
+	// Object saving
+	writeBlob(content) {
+		return this.writeObject("blob", content);
+	}
+	writeTree(items) {
+		let content = [];
+		items.forEach(item => {
+			this.appendArray(this.concat(this.stringToArray(item.mode + " " + item.name), [0], this.packSha(item.id)), content);
+		});
+		return this.writeObject("tree", content);
+	}
+	writeTreeRecursive(items) {
+		let content = items.map(item => {
+			if(item.type == "tree") {
+				return this.writeTreeRecursive(item.content)
+					.then(id => {
+						return {
+							mode: "040000",
+							name: item.name,
+							id: id
+						};
+					});
+			} else if(item.type == "blob") {
+				return this.writeBlob(item.content)
+					.then(id => {
+						return {
+							mode: "100644",
+							name: item.name,
+							id: id
+						};
+					});
+			}
+		});
+		return Promise.all(content)
+			.then(content => {
+				return this.writeTree(content);
+			});
+	}
+	writePlainCommit(commit) {
+		let content = "";
+		content += "tree " + commit.tree + "\n";
+		content += commit.parents.map(parent => "parent " + parent + "\n").join("");
+		content += "author " + commit.author + "\n";
+		content += "committer " + commit.committer + "\n";
+		content += "\n";
+		content += commit.message;
+
+		return this.writeObject("commit", this.stringToArray(content));
+	}
+	writeCommit(commit) {
+		return this.writeTreeRecursive(commit.tree)
+			.then(treeId => {
+				commit.tree = treeId;
+				return this.writePlainCommit(commit);
+			});
+	}
+
 	// Refs commands
 	getRef(ref) {
 		return this.readFile(ref)
