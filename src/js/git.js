@@ -411,14 +411,14 @@ class Git {
 			}
 		}
 
-		let description = this.subArray(object.content, currentPos);
+		let message = this.subArray(object.content, currentPos);
 
 		return {
 			tree: tree,
 			parents: parents,
 			author: author,
 			committer: committer,
-			description: this.arrayToString(description)
+			message: this.arrayToString(message)
 		};
 	}
 	parseTag(object) {
@@ -451,14 +451,14 @@ class Git {
 			}
 		}
 
-		let description = this.subArray(object.content, currentPos);
+		let message = this.subArray(object.content, currentPos);
 
 		return {
 			target: target,
 			type: type,
 			tag: tag,
 			tagger: tagger,
-			description: this.arrayToString(description)
+			message: this.arrayToString(message)
 		};
 	}
 
