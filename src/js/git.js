@@ -139,6 +139,13 @@ class Git {
 				};
 			});
 	}
+	writeObject(type, content) {
+		let data = this.concat(this.stringToArray(type + " " + content.length), [0], content);
+		let id = this.sha(data);
+
+		return this.writeFile("objects/" + id.substr(0, 2) + "/" + id.substr(2), this.deflate(data))
+			.then(() => id);
+	}
 
 	// Packed objects
 	findPackedObjects() {
