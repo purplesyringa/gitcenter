@@ -50,6 +50,7 @@ class Git {
 	}
 	appendArray(source, destination) {
 		source.forEach(item => destination.push(item));
+		return destination;
 	}
 	arrayToString(array) {
 		return Array.from(array).map(char => String.fromCharCode(char)).join("");
