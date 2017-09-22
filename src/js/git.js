@@ -82,8 +82,15 @@ class Git {
 	readDirectory(path, recursive) {
 		return this.zeroFS.readDirectory(this.root + "/" + path, recursive);
 	}
+	writeFile(path, content) {
+		return this.zeroFS.writeFile(this.root + "/" + path, Array.from(content).map(char => String.fromCharCode(char)).join(""), true);
+	}
+
 	inflate(string) {
 		return pako.inflate(string);
+	}
+	deflate(string) {
+		return pako.deflate(string);
 	}
 	sha(string) {
 		if(string instanceof Array) {
