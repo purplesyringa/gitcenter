@@ -66,6 +66,11 @@ class Git {
 		source.forEach(item => destination.push(item));
 		return destination;
 	}
+	concat(...arrs) {
+		let destination = [];
+		arrs.forEach(arr => this.appendArray(arr, destination));
+		return destination;
+	}
 	arrayToString(array) {
 		return Array.from(array).map(char => String.fromCharCode(char)).join("");
 	}
