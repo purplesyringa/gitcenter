@@ -85,6 +85,15 @@ class Git {
 	inflate(string) {
 		return pako.inflate(string);
 	}
+	sha(string) {
+		if(string instanceof Array) {
+			string = new Uint8Array(string);
+		}
+
+		let sha = new jsSHA("SHA-1", "ARRAYBUFFER");
+		sha.update(string);
+		return sha.getHash("HEX");
+	}
 
 	// Object commands
 	readObject(id) {
