@@ -521,7 +521,7 @@ class Git {
 	writeTree(items) {
 		let content = [];
 		items.forEach(item => {
-			this.appendArray(this.concat(this.stringToArray(item.mode + " " + item.name), [0], this.packSha(item.id)), content);
+			this.appendArray(this.concat(this.stringToArray((item.type == "tree" ? "040000" : "100644") + " " + item.name), [0], this.packSha(item.id)), content);
 		});
 		return this.writeObject("tree", content);
 	}
@@ -531,7 +531,7 @@ class Git {
 				if(item.id) {
 					// Use existing tree
 					return Promise.resolve({
-						mode: "040000",
+						type: "tree",
 						name: item.name,
 						id: item.id
 					});
@@ -540,7 +540,7 @@ class Git {
 				return this.writeTreeRecursive(item.content)
 					.then(id => {
 						return {
-							mode: "040000",
+							type: "tree",
 							name: item.name,
 							id: id
 						};
@@ -549,7 +549,7 @@ class Git {
 				if(item.id) {
 					// Use existing blob
 					return Promise.resolve({
-						mode: "100644",
+						type: "blob",
 						name: item.name,
 						id: item.id
 					});
@@ -558,7 +558,7 @@ class Git {
 				return this.writeBlob(item.content)
 					.then(id => {
 						return {
-							mode: "100644",
+							type: "blob",
 							name: item.name,
 							id: id
 						};
