@@ -76,6 +76,25 @@ For example,
 3. Replace tree `olddir` with blob `olddir`
 4. Leave all not mentioned files (if there was `dir/somefile` or `readme.md` they would be added to resulting tree).
 
+You can also use `makeTreeDeltaPath(base, changes)`. It works like `makeTreeDelta()` but accepts slash-separated `path` property instead of `name`:
+
+    [
+        {
+            path: "dir/subdir/subfile",
+            type: "blob",
+            content: "neworchangedfile"
+        },
+        {
+            path: "file",
+            remove: true
+        },
+        {
+            path: "olddir",
+            type: "blob",
+            content: "fds"
+        }
+    ]
+
 ### And some actions between repositories?
 
 Yes! Run `importObject(otherGit, sha)` to read `sha` from `otherGit` and save it to `this`. And `importObjectWithDependencies(otherGit, sha)` also imports commit parents and tree, tree subitems, etc.
