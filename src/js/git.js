@@ -752,6 +752,84 @@ class Git {
 		);
 	}
 
+	makeTreeDelta(base, changes) {
+		// changes:
+		// [
+		//     {
+		//         name: "dir",
+		//         type: "tree",
+		//         content: [
+		//             {
+		//                 name: "subdir",
+		//                 type: "tree",
+		//                 content: [
+		//                     {
+		//                         name: "subfile",
+		//                         type: "blob",
+		//                         content: "neworchangedfile"
+		//                     }
+		//                 ]
+		//             }
+		//         ]
+		//     },
+		//     {
+		//         name: "file",
+		//         remove: true
+		//     },
+		//     {
+		//         name: "olddir",
+		//         type: "blob",
+		//         content: "fds"
+		//     }
+		// ]
+		//
+		// Should be read as:
+		// 1. Set <dir/subdir/subfile> blob to "neworchangedfile"
+		// 2. Remove <file>
+		// 3. Remove tree <olddir> and add blob <olddir>
+
+		let promise = Promise.all(
+			changes.map(change => {
+				let treeItemIndex = base.findIndex(item => item.name == change.name);
+
+				if(change.remove) {
+					// Remove
+					if(treeItemIndex > -1) {
+						base.splice(treeItemIndex, 1);
+					}
+				} else if(change.type == "blob") {
+					if(treeItemIndex == -1) {
+						// Add blob
+						base.push(change);
+					} else {
+						// Change type to blob or change blob
+						base[treeItemIndex] = change;
+					}
+				} else if(change.type == "tree") {
+					if(treeItemIndex == -1) {
+						// Add tree
+						base.push(change);
+					} else if(tree[treeItemIndex].type != "tree") {
+						// Change type to tree
+						base[treeItemIndex] = change;
+					} else {
+						// Change tree
+						let id = base[treeItemIndex].id;
+						delete base[treeItemIndex].id;
+						return this.readUnknownObject(id)
+							.then(subTree => {
+								return this.makeTreeDelta(subTree.content, change.content);
+							});
+					}
+				}
+
+				return Promise.resolve();
+			})
+		);
+
+		return promise.then(() => base);
+	}
+
 	toString() {
 		return "<Git " + this.root + ">";
 	}

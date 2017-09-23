@@ -22,6 +22,47 @@ Use `getBranchCommit("master")` to get commit the branch references or use `read
 
 Use `getHead()`.
 
+### Can I simplify committing?
+
+`makeTreeDelta` gives you power not to recreate all tree. It accepts `base` as result of `readUnknownObject().content` and `changes` as array of items where each item can be either `{name: "...", type: "tree", content: [...]}` or `{name: "...", remove: true}` or `{name: "...", type: "blob", content: "..."]`. The resulting value is new tree. Note that `base` argument is changed.
+
+For example,
+
+    [
+        {
+            name: "dir",
+            type: "tree",
+            content: [
+                {
+                    name: "subdir",
+                    type: "tree",
+                    content: [
+                        {
+                            name: "subfile",
+                            type: "blob",
+                            content: "neworchangedfile"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            name: "file",
+            remove: true
+        },
+        {
+            name: "olddir",
+            type: "blob",
+            content: "fds"
+        }
+    ]
+
+...should be read as:
+1. Set `dir/subdir/subfile` blob to `neworchangedfile`
+2. Remove `file`
+3. Replace tree `olddir` with blob `olddir`
+4. Leave all not mentioned files (if there was `dir/somefile` or `readme.md` they would be added to resulting tree).
+
 ## Getting loose objects
 
 For getting loose object, ZeroGit splits SHA to 2-and-18 parts, reads file `objects/01/23456789abcdefghij` and deflates it. The result is:
