@@ -1,0 +1,62 @@
+.files {
+	table-layout: auto;
+	width: 1024px;
+	margin: 0 auto;
+	border-spacing: 0;
+
+	border: 1px solid #DDF;
+	border-radius: 4px;
+}
+
+.files td {
+	width: auto;
+	margin: 0;
+	padding: 8px;
+	font-size: 16px;
+}
+
+.files tr td {
+	border-top: 1px solid #DDF;
+}
+.files tr:first-child td {
+	border-top: none;
+}
+
+.files-header {
+	background-color: #DDF;
+	font-family: Helvetica, Arial, sans-serif;
+}
+.files-header a {
+	color: #008;
+}
+
+.file-content, .commit-message {
+	padding: 0 !important;
+}
+.file-content-text {
+	display: block;
+	width: calc(100% - 16px);
+	height: 496px;
+	padding: 8px;
+	margin: 0;
+	border: 0;
+
+	font-family: Consolas, "Courier New", monospace;
+	resize: none;
+}
+.commit-message-input {
+	display: block;
+	width: 100%;
+	margin: 0;
+	border: 0;
+	border-radius: 0 0 0 4px;
+}
+
+.commit-node {
+	width: 0 !important;
+	padding: 0 !important;
+	border: 0 !important;
+}
+.commit-button {
+	border-radius: 0 0 4px 0;
+}

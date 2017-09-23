@@ -186,6 +186,56 @@ class Repository {
 					.map(ref => ref.replace("refs/heads/", ""));
 			});
 	}
+	saveFile(path, content, base, message) {
+		let author, commit, parent;
+		return this.zeroAuth.requestAuth()
+			.then(auth => {
+				let date = new Date;
+				let tz = date.getTimezoneOffset() * -1;
+				let hours = Math.floor(Math.abs(tz / 60));
+				let minutes = Math.abs((tz + 60) % 60);
+				tz = (tz > 0 ? "+" : "-") + (hours < 10 ? "0" : "") + hours + (minutes < 10 ? "0" : "") + minutes;
+
+				author = auth.user[0].toUpperCase() + auth.user.substr(1).replace(/@.*/, "");
+				author += " <" + auth.user + ">";
+				author += " " + Math.floor(+date / 1000);
+				author += " " + tz;
+
+				return this.git.getBranchCommit(base);
+			})
+			.then(commitId => {
+				parent = commitId;
+				return this.git.readUnknownObject(commitId);
+			})
+			.then(commit => {
+				return this.git.readUnknownObject(commit.content.tree);
+			})
+			.then(base => {
+				return this.git.makeTreeDeltaPath(base.content, [
+					{
+						path: path,
+						type: "blob",
+						content: content
+					}
+				]);
+			})
+			.then(delta => {
+				return this.git.writeCommit({
+					tree: delta,
+					parents: [parent],
+					author: author,
+					committer: author,
+					message: message
+				});
+			})
+			.then(c => {
+				commit = c;
+				if(!this.git.isSha(base)) {
+					return this.git.setRef("refs/heads/" + base, commit);
+				}
+			})
+			.then(() => commit);
+	}
 
 	// Issues
 	addIssue(title, content) {

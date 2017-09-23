@@ -630,6 +630,9 @@ class Git {
 					});
 			});
 	}
+	setRef(ref, commit) {
+		return this.writeFile(ref, this.stringToArray(commit));
+	}
 	getBranchCommit(branch) {
 		// Fallback for branch id
 		if(this.isSha(branch)) {

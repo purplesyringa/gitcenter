@@ -12,7 +12,7 @@ You can either call `readUnknownObject` multiple times or run `readTreeItem(root
 
 ### How can I get ref list?
 
-Use `getRefList` which returns an array like `["refs/remotes/origin/master", "refs/heads/master", "refs/remotes/origin/HEAD"]`. Note that the array is not ordered at all.
+Use `getRefList` which returns an array like `["refs/remotes/origin/master", "refs/heads/master", "refs/remotes/origin/HEAD"]`. Note that the array is not ordered at all. Then run `getRef("refs/remotes/origin/HEAD")` or `setRef("refs/remotes/origin/HEAD", "0123456789abcdefghij")`.
 
 ### How can I use branches?
 
