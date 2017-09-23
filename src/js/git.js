@@ -41,6 +41,20 @@ class Git {
 			return char;
 		}).join("");
 	}
+	packSha(str) {
+		let items = str.split("").map(char => {
+			if(char >= "0" && char <= "9") {
+				return char.charCodeAt(0) - "0".charCodeAt(0);
+			} else if(char >= "a" && char <= "z") {
+				return char.charCodeAt(0) - "a".charCodeAt(0) + 10;
+			}
+		});
+		let result = [];
+		for(let i = 0; i < items.length; i += 2) {
+			result.push(items[i] * 16 + items[i + 1]);
+		}
+		return result;
+	}
 	subArray(array, begin, length) {
 		if(length === undefined) {
 			return array.slice(begin);
@@ -50,9 +64,18 @@ class Git {
 	}
 	appendArray(source, destination) {
 		source.forEach(item => destination.push(item));
+		return destination;
+	}
+	concat(...arrs) {
+		let destination = [];
+		arrs.forEach(arr => this.appendArray(arr, destination));
+		return destination;
 	}
 	arrayToString(array) {
 		return Array.from(array).map(char => String.fromCharCode(char)).join("");
+	}
+	stringToArray(string) {
+		return string.split("").map(char => char.charCodeAt(0));
 	}
 	isSha(str) {
 		return (
@@ -78,8 +101,24 @@ class Git {
 	readDirectory(path, recursive) {
 		return this.zeroFS.readDirectory(this.root + "/" + path, recursive);
 	}
+	writeFile(path, content) {
+		return this.zeroFS.writeFile(this.root + "/" + path, Array.from(content).map(char => String.fromCharCode(char)).join(""), true);
+	}
+
 	inflate(string) {
 		return pako.inflate(string);
+	}
+	deflate(string) {
+		return pako.deflate(string);
+	}
+	sha(string) {
+		if(string instanceof Array) {
+			string = new Uint8Array(string);
+		}
+
+		let sha = new jsSHA("SHA-1", "ARRAYBUFFER");
+		sha.update(string);
+		return sha.getHash("HEX");
 	}
 
 	// Object commands
@@ -99,6 +138,13 @@ class Git {
 					content: object.slice(object.indexOf(0) + 1)
 				};
 			});
+	}
+	writeObject(type, content) {
+		let data = this.concat(this.stringToArray(type + " " + content.length), [0], content);
+		let id = this.sha(data);
+
+		return this.writeFile("objects/" + id.substr(0, 2) + "/" + id.substr(2), this.deflate(data))
+			.then(() => id);
 	}
 
 	// Packed objects
@@ -353,7 +399,7 @@ class Git {
 			currentPos += 20;
 
 			items.push({
-				mode: mode,
+				type: mode.length == 6 && mode.indexOf("10") == 0 ? "blob" : "tree",
 				name: name,
 				id: objectId
 			});
@@ -468,6 +514,81 @@ class Git {
 			});
 	}
 
+	// Object saving
+	writeBlob(content) {
+		return this.writeObject("blob", content);
+	}
+	writeTree(items) {
+		let content = [];
+		items.forEach(item => {
+			this.appendArray(this.concat(this.stringToArray((item.type == "tree" ? "040000" : "100644") + " " + item.name), [0], this.packSha(item.id)), content);
+		});
+		return this.writeObject("tree", content);
+	}
+	writeTreeRecursive(items) {
+		let content = items.map(item => {
+			if(item.type == "tree") {
+				if(item.id) {
+					// Use existing tree
+					return Promise.resolve({
+						type: "tree",
+						name: item.name,
+						id: item.id
+					});
+				}
+
+				return this.writeTreeRecursive(item.content)
+					.then(id => {
+						return {
+							type: "tree",
+							name: item.name,
+							id: id
+						};
+					});
+			} else if(item.type == "blob") {
+				if(item.id) {
+					// Use existing blob
+					return Promise.resolve({
+						type: "blob",
+						name: item.name,
+						id: item.id
+					});
+				}
+
+				return this.writeBlob(item.content)
+					.then(id => {
+						return {
+							type: "blob",
+							name: item.name,
+							id: id
+						};
+					});
+			}
+		});
+		return Promise.all(content)
+			.then(content => {
+				return this.writeTree(content);
+			});
+	}
+	writePlainCommit(commit) {
+		let content = "";
+		content += "tree " + commit.tree + "\n";
+		content += commit.parents.map(parent => "parent " + parent + "\n").join("");
+		content += "author " + commit.author + "\n";
+		content += "committer " + commit.committer + "\n";
+		content += "\n";
+		content += commit.message;
+
+		return this.writeObject("commit", this.stringToArray(content));
+	}
+	writeCommit(commit) {
+		return this.writeTreeRecursive(commit.tree)
+			.then(treeId => {
+				commit.tree = treeId;
+				return this.writePlainCommit(commit);
+			});
+	}
+
 	// Refs commands
 	getRef(ref) {
 		return this.readFile(ref)
@@ -564,5 +685,152 @@ class Git {
 			}, () => {
 				return Promise.reject("No HEAD ref");
 			});
+	}
+
+	// Pair-repo actions
+	importObject(other, id) {
+		return this.readObject(id)
+			.then(object => {
+				// Already exists
+				return false;
+			}, () => {
+				let object;
+				return other.readObject(id)
+					.then(o => {
+						object = o;
+						return this.writeObject(object.type, object.content);
+					})
+					.then(newId => {
+						if(newId != id) {
+							return Promise.reject("SHA1 mismatch during importing " + id + " (received " + newId + ") from " + other + " to " + this);
+						}
+
+						return true;
+					});
+			});
+	}
+	importObjectWithDependencies(other, id) {
+		return this.importObject(other, id)
+			.then(imported => {
+				if(!imported) {
+					// Already have object and dependencies locally
+					return;
+				}
+
+				return this.readUnknownObject(id)
+					.then(object => {
+						if(object.type == "blob") {
+							return this.importBlobDependencies(other, object);
+						} else if(object.type == "tree") {
+							return this.importTreeDependencies(other, object);
+						} else if(object.type == "commit") {
+							return this.importCommitDependencies(other, object);
+						}
+					});
+			});
+	}
+	importBlobDependencies(other, blob) {
+		// Blob has no dependencies
+		return Promise.resolve();
+	}
+	importTreeDependencies(other, tree) {
+		return Promise.all(
+			tree.content.map(item => {
+				return this.importObjectWithDependencies(other, item.id);
+			})
+		);
+	}
+	importCommitDependencies(other, commit) {
+		return Promise.all(
+			[
+				this.importObjectWithDependencies(other, commit.content.tree), // Import tree
+			].concat(
+				commit.content.parents.map(parent => {
+					return this.importObjectWithDependencies(other, parent) // Import parents
+				})
+			)
+		);
+	}
+
+	makeTreeDelta(base, changes) {
+		// changes:
+		// [
+		//     {
+		//         name: "dir",
+		//         type: "tree",
+		//         content: [
+		//             {
+		//                 name: "subdir",
+		//                 type: "tree",
+		//                 content: [
+		//                     {
+		//                         name: "subfile",
+		//                         type: "blob",
+		//                         content: "neworchangedfile"
+		//                     }
+		//                 ]
+		//             }
+		//         ]
+		//     },
+		//     {
+		//         name: "file",
+		//         remove: true
+		//     },
+		//     {
+		//         name: "olddir",
+		//         type: "blob",
+		//         content: "fds"
+		//     }
+		// ]
+		//
+		// Should be read as:
+		// 1. Set <dir/subdir/subfile> blob to "neworchangedfile"
+		// 2. Remove <file>
+		// 3. Remove tree <olddir> and add blob <olddir>
+
+		let promise = Promise.all(
+			changes.map(change => {
+				let treeItemIndex = base.findIndex(item => item.name == change.name);
+
+				if(change.remove) {
+					// Remove
+					if(treeItemIndex > -1) {
+						base.splice(treeItemIndex, 1);
+					}
+				} else if(change.type == "blob") {
+					if(treeItemIndex == -1) {
+						// Add blob
+						base.push(change);
+					} else {
+						// Change type to blob or change blob
+						base[treeItemIndex] = change;
+					}
+				} else if(change.type == "tree") {
+					if(treeItemIndex == -1) {
+						// Add tree
+						base.push(change);
+					} else if(tree[treeItemIndex].type != "tree") {
+						// Change type to tree
+						base[treeItemIndex] = change;
+					} else {
+						// Change tree
+						let id = base[treeItemIndex].id;
+						delete base[treeItemIndex].id;
+						return this.readUnknownObject(id)
+							.then(subTree => {
+								return this.makeTreeDelta(subTree.content, change.content);
+							});
+					}
+				}
+
+				return Promise.resolve();
+			})
+		);
+
+		return promise.then(() => base);
+	}
+
+	toString() {
+		return "<Git " + this.root + ">";
 	}
 };
