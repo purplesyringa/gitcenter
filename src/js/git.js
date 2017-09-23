@@ -687,6 +687,71 @@ class Git {
 			});
 	}
 
+	// Pair-repo actions
+	importObject(other, id) {
+		return this.readObject(id)
+			.then(object => {
+				// Already exists
+				return false;
+			}, () => {
+				let object;
+				return other.readObject(id)
+					.then(o => {
+						object = o;
+						return this.writeObject(object.type, object.content);
+					})
+					.then(newId => {
+						if(newId != id) {
+							return Promise.reject("SHA1 mismatch during importing " + id + " (received " + newId + ") from " + other + " to " + this);
+						}
+
+						return true;
+					});
+			});
+	}
+	importObjectWithDependencies(other, id) {
+		return this.importObject(other, id)
+			.then(imported => {
+				if(!imported) {
+					// Already have object and dependencies locally
+					return;
+				}
+
+				return this.readUnknownObject(id)
+					.then(object => {
+						if(object.type == "blob") {
+							return this.importBlobDependencies(other, object);
+						} else if(object.type == "tree") {
+							return this.importTreeDependencies(other, object);
+						} else if(object.type == "commit") {
+							return this.importCommitDependencies(other, object);
+						}
+					});
+			});
+	}
+	importBlobDependencies(other, blob) {
+		// Blob has no dependencies
+		return Promise.resolve();
+	}
+	importTreeDependencies(other, tree) {
+		return Promise.all(
+			tree.content.map(item => {
+				return this.importObjectWithDependencies(other, item.id);
+			})
+		);
+	}
+	importCommitDependencies(other, commit) {
+		return Promise.all(
+			[
+				this.importObjectWithDependencies(other, commit.content.tree), // Import tree
+			].concat(
+				commit.content.parents.map(parent => {
+					return this.importObjectWithDependencies(other, parent) // Import parents
+				})
+			)
+		);
+	}
+
 	toString() {
 		return "<Git " + this.root + ">";
 	}
