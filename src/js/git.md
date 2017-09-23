@@ -22,6 +22,19 @@ Use `getBranchCommit("master")` to get commit the branch references or use `read
 
 Use `getHead()`.
 
+### I can read objects, can I write them?
+
+Yes. Currently ZeroGit only supports loose objects writing. Use `writeObject(type, plainContent)` which hashes object and returns its new SHA.
+
+### What about auto formatting saved objects?
+
+You can use:
+1. `writeBlob(rawBlobContent)`
+2. `writeTree(items)` where `items` have the same format as `readUnknownObject()` result for trees.
+3. While `writeTree(items)` expects each subtree to be `{type: "tree", name: "mydir", id: "0123456789abcdefghij"}`, `writeTreeRecursive` also supports `{type: "tree", name: "mydir", content: [{type: "blob", name: "subfile", content: "myblob"}]}`. So you can build subtrees without need to call `writeTree` several times.
+4. `writePlainCommit(commit)` expects `commit` to have the same format as the result of `readUnknownObject()` for commits, so it makes you set `tree` as SHA.
+5. `writeCommit(commit)` works like `writePlainCommit(commit)` but also builds tree with `writeTreeRecursive(commit.tree)` and sets new SHA as commit tree.
+
 ### Can I simplify committing?
 
 `makeTreeDelta` gives you power not to recreate all tree. It accepts `base` as result of `readUnknownObject().content` and `changes` as array of items where each item can be either `{name: "...", type: "tree", content: [...]}` or `{name: "...", remove: true}` or `{name: "...", type: "blob", content: "..."]`. The resulting value is new tree. Note that `base` argument is changed.
@@ -62,6 +75,10 @@ For example,
 2. Remove `file`
 3. Replace tree `olddir` with blob `olddir`
 4. Leave all not mentioned files (if there was `dir/somefile` or `readme.md` they would be added to resulting tree).
+
+### And some actions between repositories?
+
+Yes! Run `importObject(otherGit, sha)` to read `sha` from `otherGit` and save it to `this`. And `importObjectWithDependencies(otherGit, sha)` also imports commit parents and tree, tree subitems, etc.
 
 ## Getting loose objects
 
