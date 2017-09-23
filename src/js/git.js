@@ -809,7 +809,7 @@ class Git {
 					if(treeItemIndex == -1) {
 						// Add tree
 						base.push(change);
-					} else if(tree[treeItemIndex].type != "tree") {
+					} else if(base[treeItemIndex].type != "tree") {
 						// Change type to tree
 						base[treeItemIndex] = change;
 					} else {
@@ -819,6 +819,9 @@ class Git {
 						return this.readUnknownObject(id)
 							.then(subTree => {
 								return this.makeTreeDelta(subTree.content, change.content);
+							})
+							.then(delta => {
+								base[treeItemIndex].content = delta;
 							});
 					}
 				}
