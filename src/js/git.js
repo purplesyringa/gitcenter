@@ -399,7 +399,7 @@ class Git {
 			currentPos += 20;
 
 			items.push({
-				type: mode.length == 6 && mode.indexOf("10") == 0 ? "tree": "blob",
+				type: mode.length == 6 && mode.indexOf("10") == 0 ? "blob" : "tree",
 				name: name,
 				id: objectId
 			});
