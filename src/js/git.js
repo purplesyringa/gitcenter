@@ -832,6 +832,43 @@ class Git {
 
 		return promise.then(() => base);
 	}
+	makeTreeDeltaPath(base, changes) {
+		// changes:
+		// [
+		//     path: "dir/subdir/subfile",
+		//     type: "blob",
+		//     content: "hhgfd"
+		// ]
+
+		let tree = {
+			name: "",
+			type: "tree",
+			content: []
+		};
+
+		changes.forEach(change => {
+			let currentTree = tree;
+			change.path.split("/").forEach(pathPart => {
+				let item = currentTree.content.find(item => item.name == pathPart);
+				if(!item) {
+					item = {
+						name: pathPart,
+						type: "tree",
+						content: []
+					};
+					currentTree.content.push(item);
+				}
+
+				currentTree = item;
+			});
+
+			currentTree.type = change.type;
+			currentTree.content = change.content;
+			currentTree.remove = change.remove;
+		});
+
+		return this.makeTreeDelta(base, tree.content);
+	}
 
 	toString() {
 		return "<Git " + this.root + ">";
