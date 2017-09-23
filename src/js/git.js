@@ -686,4 +686,8 @@ class Git {
 				return Promise.reject("No HEAD ref");
 			});
 	}
+
+	toString() {
+		return "<Git " + this.root + ">";
+	}
 };
