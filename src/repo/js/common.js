@@ -33,27 +33,38 @@ function showTabs(level) {
 function showTitle(title) {
 	let name = document.getElementById("repo_name");
 	name.textContent = title;
-	name.innerHTML += document.getElementById("edit_icon_tmpl").innerHTML;
 
-	document.getElementById("edit_icon").onclick = renameRepo;
+	zeroPage.isSignable("merged-GitCenter/" + address + "/content.json")
+		.then(signable => {
+			if(signable) {
+				name.innerHTML += document.getElementById("edit_icon_tmpl").innerHTML;
+				document.getElementById("edit_icon").onclick = renameRepo;
+			}
+		});
 }
 function showHeader(level) {
 	document.getElementById("fork").href = "../".repeat(level) + "fork/?" + address;
 
 	let publish = document.getElementById("publish");
-	publish.onclick = () => {
-		if(publish.classList.contains("button-disabled")) {
-			return;
-		}
+	zeroPage.isSignable("merged-GitCenter/" + address + "/content.json")
+		.then(signable => {
+			if(signable) {
+				publish.style.display = "inline-block";
+				publish.onclick = () => {
+					if(publish.classList.contains("button-disabled")) {
+						return;
+					}
 
-		publish.classList.add("button-disabled");
+					publish.classList.add("button-disabled");
 
-		repo.signContent()
-			.catch(() => {})
-			.then(() => {
-				publish.classList.remove("button-disabled");
-			});
-	};
+					repo.signContent()
+						.catch(() => {})
+						.then(() => {
+							publish.classList.remove("button-disabled");
+						});
+				};
+			}
+		});
 
 	document.getElementById("git_url").value = "git clone $path_to_zeronet/data/" + address + "/repo.git";
 }

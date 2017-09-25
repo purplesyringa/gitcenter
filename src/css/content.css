@@ -20,6 +20,9 @@
 .middle-button-margin {
 	margin-left: 16px;
 }
+.publish {
+	display: none;
+}
 
 h1 {
 	margin: 8px 0;
