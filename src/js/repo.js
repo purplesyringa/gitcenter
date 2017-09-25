@@ -128,6 +128,9 @@ class Repository {
 				return this.signContent("site");
 			});
 	}
+	fork() {
+		return this.zeroPage.cmd("siteClone", [this.address])
+	}
 
 	// Git actions
 	getFiles(branch, dir) {
@@ -779,4 +782,8 @@ class Repository {
 			date.getDate()
 		);
 	}
+};
+
+Repository.createRepo = zeroPage => {
+	return zeroPage.cmd("siteClone", ["1RepoXU8bQE9m7ssNwL4nnxBnZVejHCc6"]);
 };

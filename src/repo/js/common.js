@@ -43,7 +43,9 @@ function showTitle(title) {
 		});
 }
 function showHeader(level) {
-	document.getElementById("fork").href = "../".repeat(level) + "fork/?" + address;
+	document.getElementById("fork").onclick = () => {
+		repo.fork();
+	};
 
 	let publish = document.getElementById("publish");
 	zeroPage.isSignable("merged-GitCenter/" + address + "/content.json")

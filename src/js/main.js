@@ -11,5 +11,7 @@ zeroPage.getSiteInfo()
 		let button = document.getElementById("create_repository");
 		button.classList.remove("button-disabled");
 		button.classList.add("button-blue");
-		button.href = "repo/new/";
+		button.onclick = () => {
+			Repository.createRepo(zeroPage);
+		};
 	});
