@@ -396,6 +396,161 @@ class Repository {
 			});
 	}
 
+	// Pull requests
+	addPullRequest(title, content, forkAddress, forkBranch) {
+		let auth, row;
+		return this.zeroAuth.requestAuth()
+			.then(a => {
+				auth = a;
+
+				return this.zeroDB.insertRow(
+					"merged-GitCenter/" + this.address + "/data/users/" + auth.address + "/data.json",
+					"merged-GitCenter/" + this.address + "/data/users/" + auth.address + "/content.json",
+					"pull_requests",
+					{
+						title: title,
+						body: content,
+						date_added: Date.now(),
+						merged: 0,
+						fork_address: forkAddress,
+						fork_branch: forkBranch
+					},
+					{
+						source: "next_pull_request_id",
+						column: "id"
+					}
+				);
+			})
+			.then(r => {
+				row = r;
+
+				return this.zeroDB.getJsonID(this.address + "/data/users/" + auth.address + "/data.json", 3);
+			})
+			.then(json_id => {
+				row.json_id = json_id;
+				return row;
+			});
+	}
+	getPullRequests(page) {
+		return this.zeroDB.query("SELECT pull_requests.*, json.cert_user_id FROM pull_requests, json WHERE pull_requests.json_id = json.json_id AND json.site = :address LIMIT " + (page * 10) + ", 11", {
+			address: this.address
+		})
+			.then(pullRequests => {
+				return {
+					pullRequests: pullRequests.slice(0, 10),
+					nextPage: pullRequests.length > 10
+				};
+			});
+	}
+	getPullRequest(id, jsonId) {
+		return this.zeroDB.query("SELECT pull_requests.*, json.cert_user_id FROM pull_requests, json WHERE pull_requests.json_id = json.json_id AND pull_requests.json_id = :jsonId AND pull_requests.id = :id AND json.site = :address", {
+			jsonId: jsonId,
+			id: id,
+			address: this.address
+		})
+			.then(pullRequest => {
+				return pullRequest[0];
+			});
+	}
+	getPullRequestComments(id, jsonId) {
+		return this.zeroDB.query("\
+			SELECT\
+				-1 AS id,\
+				pull_requests.body AS body,\
+				pull_requests.date_added AS date_added,\
+				pull_requests.json_id AS json_id,\
+				json.cert_user_id AS cert_user_id,\
+				pull_requests.id AS pull_request_id,\
+				pull_requests.json_id AS pull_request_json_id\
+			FROM pull_requests, json\
+			WHERE\
+				pull_requests.json_id = json.json_id AND\
+				pull_requests.json_id = :jsonId AND\
+				pull_requests.id = :id AND\
+				json.site = :address\
+			\
+			UNION ALL\
+			\
+			SELECT\
+				pull_request_comments.id AS id,\
+				pull_request_comments.body AS body,\
+				pull_request_comments.date_added AS date_added,\
+				pull_request_comments.json_id AS json_id,\
+				json.cert_user_id AS cert_user_id,\
+				pull_request_comments.pull_request_id AS pull_request_id,\
+				pull_request_comments.pull_request_json_id AS pull_request_json_id\
+			FROM pull_request_comments, json\
+			WHERE\
+				pull_request_comments.json_id = json.json_id AND\
+				pull_request_comments.json_id = :jsonId AND\
+				pull_request_comments.pull_request_id = :id AND\
+				json.site = :address\
+			\
+			ORDER BY date_added ASC\
+		", {
+			jsonId: jsonId,
+			id: id,
+			address: this.address
+		});
+	}
+	addPullRequestComment(pullRequestId, pullRequestJsonId, content) {
+		let auth, row;
+		return this.zeroAuth.requestAuth()
+			.then(a => {
+				auth = a;
+
+				return this.zeroDB.insertRow(
+					"merged-GitCenter/" + this.address + "/data/users/" + auth.address + "/data.json",
+					"merged-GitCenter/" + this.address + "/data/users/" + auth.address + "/content.json",
+					"pull_request_comments",
+					{
+						pull_request_id: pullRequestId,
+						pull_request_json_id: pullRequestJsonId,
+						body: content,
+						date_added: Date.now()
+					},
+					{
+						source: "next_pull_request_comment_id",
+						column: "id"
+					}
+				);
+			})
+			.then(r => {
+				row = r;
+
+				return this.zeroDB.getJsonID(this.address + "/data/users/" + auth.address + "/data.json", 3);
+			})
+			.then(json_id => {
+				row.json_id = json_id;
+
+				return this.zeroDB.query("SELECT * FROM json WHERE json_id = :jsonId", {jsonId: json_id});
+			})
+			.then(jsonRow => {
+				row.cert_user_id = jsonRow[0].cert_user_id;
+
+				return row;
+			});
+	}
+	changePullRequestStatus(id, jsonId, merged) {
+		return this.zeroAuth.requestAuth()
+			.then(auth => {
+				return this.zeroDB.changeRow(
+					"merged-GitCenter/" + this.address + "/data/users/" + auth.address + "/data.json",
+					"merged-GitCenter/" + this.address + "/data/users/" + auth.address + "/content.json",
+					"pull_requests",
+					pullRequest => {
+						if(pullRequest.id != id) {
+							return pullRequest;
+						}
+
+						pullRequest.merged = merged;
+
+						return pullRequest;
+					}
+				);
+			});
+	}
+
 	// Maintainers
 	getUsers() {
 		let users;
