@@ -23,3 +23,7 @@
 .tab > img {
 	vertical-align: bottom;
 }
+
+.settings-link {
+	display: none;
+}

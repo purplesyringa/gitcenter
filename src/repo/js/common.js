@@ -21,6 +21,13 @@ function showTabs(level) {
 		"settings/" +
 		"?" + address
 	);
+
+	zeroPage.isSignable("merged-GitCenter/" + address + "/content.json")
+		.then(signable => {
+			if(signable) {
+				document.getElementById("settings_link").style.display = "inline-block";
+			}
+		});
 }
 
 function showTitle(title) {
