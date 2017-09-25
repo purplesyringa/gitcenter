@@ -283,13 +283,20 @@ class Repository {
 			});
 	}
 	getIssue(id, jsonId) {
-		return this.zeroDB.query("SELECT issues.*, json.cert_user_id FROM issues, json WHERE issues.json_id = json.json_id AND issues.json_id = :jsonId AND issues.id = :id AND json.site = :address", {
+		let issue;
+		return this.zeroDB.query("SELECT issues.*, json.directory, json.cert_user_id FROM issues, json WHERE issues.json_id = json.json_id AND issues.json_id = :jsonId AND issues.id = :id AND json.site = :address", {
 			jsonId: jsonId,
 			id: id,
 			address: this.address
 		})
-			.then(issue => {
-				return issue[0];
+			.then(i => {
+				issue = i[0];
+
+				return this.zeroPage.isSignable("merged-GitCenter/" + this.address + "/" + issue.directory + "/content.json");
+			})
+			.then(signable => {
+				issue.owned = signable;
+				return issue;
 			});
 	}
 	getIssueComments(id, jsonId) {
@@ -443,13 +450,20 @@ class Repository {
 			});
 	}
 	getPullRequest(id, jsonId) {
-		return this.zeroDB.query("SELECT pull_requests.*, json.cert_user_id FROM pull_requests, json WHERE pull_requests.json_id = json.json_id AND pull_requests.json_id = :jsonId AND pull_requests.id = :id AND json.site = :address", {
+		let pullRequest;
+		return this.zeroDB.query("SELECT pull_requests.*, json.directory, json.cert_user_id FROM pull_requests, json WHERE pull_requests.json_id = json.json_id AND pull_requests.json_id = :jsonId AND pull_requests.id = :id AND json.site = :address", {
 			jsonId: jsonId,
 			id: id,
 			address: this.address
 		})
-			.then(pullRequest => {
-				return pullRequest[0];
+			.then(p => {
+				pullRequest = p[0];
+
+				return this.zeroPage.isSignable("merged-GitCenter/" + this.address + "/" + pullRequest.directory + "/content.json");
+			})
+			.then(signable => {
+				pullRequest.owned = signable;
+				return pullRequest;
 			});
 	}
 	getPullRequestComments(id, jsonId) {

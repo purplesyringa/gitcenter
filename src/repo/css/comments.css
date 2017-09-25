@@ -87,6 +87,7 @@
 	float: right;
 }
 .comment-submit-close {
+	display: none;
 	float: right;
 	margin-right: 16px;
 }

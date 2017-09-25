@@ -88,39 +88,42 @@ repo.addMerger()
 				});
 		};
 
-		document.getElementById("comment_submit_close").onclick = () => {
-			let contentNode = document.getElementById("comment_content");
-			if(contentNode.disabled) {
-				return;
-			}
+		if(issue.owned) {
+			document.getElementById("comment_submit_close").style.display = "inline-block";
+			document.getElementById("comment_submit_close").onclick = () => {
+				let contentNode = document.getElementById("comment_content");
+				if(contentNode.disabled) {
+					return;
+				}
 
-			contentNode.disabled = true;
+				contentNode.disabled = true;
 
-			let promise;
-			if(contentNode.value == "") {
-				promise = Promise.resolve();
-			} else {
-				promise = repo.addIssueComment(id, jsonId, contentNode.value)
-					.then(comment => {
-						showComment(comment);
+				let promise;
+				if(contentNode.value == "") {
+					promise = Promise.resolve();
+				} else {
+					promise = repo.addIssueComment(id, jsonId, contentNode.value)
+						.then(comment => {
+							showComment(comment);
+						});
+				}
+
+				promise
+					.then(() => {
+						return repo.changeIssueStatus(id, jsonId, !issue.open);
+					})
+					.then(() => {
+						if(issue.open) {
+							issue.open = false;
+						} else {
+							issue.open = true;
+							issue.reopened = true;
+						}
+						drawIssueStatus();
+
+						contentNode.value = "";
+						contentNode.disabled = false;
 					});
-			}
-
-			promise
-				.then(() => {
-					return repo.changeIssueStatus(id, jsonId, !issue.open);
-				})
-				.then(() => {
-					if(issue.open) {
-						issue.open = false;
-					} else {
-						issue.open = true;
-						issue.reopened = true;
-					}
-					drawIssueStatus();
-
-					contentNode.value = "";
-					contentNode.disabled = false;
-				});
-		};
+			};
+		}
 	});
