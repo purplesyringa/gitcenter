@@ -14,6 +14,7 @@ repo.addMerger()
 		}
 
 		showTitle(content.title);
+		showHeader(1);
 		showTabs(1);
 		document.getElementById("new_issue").href = "new/?" + address;
 

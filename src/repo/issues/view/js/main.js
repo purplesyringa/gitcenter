@@ -52,6 +52,7 @@ repo.addMerger()
 		}
 
 		showTitle(content.title);
+		showHeader(2);
 		showTabs(2);
 
 		return repo.getIssue(id, jsonId);

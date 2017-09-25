@@ -21,6 +21,7 @@ repo.addMerger()
 		}
 
 		showTitle(content.title);
+		showHeader(1);
 		showTabs(1);
 
 		// Description

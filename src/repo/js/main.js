@@ -12,6 +12,7 @@ repo.addMerger()
 		}
 
 		showTitle(content.title);
+		showHeader(0);
 		showBranches();
 		showPath(false);
 		showLinks();
