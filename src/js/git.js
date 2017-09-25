@@ -630,6 +630,9 @@ class Git {
 					});
 			});
 	}
+	setRef(ref, commit) {
+		return this.writeFile(ref, this.stringToArray(commit));
+	}
 	getBranchCommit(branch) {
 		// Fallback for branch id
 		if(this.isSha(branch)) {
@@ -809,7 +812,7 @@ class Git {
 					if(treeItemIndex == -1) {
 						// Add tree
 						base.push(change);
-					} else if(tree[treeItemIndex].type != "tree") {
+					} else if(base[treeItemIndex].type != "tree") {
 						// Change type to tree
 						base[treeItemIndex] = change;
 					} else {
@@ -819,6 +822,9 @@ class Git {
 						return this.readUnknownObject(id)
 							.then(subTree => {
 								return this.makeTreeDelta(subTree.content, change.content);
+							})
+							.then(delta => {
+								base[treeItemIndex].content = delta;
 							});
 					}
 				}
@@ -828,6 +834,43 @@ class Git {
 		);
 
 		return promise.then(() => base);
+	}
+	makeTreeDeltaPath(base, changes) {
+		// changes:
+		// [
+		//     path: "dir/subdir/subfile",
+		//     type: "blob",
+		//     content: "hhgfd"
+		// ]
+
+		let tree = {
+			name: "",
+			type: "tree",
+			content: []
+		};
+
+		changes.forEach(change => {
+			let currentTree = tree;
+			change.path.split("/").forEach(pathPart => {
+				let item = currentTree.content.find(item => item.name == pathPart);
+				if(!item) {
+					item = {
+						name: pathPart,
+						type: "tree",
+						content: []
+					};
+					currentTree.content.push(item);
+				}
+
+				currentTree = item;
+			});
+
+			currentTree.type = change.type;
+			currentTree.content = change.content;
+			currentTree.remove = change.remove;
+		});
+
+		return this.makeTreeDelta(base, tree.content);
 	}
 
 	toString() {

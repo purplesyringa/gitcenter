@@ -17,6 +17,8 @@ repo.addMerger()
 		showLinks();
 		showTabs(1);
 
+		document.getElementById("edit").href = "../edit/?" + address + "/" + path.replace(/@/g, "@@") + "@" + branch.replace(/@/g, "@@");
+
 		return repo.getFiles(branch, "");
 	})
 	.then(() => {

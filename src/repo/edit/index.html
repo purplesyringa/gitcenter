@@ -62,17 +62,27 @@
 			<a class="info-link button" id="fork">Fork</a>
 			<a class="info-link button button-blue" id="publish" title="Use this option after pushing">Sign &amp; Publish changes</a>
 			<input type="text" class="info-link input" id="git_url">
-			<a class="info-link button" id="edit">Edit</a>
+			<a class="info-link button" id="view">View</a>
 		</div>
 
 		<table id="files" class="files">
 			<tr class="files-header">
-				<td id="files_path">
+				<td id="files_path" colspan="2">
 					<span><a id="files_root">Root</a> › </span>
 				</td>
 			</tr>
 			<tr>
-				<td class="file-content" id="file_content"></td>
+				<td class="file-content" colspan="2">
+					<textarea id="file_content" class="file-content-text"></textarea>
+				</td>
+			</tr>
+			<tr>
+				<td class="commit-message">
+					<input type="text" class="input commit-message-input" id="commit_message" placeholder="Commit message">
+				</td>
+				<td class="commit-node">
+					<a class="button button-blue commit-button" id="save">Commit</a>
+				</td>
 			</tr>
 		</table>
 
