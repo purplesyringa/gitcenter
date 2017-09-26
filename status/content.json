@@ -1,0 +1,51 @@
+{
+ "address": "1sTatuSy3fQXUFjYmXZXE4tW62EQzScAP",
+ "address_index": 80074647,
+ "background-color": "#FFF",
+ "clone_root": "template-new",
+ "cloned_from": "1HeLLo4uzjaLetFx6NH3PMwFP3qbRbTf3D",
+ "description": "",
+ "favicon": "img/logo.svg",
+ "files": {
+  "css/buttons.css": {
+   "sha512": "3e1fef45aacc6aa79952351a73fb66996107809f1dcbe974620228650b87c369",
+   "size": 1670
+  },
+  "css/content.css": {
+   "sha512": "430422777c614aa46e6e974b120f739ca0f5a4a2375be85dc336b8e9db5ed35c",
+   "size": 748
+  },
+  "css/header.css": {
+   "sha512": "bec6009f16f5d6dbf01dc67f31fc0f786690030f000bc1d9bc9fc7aaf059e855",
+   "size": 794
+  },
+  "css/history.css": {
+   "sha512": "9269055e858030c623e789b5c59312dc9bee72abb59bb30afd8e53220a945f50",
+   "size": 287
+  },
+  "css/main.css": {
+   "sha512": "655b8c3b04526d93e193ae3df1df211b83a23d412dbaa2c235bbb01318643dc5",
+   "size": 121
+  },
+  "img/logo-white.svg": {
+   "sha512": "71bfe4e341a9e58340b37de8cc4ea2299098b20fa4a77f8ac14917c19364d4ec",
+   "size": 900
+  },
+  "index.html": {
+   "sha512": "57302114e1caa65dd2bfc30aadc883315fbf223022f4444d0756c4423c1303f8",
+   "size": 1340
+  }
+ },
+ "ignore": "",
+ "inner_path": "content.json",
+ "modified": 1506447425,
+ "postmessage_nonce_security": true,
+ "signers_sign": "G5Aj/87p8XL4m9DYQeeDTaDWVF6Z6KovmaMz/uIFx7S9QpMX5+KZAtnlpkoULyRkD13b+J6TU+5c5989FSPIhCw=",
+ "signs": {
+  "1sTatuSy3fQXUFjYmXZXE4tW62EQzScAP": "G+EY03+MOSH6yOGJeEtRJ7jZ3/Zw5mvsvREwVbwATFPTQSTX5PZ82w+Ne1ezi3V59FN+YaN5El8ArjBGGczfHjo="
+ },
+ "signs_required": 1,
+ "title": "Git Center",
+ "translate": ["js/all.js"],
+ "zeronet_version": "0.5.7"
+}
