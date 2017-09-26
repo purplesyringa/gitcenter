@@ -14,7 +14,13 @@
 
 	color: #FFF;
 	text-decoration: none;
+
+	transition: all 1s;
 }
+.support-item:hover {
+	box-shadow: 0 8px 8px #888;
+}
+
 .support-item-margin {
 	margin-right: 1%;
 }
