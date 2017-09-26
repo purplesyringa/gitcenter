@@ -121,5 +121,24 @@ repo.addMerger()
 						contentNode.disabled = false;
 					});
 			};
+
+			let commentImport = document.getElementById("comment_import");
+			commentImport.style.display = "inline-block";
+			commentImport.title = "Import branch " + pullRequest.fork_address + "/" + pullRequest.fork_branch + " as " + address + "/pr-" + id + "-" + jsonId;
+			commentImport.onclick = () => {
+				if(commentImport.classList.contains("button-disabled")) {
+					return;
+				}
+				commentImport.classList.add("button-disabled");
+
+				repo.importPullRequest(pullRequest)
+					.then(() => {
+						zeroPage.alert("Branch pr-" + id + "-" + jsonId + " was imported to your repository. Run git fetch to download and merge it.");
+						commentImport.classList.remove("button-disabled");
+					}, e => {
+						zeroPage.error(e);
+						commentImport.classList.remove("button-disabled");
+					});
+			};
 		}
 	});
