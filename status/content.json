@@ -5,7 +5,7 @@
  "clone_root": "template-new",
  "cloned_from": "1HeLLo4uzjaLetFx6NH3PMwFP3qbRbTf3D",
  "description": "",
- "favicon": "img/logo.svg",
+ "favicon": "img/logo-green.svg",
  "files": {
   "css/buttons.css": {
    "sha512": "3e1fef45aacc6aa79952351a73fb66996107809f1dcbe974620228650b87c369",
@@ -27,6 +27,10 @@
    "sha512": "655b8c3b04526d93e193ae3df1df211b83a23d412dbaa2c235bbb01318643dc5",
    "size": 121
   },
+  "img/logo-green.svg": {
+   "sha512": "e390644d9e39cc159927a7ab9a264b134ebdd3818afa2a9469786fe8860f67f9",
+   "size": 900
+  },
   "img/logo-white.svg": {
    "sha512": "71bfe4e341a9e58340b37de8cc4ea2299098b20fa4a77f8ac14917c19364d4ec",
    "size": 900
@@ -38,14 +42,14 @@
  },
  "ignore": "",
  "inner_path": "content.json",
- "modified": 1506447425,
+ "modified": 1506447928,
  "postmessage_nonce_security": true,
  "signers_sign": "G5Aj/87p8XL4m9DYQeeDTaDWVF6Z6KovmaMz/uIFx7S9QpMX5+KZAtnlpkoULyRkD13b+J6TU+5c5989FSPIhCw=",
  "signs": {
-  "1sTatuSy3fQXUFjYmXZXE4tW62EQzScAP": "G+EY03+MOSH6yOGJeEtRJ7jZ3/Zw5mvsvREwVbwATFPTQSTX5PZ82w+Ne1ezi3V59FN+YaN5El8ArjBGGczfHjo="
+  "1sTatuSy3fQXUFjYmXZXE4tW62EQzScAP": "HFIANhlu+xZM0MxLv+I5kr4UtnEICOJK4Z1URclO1/4zEO85xedhq9vBVf1mKLT3M0NKdE5/lVuFlLejDwUqnLU="
  },
  "signs_required": 1,
- "title": "Git Center",
+ "title": "Git Center Status",
  "translate": ["js/all.js"],
  "zeronet_version": "0.5.7"
 }
