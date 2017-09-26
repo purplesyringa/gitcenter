@@ -19,7 +19,7 @@
 	display: inline-block;
 	width: auto;
 	height: 32px;
-	margin: 16px 0;
+	margin: 16px 8px 16px 0;
 	vertical-align: top;
 
 	font-family: Verdana, Arial, sans-serif;
@@ -32,7 +32,8 @@
 	display: inline-block;
 	width: auto;
 	height: 24px;
-	margin: 20px 0 20px 24px;
+	margin: 0 10px;
+	padding: 20px 0;
 	vertical-align: top;
 
 	font-family: Verdana, Arial, sans-serif;
