@@ -1,0 +1,54 @@
+.content {
+	display: block;
+	width: 1024px;
+	padding: 0 calc(50% - 512px);
+	margin: 16px 0;
+}
+
+.middle {
+	display: block;
+	width: 1024px;
+	padding: 16px calc(50% - 512px) 0;
+	background-color: #EEE;
+	border-bottom: 1px solid #888;
+}
+.middle-buttons {
+	float: right;
+	vertical-align: top;
+	margin-top: -40px;
+}
+.middle-button-margin {
+	margin-left: 16px;
+}
+.publish {
+	display: none;
+}
+
+h1 {
+	margin: 8px 0;
+	font-size: 32px;
+}
+h2 {
+	margin: 6px 0;
+	font-size: 24px;
+}
+
+p, ul, ol {
+	margin: 8px 0;
+	font-size: 16px;
+}
+
+.center {
+	text-align: center;
+}
+
+.info {
+	display: block;
+	width: 1024px;
+	padding: 0 calc(50% - 512px);
+	margin: 16px 0;
+}
+.info-link {
+	margin-left: 16px;
+	font-size: 16px;
+}
