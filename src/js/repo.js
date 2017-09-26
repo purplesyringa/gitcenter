@@ -567,6 +567,22 @@ class Repository {
 				);
 			});
 	}
+	importPullRequest(pullRequest) {
+		let other = new Repository(pullRequest.fork_address, this.zeroPage);
+
+		let ref;
+		return other.addMerger()
+			.then(() => {
+				return other.git.getBranchCommit(pullRequest.fork_branch);
+			})
+			.then(r => {
+				ref = r;
+				return this.git.importObjectWithDependencies(other.git, ref);
+			})
+			.then(() => {
+				return this.git.setRef("refs/heads/pr-" + pullRequest.id + "-" + pullRequest.json_id, ref);
+			});
+	}
 
 	// Maintainers
 	getUsers() {
