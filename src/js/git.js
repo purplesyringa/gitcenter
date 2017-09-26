@@ -519,6 +519,19 @@ class Git {
 		return this.writeObject("blob", content);
 	}
 	writeTree(items) {
+		items = items.sort((a, b) => {
+			let aName = a.name;
+			let bName = b.name;
+			if(a.type == "tree") {
+				aName += "/";
+			}
+			if(b.type == "tree") {
+				bName += "/";
+			}
+
+			return aName < bName ? -1 : aName > bName ? 1 : 0;
+		});
+
 		let content = [];
 		items.forEach(item => {
 			this.appendArray(this.concat(this.stringToArray((item.type == "tree" ? "040000" : "100644") + " " + item.name), [0], this.packSha(item.id)), content);
