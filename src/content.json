@@ -8,24 +8,28 @@
  "favicon": "img/logo.svg",
  "files": {
   "css/buttons.css": {
-   "sha512": "73cc647f1a433c2b6e666ff522c5a21db8934ad8f3ea861f4a9eccb340f1707d",
-   "size": 1316
+   "sha512": "3e1fef45aacc6aa79952351a73fb66996107809f1dcbe974620228650b87c369",
+   "size": 1670
   },
   "css/content.css": {
-   "sha512": "ca8995e0c18d096849fe0ee371b5cedb5efec222db4856855c231d0d62d1db13",
-   "size": 532
+   "sha512": "430422777c614aa46e6e974b120f739ca0f5a4a2375be85dc336b8e9db5ed35c",
+   "size": 748
   },
   "css/header.css": {
-   "sha512": "bec6009f16f5d6dbf01dc67f31fc0f786690030f000bc1d9bc9fc7aaf059e855",
-   "size": 794
+   "sha512": "f05e44aa38434013d6f57c8c2845b8049455a0ed92d0e5caa826d29ef3ae283a",
+   "size": 812
   },
   "css/main.css": {
    "sha512": "655b8c3b04526d93e193ae3df1df211b83a23d412dbaa2c235bbb01318643dc5",
    "size": 121
   },
   "dbschema.json": {
-   "sha512": "ddde5e7e3cc42379940e932dd0763b04c844f97287c76c6c90f1b6774390cd3f",
-   "size": 1389
+   "sha512": "f9deb01c5d5120f529a6efc92d5758c617cce64a7225d10ed69203d9c31e3d89",
+   "size": 2721
+  },
+  "default/index.html": {
+   "sha512": "ae1df598ce5de96466e2eca53566bab8445bba3c52fb703af43fb780c1ca63e9",
+   "size": 1717
   },
   "hljs/default.min.css": {
    "sha512": "93a92e400d37cfc01086f8d2e806df99837d07f37d0bab2eaee2685439946e25",
@@ -43,6 +47,10 @@
    "sha512": "04fb67e137f45e326e7d44fe6ad0ea295916b278d72955a1d34e2e8459bb4f11",
    "size": 202
   },
+  "img/cross.svg": {
+   "sha512": "e9dc14968c407215b7fcdfcbc9fa351361d3b9de02999e08f962deb9980f2fa5",
+   "size": 460
+  },
   "img/directory.svg": {
    "sha512": "d7eba34a410b10a65a5d9f564ee5d743e13d3588f6a3d2055d87a75c41053b65",
    "size": 295
@@ -54,6 +62,10 @@
   "img/file.svg": {
    "sha512": "9ae0b768368d1b7bfacfb40bdf6345540f067bcc2ff23732d68bd002d6eabcce",
    "size": 1068
+  },
+  "img/info.svg": {
+   "sha512": "592a7e599933c1c555f68fac60fc10f10685aaecfe2130cb36aeb6bf2da643c4",
+   "size": 258
   },
   "img/issue-closed-white.svg": {
    "sha512": "3fd33a74c6074d9dfd9a086a304f2402aa6d98762143e23875eacba8679228f1",
@@ -79,6 +91,10 @@
    "sha512": "d56b2f014f1abad591babbfb1996abde2dd1c1bf38ad6a2484ecaec6a3c6d271",
    "size": 643
   },
+  "img/logo-green.svg": {
+   "sha512": "e390644d9e39cc159927a7ab9a264b134ebdd3818afa2a9469786fe8860f67f9",
+   "size": 900
+  },
   "img/logo-red.svg": {
    "sha512": "9f5481798d939ab8018a4e8a8baebf094e070eebd41b3ec5dd305e55430df5e3",
    "size": 888
@@ -87,13 +103,25 @@
    "sha512": "1b8f46502d02afe2f96f8aeb0f938a1e7d6f9a9699b30fcbc40a800432ec8219",
    "size": 887
   },
+  "img/logo-yellow.svg": {
+   "sha512": "c5e05d25c8bed9925de835319365b168d3d7ad66876a04303481fb5f91a4db66",
+   "size": 888
+  },
   "img/logo.svg": {
    "sha512": "8d6ce77a51f8323b002329d044bc14c91b5ea1d95921dc53644077422516130a",
    "size": 888
   },
+  "img/pr-merged-white.svg": {
+   "sha512": "6039c90c3a77f55c8d758e5966fc1afb5d1a91f55a412c9def770c7dff6d9142",
+   "size": 994
+  },
   "img/pr-merged.svg": {
    "sha512": "65e872b7d11601ecec32756e8dfb224bf5fa0202e479549e70add515b2cfc1d5",
    "size": 994
+  },
+  "img/pr-opened-white.svg": {
+   "sha512": "7514ea400f53ad8e2ad39723c85b3b921fc8751516f15217cdea15fb0ef244b1",
+   "size": 1174
   },
   "img/pr-opened.svg": {
    "sha512": "43d6265a0998eb0dff66f1bf7b75eeda15a502f5d568c54b32d759eb91aa72f4",
@@ -103,25 +131,37 @@
    "sha512": "e5d4da126feb3fc9cf149b731b0f3fe3a927b944b5771827e1ab46a5d04bc661",
    "size": 1339
   },
+  "img/tick.svg": {
+   "sha512": "28ddd638b2a695e7ffcdfce5ad7b9fd99681a9a53642aaf9670fa52b703076b9",
+   "size": 419
+  },
   "img/unknown.svg": {
    "sha512": "4041f094b4666fe93d657d4db0662081349e504a4ac785e36d9a64147cd3ba89",
    "size": 354
   },
   "index.html": {
-   "sha512": "0ea47157d75a398d0c0e8177c5542389b02188776e5129f885818aa438455ad4",
-   "size": 1597
+   "sha512": "a174272bb71ada76e79147c31c2f16c391227651e6595ee1fbcc479681ea434b",
+   "size": 2079
   },
   "index/css/repo.css": {
    "sha512": "f7a99ba890d17541e5756cc736ce7eac4736686bd3da7f7913ef9a1f7b56cf2c",
    "size": 446
   },
   "index/index.html": {
-   "sha512": "b38c33f1de11337e546cce95111d4e5b0cc8f3f129a8713473977575c247fb3a",
-   "size": 1210
+   "sha512": "e727904b915761005cf9ab932b356982c4e1c85c36794e0741bb2e3d241bc3c4",
+   "size": 1792
   },
   "index/js/main.js": {
-   "sha512": "f875c75f067a36060c72864531ba649340baa6e283e99fdeb8cd0bd3c1358681",
-   "size": 152
+   "sha512": "2fbd7098e77975638f2be53f00675ae5466abdfaaf40f56aa1a5a5cf42394c2e",
+   "size": 912
+  },
+  "install/index.html": {
+   "sha512": "d8f302be180c7933a20d9a1cca157c3c177eb5a601eebae778403b4b3ac3caea",
+   "size": 2029
+  },
+  "install/js/main.js": {
+   "sha512": "f469a5e854e33b305dafa1ccf7a5bc2e423356196eba7fc222d8569e5e3af865",
+   "size": 259
   },
   "js/ZeroAuth.js": {
    "sha512": "60b4f90733deca5c098312ac497a59e5165d69a5340808124e7d2f7efcb3524f",
@@ -144,32 +184,48 @@
    "size": 7928
   },
   "js/git.js": {
-   "sha512": "e0fbe4a1edc8c762bc44d1f44041851b1195d69fe69e546409baa1c2f534506f",
-   "size": 14018
+   "sha512": "f323b52f7c41bbda6e4e9ef55f0d0638df923b098af225eb5f3bd6cfaffdea3a",
+   "size": 22480
   },
   "js/git.md": {
-   "sha512": "ee7081e43df0b750ed3a8325b92765a9373d2f2e92658e32bf93018e56b5fc4c",
-   "size": 7669
+   "sha512": "31ad72bde0afddde7463e2859488537737288e62f0742798e63856af9118c14f",
+   "size": 10962
   },
   "js/main.js": {
-   "sha512": "72c57f7759689f94dbb00d485ef401c46abd89570158118f721ec0eb97b5ab75",
-   "size": 476
+   "sha512": "50677828c6338ae7278b1a0d1eb0124aa4d94e2fab1009e1c920f7c2881e8904",
+   "size": 1144
   },
   "js/pako.js": {
    "sha512": "314481f39750571e54d4c4ec3ebc133b2a26282b0b3d91ac135798197f782fdb",
    "size": 46996
   },
   "js/repo.js": {
-   "sha512": "d37f12b18cb7dd8bfe51c33dcb3fb690686f7f5f127f056f9f0b1c6923c8d8cb",
-   "size": 10297
+   "sha512": "2cd0593efb84c54cc3bbdd97c08483facb1fb5845c99e89fdf1a414f75014c34",
+   "size": 21672
+  },
+  "js/sha.js": {
+   "sha512": "dbc736e73b63c017af09a6004989550f7109dbf10e8726d7aa49ef4d2a741536",
+   "size": 7318
   },
   "merged-GitCenter/GitCenter.db": {
-   "sha512": "8bec26c7f5941ca7c91ced79d203ce273efe953b3cd0a7ee95f5cdb7b63da9cb",
-   "size": 13312
+   "sha512": "c29d0973138b4925249860d8209a90b3d206d3a20edbc15f14b3ac78f8ca2580",
+   "size": 24576
+  },
+  "myrepos/css/repo.css": {
+   "sha512": "f7a99ba890d17541e5756cc736ce7eac4736686bd3da7f7913ef9a1f7b56cf2c",
+   "size": 446
+  },
+  "myrepos/index.html": {
+   "sha512": "aae9760f3d723add92ecb548d8015e4caf24be8d726d268fc048779c842958d0",
+   "size": 1796
+  },
+  "myrepos/js/main.js": {
+   "sha512": "8d0c0f2398986888bbc8f7cc971c9597cc07e2a7c9941ff9df7f2c024297b65b",
+   "size": 1511
   },
   "repo/css/comments.css": {
-   "sha512": "b5c81d2d29497e27c397d22b526ad3a9774d8a491649c58fbed9753588f8b79a",
-   "size": 1447
+   "sha512": "42565260b7acbd660866e33584076628664fde6a559b259fe3f4fb2458941bf7",
+   "size": 1525
   },
   "repo/css/files.css": {
    "sha512": "d8c5eddba2d6776159a1a390720350e19461e00e5325d6c8d615e8c64fe5f71b",
@@ -180,68 +236,80 @@
    "size": 30
   },
   "repo/css/tabs.css": {
-   "sha512": "99570d3ed44a92a0a4da1949ed2de50bad853e6eb9ed310ff9e3749d5eced7a7",
-   "size": 398
+   "sha512": "4da5da8714381563e7c78e3e6e256443501449ef4e80d61dd086eeadd7957031",
+   "size": 438
+  },
+  "repo/edit/css/file.css": {
+   "sha512": "0f17eb7b2f7f52136bc55093e239c3b6895b31f381ed925f5d0184185a379973",
+   "size": 972
+  },
+  "repo/edit/index.html": {
+   "sha512": "31d4261a62e3febaa1cc20a3f20b0e2121fa3f0a68cfb39c8e0f5cc80ab81b6a",
+   "size": 4402
+  },
+  "repo/edit/js/main.js": {
+   "sha512": "1d1057dabe1c67f8b3d288e896dbf5f841f8475ea0a20e05998f40b26ce06851",
+   "size": 1861
   },
   "repo/file/css/file.css": {
    "sha512": "547ad80635df14d436dcae9cbab38aedc001d244c269a36acec36a82896b6be6",
    "size": 564
   },
   "repo/file/index.html": {
-   "sha512": "53d2ab43e5444540cea9c0740825c7ef9788f10746377231f9d77e510dfe7b3f",
-   "size": 3199
+   "sha512": "b60ec93f696f69b33b5cac120c48bac074741d945dcd82e11fa122ee791cf71f",
+   "size": 4033
   },
   "repo/file/js/main.js": {
-   "sha512": "06bef90618e0a09b1b255e106740acb2a3078ddd03af8158530181a5384cc7e0",
-   "size": 849
+   "sha512": "298a12d2a7a24e2672d18c26f21601b306c0b7222577ea3bfbc35ba79f85f715",
+   "size": 1181
   },
   "repo/index.html": {
-   "sha512": "6d0628cac4cf4198445d97f0ae2162e428de362af42e74adc61df6e438479678",
-   "size": 2949
+   "sha512": "3bf2eb598da1023464438ad79d8a71c68eeb213ddfc07c8a5a31b2bcbfceb15d",
+   "size": 3779
   },
   "repo/issues/css/issues.css": {
    "sha512": "c7d52970494c36d9f99f0423d63f469a4321fb677d402a0ed6ab4ac23828de69",
    "size": 805
   },
   "repo/issues/index.html": {
-   "sha512": "b9d7611f6c2e6aca6d50af1abe2de16f3985f35d83040b731418a1282ea8fbfd",
-   "size": 2842
+   "sha512": "41938988c79f14020067f36fd1e095ae5ec36c8f81e927ea1420d6c59577792a",
+   "size": 3692
   },
   "repo/issues/js/main.js": {
-   "sha512": "8a8f6cf414d35cf00402cf2e215fe5ecc7708442a65c8cccb0c2813253583eab",
-   "size": 1636
+   "sha512": "501bfbfe05fc278e2b0c1ef6eaa985524af644ab073b46facbdd3b4234de857c",
+   "size": 1833
   },
   "repo/issues/new/css/issue.css": {
    "sha512": "d5620d6a47a3a2459b90ff4dcc588bd29f157cf96eb125a37fc48c0fa9590009",
    "size": 72
   },
   "repo/issues/new/index.html": {
-   "sha512": "2165ca80da4a63a17cc98bcb0aea95954fc79d93faaeb9f1d80e39aaa1fa3c42",
-   "size": 2937
+   "sha512": "44dcdc9e1bec6d72bb6ca0ceba11a7541668d41bfc66338ebdaee0af5d8eef0c",
+   "size": 3802
   },
   "repo/issues/new/js/main.js": {
-   "sha512": "2ff6884117765ff87846e2d334063684dc818f7f77ac207a20a5360934ce1de2",
-   "size": 416
+   "sha512": "dfc73d0110da475838544e38e9be81c94f3eecf69cec05b2ea53fb2150d97208",
+   "size": 619
   },
   "repo/issues/view/css/issue.css": {
    "sha512": "a5b66bba84bd93f5302c34e390dfac7da30e38b9389b828d1a93d6843ab5d393",
    "size": 762
   },
   "repo/issues/view/index.html": {
-   "sha512": "ebe8b7beeb6b2d6236bd9f583de9296871a0789ebbdf9efceeb0d62b056a6ae6",
-   "size": 3429
+   "sha512": "49e7ed8af4bd39ab8a1b8a33614840cf25ccde7669f2f01604770c96728ca67e",
+   "size": 4294
   },
   "repo/issues/view/js/main.js": {
-   "sha512": "c95b0d9aed4a7b62f04409e226f2e58a28dd5560d0eb75adaef3f1603e7dbf80",
-   "size": 3259
+   "sha512": "8301a53b9ab17fb108efec7b328f03360ee50b1b98d5438a9f32b6fd50cedfbb",
+   "size": 3603
   },
   "repo/js/common.js": {
-   "sha512": "2164419f2c46123a5bd75f452ce9b3222a38668f06f11532a586dcbcac8fb058",
-   "size": 2774
+   "sha512": "7a8c8c5835666cc18c712fd463a18bc961580c771892cff72a70add7d54a4db5",
+   "size": 3984
   },
   "repo/js/main.js": {
-   "sha512": "6e7f1d2cd555dfdc1d4496485bc78b3a4a4ac1901d6d3620450487572185087f",
-   "size": 1474
+   "sha512": "668d518090373132caa9d73389e40c3b405fd9640639864206c9d2d484f39dc2",
+   "size": 1863
   },
   "repo/js/path_common.js": {
    "sha512": "b364053f4f27cc13bc80618f9b46f6f464db0d886915db5d41aac400549c559f",
@@ -251,21 +319,77 @@
    "sha512": "4ffde8e371920010bc596f6aa9480e9a51c63ca6be431cea23d44ad8fdb34e53",
    "size": 608
   },
-  "repo/new/index.html": {
-   "sha512": "8b778a91049e19a000468389ae09a82b7b4ce1150e1a89dc1137bd4020f2a31d",
-   "size": 1323
+  "repo/newfile/css/file.css": {
+   "sha512": "0f17eb7b2f7f52136bc55093e239c3b6895b31f381ed925f5d0184185a379973",
+   "size": 972
+  },
+  "repo/newfile/index.html": {
+   "sha512": "12733f6745a9e36af075550bad60085e792f9ba8629d377560e85203c843727c",
+   "size": 4513
+  },
+  "repo/newfile/js/main.js": {
+   "sha512": "c90b14cf5c5339637aecaf6a607c716705a6b37400ce3db301bb47ef347b3882",
+   "size": 1361
+  },
+  "repo/pull-requests/css/pull-requests.css": {
+   "sha512": "e48a70f0b505849cee822c57a247c98ac06bcb34b77d0f991eb642946afbb90f",
+   "size": 861
+  },
+  "repo/pull-requests/index.html": {
+   "sha512": "ffd8aa15dcac196777fc6df29254f0edf1cf0aeb51be74327c5c24aa5da6621a",
+   "size": 3727
+  },
+  "repo/pull-requests/js/main.js": {
+   "sha512": "8bf65261aac53e06f1737563ea5bce2d4c68b7ad0a503fe3e16bccb3cc4a9827",
+   "size": 1902
+  },
+  "repo/pull-requests/new/css/pull_request.css": {
+   "sha512": "6e7b73c81f23f8c448b634dd7cc465b5bc04aaa27cd2e587ddb1eb979af7fdfa",
+   "size": 79
+  },
+  "repo/pull-requests/new/index.html": {
+   "sha512": "d694fc96d1ace673eb6e6a23d37b345280931721b559cfb166f6a1db0867de78",
+   "size": 3595
+  },
+  "repo/pull-requests/new/js/main.js": {
+   "sha512": "9258fff0eecad88580cf3c2f910ae9f5702975e28860d5098154202ce1a2a6f4",
+   "size": 718
+  },
+  "repo/pull-requests/view/css/pull_request.css": {
+   "sha512": "3ecbd7466dd67312c562b33d0d294f1a888c5a0bc221fb30e0ed29556c21347c",
+   "size": 837
+  },
+  "repo/pull-requests/view/index.html": {
+   "sha512": "f791470e0930ba2dcfe2319533b72cb9c1e9ef09df422904dcd35f34cfd405d1",
+   "size": 4208
+  },
+  "repo/pull-requests/view/js/main.js": {
+   "sha512": "fbefd7cb6f5ba990c18ded3a5f341b4de1d216b4de93dec8d2352e87cb6c45de",
+   "size": 4671
   },
   "repo/settings/css/settings.css": {
-   "sha512": "bc028ffe7045c66bab37eb90151326c950a7d819d4ce937d5570e8d4b6dbe026",
-   "size": 503
+   "sha512": "4583c81dbf28969115ab45e1b2e781f9297ba15a37e74595fdf83ca6bf1d76bb",
+   "size": 726
   },
   "repo/settings/index.html": {
-   "sha512": "020a9574a02883aa50ff48bd2e9a2ca04791da5d525f9d7dbbb708989c25f498",
-   "size": 3602
+   "sha512": "a8a3f57589d4bf9b63e1cc51a261ffd8dd34df1bbe0ccc9b3c8431851f6080a7",
+   "size": 5093
   },
   "repo/settings/js/main.js": {
-   "sha512": "1e3c8046afb457ba06a5a3f01cd99ea92b49787f86b92a234da9ded0aa3e155d",
-   "size": 2948
+   "sha512": "1187868c7e600012c9dd3132505e795a0ac1bea47e07929bfed6f88d1332624c",
+   "size": 6015
+  },
+  "support/css/support.css": {
+   "sha512": "90b64edd5b44016b65d1c699bd2330372cf316cfa078dac38d4eff9ca6436701",
+   "size": 1238
+  },
+  "support/index.html": {
+   "sha512": "767af6ebb6672eb7cd003b9e5405cd9018c3a360fd635c17b90edc737a419268",
+   "size": 2549
+  },
+  "workflow/index.html": {
+   "sha512": "7bf18e2fdd5ed5c8296c792606783dc20ff8e95077cd5c8b1ed18864c3d6fcd0",
+   "size": 6697
   }
  },
  "ignore": "",
@@ -276,11 +400,11 @@
   }
  },
  "inner_path": "content.json",
- "modified": 1505842688,
+ "modified": 1506777972,
  "postmessage_nonce_security": true,
  "signers_sign": "HGi2ieQAyGsfO7LeAVgbnd2tJAqB15an3uspuYTlJVSMUCEkQjs2wzhEY9sW3z7LTfS24oyDRVEnQ7KdzADbGRI=",
  "signs": {
-  "1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t": "HF1MagyjudP4NnzA0haUIO3n6YLrgC7JVS3Ke6zZBqYJYSQ76TXDodmxfYFsR6S62Dy+FkJjMlTi3jnw4lUCMTE="
+  "1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t": "HLUkCV+9uQCyAZ3iAlybws7ytVcJy2kniQebVq9m9SrkU9B1QOlW6hDXryxKdp6ryZr+2YtzzbrjwrdLcPLqv0w="
  },
  "signs_required": 1,
  "title": "Git Center",

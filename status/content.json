@@ -16,8 +16,8 @@
    "size": 748
   },
   "css/header.css": {
-   "sha512": "bec6009f16f5d6dbf01dc67f31fc0f786690030f000bc1d9bc9fc7aaf059e855",
-   "size": 794
+   "sha512": "f05e44aa38434013d6f57c8c2845b8049455a0ed92d0e5caa826d29ef3ae283a",
+   "size": 812
   },
   "css/history.css": {
    "sha512": "9269055e858030c623e789b5c59312dc9bee72abb59bb30afd8e53220a945f50",
@@ -42,11 +42,11 @@
  },
  "ignore": "",
  "inner_path": "content.json",
- "modified": 1506447928,
+ "modified": 1506487922,
  "postmessage_nonce_security": true,
  "signers_sign": "G5Aj/87p8XL4m9DYQeeDTaDWVF6Z6KovmaMz/uIFx7S9QpMX5+KZAtnlpkoULyRkD13b+J6TU+5c5989FSPIhCw=",
  "signs": {
-  "1sTatuSy3fQXUFjYmXZXE4tW62EQzScAP": "HFIANhlu+xZM0MxLv+I5kr4UtnEICOJK4Z1URclO1/4zEO85xedhq9vBVf1mKLT3M0NKdE5/lVuFlLejDwUqnLU="
+  "1sTatuSy3fQXUFjYmXZXE4tW62EQzScAP": "Gy3pFcze+5+oQDJjOPftXUoCBjNSZdde5TZajOlp5IMiedvuEgtNbU80sueHd1QqPXBxv54n+XoA8shoyaMf5nE="
  },
  "signs_required": 1,
  "title": "Git Center Status",
