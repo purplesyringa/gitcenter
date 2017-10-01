@@ -5,8 +5,6 @@ class Repository {
 		this.zeroFS = new ZeroFS(zeroPage);
 		this.zeroAuth = new ZeroAuth(zeroPage);
 		this.zeroDB = new ZeroDB(zeroPage);
-
-		this.git = new Git("merged-GitCenter/" + address + "/repo.git", zeroPage);
 	}
 
 	// Permission actions
@@ -38,6 +36,16 @@ class Repository {
 				if(!list["1iNDExENNBsfHc6SKmy1HaeasHhm3RPcL"]) {
 					return this.zeroPage.cmd("mergerSiteAdd", ["1iNDExENNBsfHc6SKmy1HaeasHhm3RPcL"]);
 				}
+			})
+			.then(() => {
+				return this.getContent();
+			})
+			.then(content => {
+				if(content.git) {
+					this.git = new Git("merged-GitCenter/" + this.address + "/" + content.git, zeroPage);
+				} else {
+					this.git = null;
+				}
 			});
 	}
 
@@ -52,7 +60,7 @@ class Repository {
 	signContent(signStyle) {
 		return this.zeroPage.cmd("sitePublish", {inner_path: "merged-GitCenter/" + this.address + "/content.json", privatekey: signStyle == "site" ? "stored" : null})
 			.then(res => {
-				if(res != "ok" && res.error != "Port not opened.") {
+				if(res != "ok" && res.error != "Port not opened." && res.error != "Content publish failed.") {
 					return Promise.reject(res);
 				}
 			});
@@ -111,7 +119,7 @@ class Repository {
 			})
 			.then(() => this.sign());
 	}
-	install() {
+	install(title, description, address) {
 		let content;
 		return this.getContent()
 			.then(c => {
@@ -120,11 +128,18 @@ class Repository {
 				return this.zeroAuth.requestAuth();
 			})
 			.then(auth => {
+				content.title = title;
+				content.description = description;
 				content.signers = [auth.address];
 				content.installed = true;
+				content.git = address;
 				return this.setContent(content);
 			})
 			.then(() => {
+				return Git.init("merged-GitCenter/" + this.address + "/" + address + (address.endsWith(".git") ? "" : ".git"), this.zeroPage);
+			})
+			.then(git => {
+				this.git = git;
 				return this.signContent("site");
 			});
 	}

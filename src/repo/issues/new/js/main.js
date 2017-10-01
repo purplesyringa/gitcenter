@@ -12,7 +12,7 @@ repo.addMerger()
 		}
 
 		showTitle(content.title);
-		showHeader(2);
+		showHeader(2, content.git);
 		showTabs(2);
 
 		document.getElementById("submit").onclick = () => {

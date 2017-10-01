@@ -52,7 +52,7 @@ repo.addMerger()
 		}
 
 		showTitle(content.title);
-		showHeader(2);
+		showHeader(2, content.git);
 		showTabs(2);
 
 		return repo.getIssue(id, jsonId);

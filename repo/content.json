@@ -8,10 +8,6 @@
  "description": "Default Git Center Repo",
  "favicon": "img/logo-red.svg",
  "files": {
-  "content.json-default": {
-   "sha512": "079103ca57004699f00cf57cdc949b1ee9e298bdeaddda6745032bcf9af332e3",
-   "size": 6565
-  },
   "data-default/users/content.json-default": {
    "sha512": "091029acc8d6ba0f1c8c19dbb0df97ec810b454d690668bbb844c334fae396c4",
    "size": 541
@@ -27,92 +23,16 @@
   "js/ZeroFrame.js": {
    "sha512": "672291eadcac614188b41e2df665cacf0c3b1b1d775cbf8291abab2d9e669f9d",
    "size": 2502
-  },
-  "repo.git-default/HEAD": {
-   "sha512": "76b199f1bffdc6d21547895431b0f85f3857df400225cbd1ae55e7ded09786a8",
-   "size": 23
-  },
-  "repo.git-default/config": {
-   "sha512": "6b53072edfe2b5837f91eec3f8dbc5a08f41719986c12876a23eb7ec20b6674a",
-   "size": 151
-  },
-  "repo.git-default/description": {
-   "sha512": "f7e152f75b124c3e1c5d12f00427729d9eec4e2c1bf70d7606440a6600d00336",
-   "size": 73
-  },
-  "repo.git-default/hooks/applypatch-msg.sample": {
-   "sha512": "536cce804d84e25813993efdd240537b52d00ce9cdcecf1982f85096d56a5212",
-   "size": 478
-  },
-  "repo.git-default/hooks/commit-msg.sample": {
-   "sha512": "d6bb7fa747f4625adf1877f546565cbe812ca7dd4168f7e9068e6732555d8737",
-   "size": 896
-  },
-  "repo.git-default/hooks/post-receive": {
-   "sha512": "f75819ab8e020ae5ac0165bc19d07990362571e1c6da54438b08132a8c6c8f48",
-   "size": 2015
-  },
-  "repo.git-default/hooks/post-update.sample": {
-   "sha512": "473ad124642571656276bf83b9ff63ab1804d3c23a5bdae52391c6f70a894849",
-   "size": 189
-  },
-  "repo.git-default/hooks/pre-applypatch.sample": {
-   "sha512": "cb78aa7e9b9c146e5db65d86dd83f04e2b6942a06fab50c704a0fd900683f3b6",
-   "size": 424
-  },
-  "repo.git-default/hooks/pre-commit.sample": {
-   "sha512": "4a7ac2ed2ffe50d2a997c3477b5855c3d19423c295a82f7d660be3418217a183",
-   "size": 1642
-  },
-  "repo.git-default/hooks/pre-push.sample": {
-   "sha512": "37cd20a090494acb16c2255fe93dadeb409f2553afddc409dad5b5e99c9f5612",
-   "size": 1348
-  },
-  "repo.git-default/hooks/pre-rebase.sample": {
-   "sha512": "de9bdf513f383b3215e467c025ca851a0f2661b91811bfd441486b678e4d45e4",
-   "size": 4951
-  },
-  "repo.git-default/hooks/pre-receive": {
-   "sha512": "7e4bc3042655351c9a097d41a6bd68d306ac39786d2b631173e4f067c11f366f",
-   "size": 865
-  },
-  "repo.git-default/hooks/pre-receive.sample": {
-   "sha512": "ee08c11fab7e896b2e09c241954ba7640338b12c75cd8040daf053c31b2f2223",
-   "size": 544
-  },
-  "repo.git-default/hooks/prepare-commit-msg.sample": {
-   "sha512": "fbf15f12136a413dd590e57392e6122714d67456beed50d9ef285e40076a138a",
-   "size": 1239
-  },
-  "repo.git-default/hooks/update.sample": {
-   "sha512": "759abd33e5d1dda9b3e3d3116c47b23f616320d70cd66d567b1c4eeefeb6d785",
-   "size": 3610
-  },
-  "repo.git-default/info/exclude": {
-   "sha512": "9828c6ecdf91bf117416e17f4ee9caee2e1e37b6fb00b9ff04035ace17a3089b",
-   "size": 240
-  },
-  "repo.git-default/objects/4b/825dc642cb6eb9a060e54bf8d69288fbee4904": {
-   "sha512": "20f2df3641c9830fce6af6af53f9f0ef89a59c3eb224feda882f1aa0aa79c852",
-   "size": 15
-  },
-  "repo.git-default/objects/96/b2b8eb0cc004663a987424c32630ca27b94857": {
-   "sha512": "a12982f1b9f0b8c089cfc8680e4d28b55da37909e6ded3b2f0c3d2579b3b145b",
-   "size": 126
-  },
-  "repo.git-default/refs/heads/master": {
-   "sha512": "f90da8aba34ef5b244b5432feae0adde74e9a771c9cfbc8cc890e0681adb7fa8",
-   "size": 42
   }
  },
  "ignore": "",
  "inner_path": "content.json",
  "merged_type": "GitCenter",
- "modified": 1506454966,
+ "modified": 1506873683,
  "postmessage_nonce_security": true,
  "signers_sign": "HIbkXHjK35NbjH6FiPXQ6yWz6FagbYVIRVKKA+XdtHUwbgSErgTMH5KoEiJSm3UbygccjfySXI/qIH6C4I+xLAc=",
  "signs": {
-  "1RepoXU8bQE9m7ssNwL4nnxBnZVejHCc6": "GypVMEP8gL5H4nyYJocLpLI8v0OZ/35onJeHlhKSnqyDT8GM7Ib+i7QBocST1YqH2joRyAUMHEdw/2bl/TqxP8s="
+  "1RepoXU8bQE9m7ssNwL4nnxBnZVejHCc6": "HB2KACIS6D7DqE6yEa6CyrdX31sJHbhnX/BEyVAjdRSkJOv3s2KGrxjC9X0xse158wu6DzyXwoCkzh2F5mr1MZU="
  },
  "signs_required": 1,
  "title": "Default Git Center Repo",
