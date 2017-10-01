@@ -42,7 +42,7 @@ function showTitle(title) {
 			}
 		});
 }
-function showHeader(level) {
+function showHeader(level, gitAddress) {
 	document.getElementById("fork").onclick = () => {
 		repo.fork();
 	};
@@ -68,7 +68,7 @@ function showHeader(level) {
 			}
 		});
 
-	document.getElementById("git_url").value = "git clone $path_to_zeronet/data/" + address + "/repo.git";
+	document.getElementById("git_url").value = "git clone $path_to_zeronet/data/" + address + "/" + gitAddress;
 }
 
 function showBranches() {
