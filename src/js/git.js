@@ -890,3 +890,42 @@ class Git {
 		return "<Git " + this.root + ">";
 	}
 };
+
+Git.init = (root, zeroPage) => {
+	let zeroFS = new ZeroFS(zeroPage);
+
+	let git;
+
+	return zeroFS.writeFile(root + "/HEAD", "ref: refs/heads/master")
+		.then(() => {
+			return zeroFS.writeFile(root + "/description", "Git Center repository");
+		})
+		.then(() => {
+			return zeroFS.writeFile(root + "/config", "[core]\n\trepositoryformatversion = 0\n\tfilemode = false\n\tbare = true\n\tsymlinks = false\n\tignorecase = true\n[receive]\n\tadvertisePushOptions = true\n");
+		})
+		.then(() => {
+			git = new Git(root, zeroPage);
+
+			let date = new Date;
+			let tz = date.getTimezoneOffset() * -1;
+			let hours = Math.floor(Math.abs(tz / 60));
+			let minutes = Math.abs((tz + 60) % 60);
+			tz = (tz > 0 ? "+" : "-") + (hours < 10 ? "0" : "") + hours + (minutes < 10 ? "0" : "") + minutes;
+
+			let author = "Git Center <gitcenter@zeroid.bit> " + Math.floor(+date / 1000) + " " + tz;
+
+			return git.writeCommit({
+				tree: [],
+				parents: [],
+				author: author,
+				committer: author,
+				message: "Initial commit"
+			});
+		})
+		.then(id => {
+			return git.setRef("refs/heads/master", id);
+		})
+		.then(() => {
+			return git;
+		});
+};
