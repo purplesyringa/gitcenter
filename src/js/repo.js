@@ -5,8 +5,6 @@ class Repository {
 		this.zeroFS = new ZeroFS(zeroPage);
 		this.zeroAuth = new ZeroAuth(zeroPage);
 		this.zeroDB = new ZeroDB(zeroPage);
-
-		this.git = new Git("merged-GitCenter/" + address + "/repo.git", zeroPage);
 	}
 
 	// Permission actions
@@ -37,6 +35,16 @@ class Repository {
 			.then(() => {
 				if(!list["1iNDExENNBsfHc6SKmy1HaeasHhm3RPcL"]) {
 					return this.zeroPage.cmd("mergerSiteAdd", ["1iNDExENNBsfHc6SKmy1HaeasHhm3RPcL"]);
+				}
+			})
+			.then(() => {
+				return this.getContent();
+			})
+			.then(content => {
+				if(content.git) {
+					this.git = new Git("merged-GitCenter/" + this.address + "/" + content.git, zeroPage);
+				} else {
+					this.git = null;
 				}
 			});
 	}
