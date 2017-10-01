@@ -33,10 +33,10 @@ zeroPage.getSiteInfo()
 		document.getElementById("profile").style.display = "block";
 
 		let commitEmail = document.getElementById("commit_email");
-		commitEmail.value = profile.commit_email || auth.user;
+		commitEmail.value = profile.commitEmail || auth.user;
 
 		let commitName = document.getElementById("commit_name");
-		commitName.value = profile.commit_name || auth.user[0].toUpperCase() + auth.user.substr(1).replace(/@.*/, "");
+		commitName.value = profile.commitName || auth.user[0].toUpperCase() + auth.user.substr(1).replace(/@.*/, "");
 
 		let saveButton = document.getElementById("save");
 		saveButton.onclick = () => {
@@ -47,8 +47,8 @@ zeroPage.getSiteInfo()
 			saveButton.classList.add("button-disabled");
 
 			saveProfile(auth.address, {
-				commit_email: commitEmail.value,
-				commit_name: commitName.value
+				commitEmail: commitEmail.value,
+				commitName: commitName.value
 			})
 				.then(() => {
 					saveButton.classList.remove("button-disabled");
