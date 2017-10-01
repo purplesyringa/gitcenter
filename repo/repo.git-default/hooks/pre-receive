@@ -17,6 +17,13 @@ fi
 
 ################################################################################
 
+zeronet_home=`git config --get zeronet.home`
+if [ -z "$zeronet_home" ]; then
+	exit 0
+fi
+
+################################################################################
+
 python_path=`command -v python`
 if [ -z "$python_path" ]; then
 	python_path=`command -v python2`
