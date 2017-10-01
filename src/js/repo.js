@@ -119,7 +119,7 @@ class Repository {
 			})
 			.then(() => this.sign());
 	}
-	install() {
+	install(title, description, address) {
 		let content;
 		return this.getContent()
 			.then(c => {
@@ -128,11 +128,18 @@ class Repository {
 				return this.zeroAuth.requestAuth();
 			})
 			.then(auth => {
+				content.title = title;
+				content.description = description;
 				content.signers = [auth.address];
 				content.installed = true;
+				content.git = address;
 				return this.setContent(content);
 			})
 			.then(() => {
+				return Git.init("merged-GitCenter/" + this.address + "/" + address + (address.endsWith(".git") ? "" : ".git"), this.zeroPage);
+			})
+			.then(git => {
+				this.git = git;
 				return this.signContent("site");
 			});
 	}
