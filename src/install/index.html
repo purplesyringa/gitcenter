@@ -11,6 +11,7 @@
 		<link rel="stylesheet" type="text/css" href="../css/buttons.css">
 		<link rel="stylesheet" type="text/css" href="../css/header.css">
 		<link rel="stylesheet" type="text/css" href="../css/content.css">
+		<link rel="stylesheet" type="text/css" href="../repo/settings/css/settings.css">
 	</head>
 	<body>
 		<header class="header">
@@ -24,12 +25,47 @@
 			<a href="../myrepos/">
 				<div class="header-item">My Repos</div>
 			</a>
+			<a href="../workflow/">
+				<div class="header-item">Git Center workflow</div>
+			</a>
+			<a href="../support/">
+				<div class="header-item">Support</div>
+			</a>
 		</header>
 		<main class="content">
 			<h1>Install a repository</h1>
-			<p>
-				Each repository has to be installed before usage. Setting up a new repo...
-			</p>
+		</main>
+
+		<div class="entry">
+			<div class="entry-title">
+				Title
+			</div>
+			<div class="entry-value">
+				<input type="text" class="input" id="title" placeholder="New repository">
+			</div>
+		</div>
+
+		<div class="entry">
+			<div class="entry-title">
+				Description
+				<img src="../img/info.svg" height="16" title="This description is used for indexation. Many people can index a repo, so description should never change">
+			</div>
+			<div class="entry-value">
+				<input type="text" class="input" id="description" placeholder="My cool repo!">
+			</div>
+		</div>
+
+		<div class="entry">
+			<div class="entry-title">
+				.git address
+			</div>
+			<div class="entry-value">
+				<input type="text" class="input" id="address" placeholder="myproject.git">
+			</div>
+		</div>
+
+		<main class="content">
+			<a class="button button-blue" id="install">Install</a>
 		</main>
 
 		<script type="text/javascript" src="../js/ZeroFrame.js"></script>
