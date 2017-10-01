@@ -60,7 +60,7 @@ class Repository {
 	signContent(signStyle) {
 		return this.zeroPage.cmd("sitePublish", {inner_path: "merged-GitCenter/" + this.address + "/content.json", privatekey: signStyle == "site" ? "stored" : null})
 			.then(res => {
-				if(res != "ok" && res.error != "Port not opened.") {
+				if(res != "ok" && res.error != "Port not opened." && res.error != "Content publish failed.") {
 					return Promise.reject(res);
 				}
 			});
