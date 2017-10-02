@@ -1,0 +1,46 @@
+#!/bin/bash
+python_path=`command -v python`
+if [ -z "$python_path" ]; then
+	python_path=`command -v python2`
+fi
+
+if [ -z "$python_path" ]; then
+	exit 0
+fi
+
+################################################################################
+
+cat "$GIT_DIR/../content.json" | "$python_path" -c "import sys, json; content = json.load(sys.stdin); sys.exit(1 if content['hooks'] else 0)"
+if [ $? -eq 0 ]; then
+	# Hooks disabled
+	exit 0
+fi
+
+if test -n "$GIT_PUSH_OPTION_COUNT"
+then
+	i=0
+	while test "$i" -lt "$GIT_PUSH_OPTION_COUNT"
+	do
+		eval "value=\$GIT_PUSH_OPTION_$i"
+		case "$value" in
+		no-fetch)
+			echo "no-fetch cancels fetching, returning."
+			exit 0
+			;;
+		esac
+		i=$((i + 1))
+	done
+fi
+
+################################################################################
+
+"$python_path" -c "import socket; s = socket.socket(); s.settimeout(2); s.connect(('127.0.0.1', 43110)); s.close()" >/dev/null 2>&1
+if [ $? -eq 0 ]; then
+	echo "ZeroNet already running, skipping fetching."
+	exit 0
+fi
+
+echo "Fetching ZeroNet..."
+"$python_path" "$zeronet_home/zeronet.py" siteDownload "$site" >/dev/null 2>&1
+
+exit 0

@@ -87,7 +87,15 @@
 				</li>
 				<li>
 					<code>git push</code><br>
-					Pushing is not so hard, too. Git Center adds some hooks which sign (disabled by <code>git push -o no-sign</code> which implies <code>no-publish</code>) and publish (disabled by <code>git push -o no-publish</code>) changes after pushing. These hooks also download the newest version from ZeroNet to prevent overwriting work (disabled by <code>git push -o no-fetch</code>). Join these <code>-o</code> options like <code>git push -o no-sign -o no-fetch</code> (multiple <code>-o</code>).
+					Git Center offers two ways of pushing. First, you can run <code>git push</code> and then press <a class="button button-blue">Sign &amp; Publish changes</a> on repository home page.<br>
+					<br>
+					Secondly, you can skip manually pressing button with hooks. If you enable hooks on repository <b>Settings</b> tab, Git Center will fetch repository for changes and sign &amp; publish repository for you.
+					<ol>
+						<li>Your user must have read/write permissions to access ZeroNet directory.</li>
+						<li><code>zeronet.home</code> git variable must be set to absolute path.</li>
+						<li>You must have python installed and available in PATH.</li>
+					</ol>
+					You can disable signing and publishing via <code>git push -o nosign</code>, publishing via <code>git push -o no-publish</code> and fetching via <code>git push -o no-fetch</code>.
 				</li>
 			</ul>
 			<p>

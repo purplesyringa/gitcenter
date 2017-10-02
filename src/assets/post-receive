@@ -1,0 +1,84 @@
+#!/bin/bash
+python_path=`command -v python`
+if [ -z "$python_path" ]; then
+	python_path=`command -v python2`
+fi
+
+if [ -z "$python_path" ]; then
+	echo "Python not installed. If you want to automatically sign and publish after pushing, please install it."
+	exit 0
+fi
+
+################################################################################
+
+cat "$GIT_DIR/../content.json" | "$python_path" -c "import sys, json; content = json.load(sys.stdin); sys.exit(1 if content['hooks'] else 0)"
+if [ $? -eq 0 ]; then
+	# Hooks disabled
+	exit 0
+fi
+
+################################################################################
+
+sign=1
+publish=1
+
+if test -n "$GIT_PUSH_OPTION_COUNT"
+then
+	i=0
+	while test "$i" -lt "$GIT_PUSH_OPTION_COUNT"
+	do
+		eval "value=\$GIT_PUSH_OPTION_$i"
+		case "$value" in
+		no-sign)
+			sign=0
+			;;
+		no-publish)
+			publish=0
+			;;
+		esac
+		i=$((i + 1))
+	done
+fi
+
+if [ $sign -eq 0 ]; then
+	echo "no-sign rejects signing, rejecting."
+	exit 0
+fi
+
+################################################################################
+
+zeronet_home=`git config --get zeronet.home`
+if [ -z "$zeronet_home" ]; then
+	echo "zeronet.home not set, rejecting to sign."
+	echo "Run 'git config --global zeronet.home path_to_zeronet'"
+	exit 0
+fi
+
+site=`basename $(realpath "$GIT_DIR/..")`
+
+echo "Retrieving data directory..."
+data_dir=`"$python_path" "$zeronet_home/zeronet.py" --silent getConfig | "$python_path" -c "import sys, json; config = json.load(sys.stdin); print config['data_dir']"`
+
+privatekey=`cat "$data_dir/users.json" | "$python_path" -c "import sys, json; users = json.load(sys.stdin); print users[users.keys()[0]]['certs']['zeroid.bit']['auth_privatekey']"`
+if [ $? -ne 0 ]; then
+	echo "Failed to get signing key, rejecting to sign."
+	exit 0
+fi
+
+echo "Signing..."
+"$python_path" "$zeronet_home/zeronet.py" siteSign "$site" "$privatekey" 2>&1 | grep "Private key invalid" >/dev/null 2>&1
+if [ $? -eq 0 ]; then
+	echo "Failed to sign, invalid private key. Probably you are not a maintainer."
+	exit 0
+fi
+
+if [ $publish -eq 0 ]; then
+	echo "no-publish rejects publishing, rejecting."
+	echo "Signed successfully"
+	exit 0
+fi
+
+echo "Publishing..."
+"$python_path" "$zeronet_home/zeronet.py" sitePublish "$site" >/dev/null 2>&1
+
+echo "Signed & published successfully"

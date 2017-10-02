@@ -926,6 +926,16 @@ Git.init = (root, zeroPage, name, email) => {
 			return git.setRef("refs/heads/master", id);
 		})
 		.then(() => {
-			return git;
-		});
+			return zeroFS.readFile("assets/post-receive");
+		})
+		.then(postReceive => {
+			return zeroFS.writeFile(root + "/hooks/post-receive", postReceive);
+		})
+		.then(() => {
+			return zeroFS.readFile("assets/pre-receive");
+		})
+		.then(preReceive => {
+			return zeroFS.writeFile(root + "/hooks/pre-receive", preReceive);
+		})
+		.then(() => git);
 };

@@ -42,7 +42,7 @@
 			<div id="middle_buttons" class="middle-buttons">
 				<input type="text" class="middle-button-margin input" id="git_url">
 				<a class="middle-button-margin button" id="fork">Fork</a>
-				<a class="middle-button-margin button button-blue publish" id="publish" title="Use this option after pushing if you disabled automatical publishing via no-sign or no-publish keys">Sign &amp; Publish changes</a>
+				<a class="middle-button-margin button button-blue publish" id="publish" title="Use this option after pushing if you didn't enable hooks">Sign &amp; Publish changes</a>
 			</div>
 
 			<a id="code_link" class="tab">
@@ -108,6 +108,21 @@
 
 				<a class="button button-blue" id="maintainers_add">Add</a>
 				<a class="button entry-value-margin" id="maintainers_restore" title="This option can be used if you have accidentally removed yourself from maintainers list. Restoring access is possible if you have private key of your repository.">Restore access</a>
+			</div>
+		</div>
+
+		<div class="entry">
+			<div class="entry-title">
+				Hooks
+				<img src="../../img/info.svg" height="16" title="Automatically fetch ZeroNet before pushing and sign changes after pushing via hooks">
+			</div>
+			<div class="entry-value">
+				<select class="select" id="hooks_select">
+					<option value="enabled">Enabled</option>
+					<option value="disabled">Disabled</option>
+				</select>
+
+				<a class="button entry-value-margin" id="hooks_save">Save</a>
 			</div>
 		</div>
 

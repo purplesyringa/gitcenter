@@ -119,6 +119,14 @@ class Repository {
 			})
 			.then(() => this.sign());
 	}
+	changeHooks(hooks) {
+		return this.getContent()
+			.then(content => {
+				content.hooks = hooks;
+				return this.setContent(content);
+			})
+			.then(() => this.sign());
+	}
 	install(title, description, address) {
 		let auth, content;
 		return this.getContent()
@@ -135,6 +143,7 @@ class Repository {
 				content.signers = [auth.address];
 				content.installed = true;
 				content.git = address;
+				content.hooks = false;
 				return this.setContent(content);
 			})
 			.then(() => {
