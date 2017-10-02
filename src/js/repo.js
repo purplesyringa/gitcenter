@@ -120,14 +120,16 @@ class Repository {
 			.then(() => this.sign());
 	}
 	install(title, description, address) {
-		let content;
+		let auth, content;
 		return this.getContent()
 			.then(c => {
 				content = c;
 
 				return this.zeroAuth.requestAuth();
 			})
-			.then(auth => {
+			.then(a => {
+				auth = a;
+
 				content.title = title;
 				content.description = description;
 				content.signers = [auth.address];
@@ -136,7 +138,15 @@ class Repository {
 				return this.setContent(content);
 			})
 			.then(() => {
-				return Git.init("merged-GitCenter/" + this.address + "/" + address + (address.endsWith(".git") ? "" : ".git"), this.zeroPage);
+				return this.zeroFS.readFile("data/users/" + auth.address + "/data.json");
+			})
+			.then(profile => {
+				profile = JSON.parse(profile);
+
+				profile.commitName = profile.commitName || auth.user[0].toUpperCase() + auth.user.substr(1).replace(/@.*/, "");
+				profile.commitEmail = profile.commitEmail || auth.user;
+
+				return Git.init("merged-GitCenter/" + this.address + "/" + address + (address.endsWith(".git") ? "" : ".git"), this.zeroPage, profile.commitName, profile.commitEmail);
 			})
 			.then(git => {
 				this.git = git;
@@ -205,17 +215,24 @@ class Repository {
 			});
 	}
 	saveFile(path, content, base, message) {
-		let author, commit, parent;
+		let auth, author, commit, parent;
 		return this.zeroAuth.requestAuth()
-			.then(auth => {
+			.then(a => {
+				auth = a;
+
+				return this.zeroFS.readFile("data/users/" + auth.address + "/data.json");
+			})
+			.then(profile => {
+				profile = JSON.parse(profile);
+
 				let date = new Date;
 				let tz = date.getTimezoneOffset() * -1;
 				let hours = Math.floor(Math.abs(tz / 60));
 				let minutes = Math.abs((tz + 60) % 60);
 				tz = (tz > 0 ? "+" : "-") + (hours < 10 ? "0" : "") + hours + (minutes < 10 ? "0" : "") + minutes;
 
-				author = auth.user[0].toUpperCase() + auth.user.substr(1).replace(/@.*/, "");
-				author += " <" + auth.user + ">";
+				author = profile.commitName || auth.user[0].toUpperCase() + auth.user.substr(1).replace(/@.*/, "");
+				author += " <" + (profile.commitEmail || auth.user) + ">";
 				author += " " + Math.floor(+date / 1000);
 				author += " " + tz;
 

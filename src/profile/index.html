@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>Repository Index - Git Center</title>
+		<title>Install a repository - Git Center</title>
 		<meta charset="utf-8">
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<base href="" target="_top" id="base">
@@ -11,7 +11,8 @@
 		<link rel="stylesheet" type="text/css" href="../css/buttons.css">
 		<link rel="stylesheet" type="text/css" href="../css/header.css">
 		<link rel="stylesheet" type="text/css" href="../css/content.css">
-		<link rel="stylesheet" type="text/css" href="css/repo.css">
+		<link rel="stylesheet" type="text/css" href="../repo/settings/css/settings.css">
+		<link rel="stylesheet" type="text/css" href="css/profile.css">
 	</head>
 	<body>
 		<header class="header">
@@ -19,8 +20,8 @@
 				<img src="../img/logo-white.svg" class="header-logo">
 				<div class="header-name">Git Center</div>
 			</a>
-			<a href=".">
-				<div class="header-item header-item-active">Repository Index</div>
+			<a href="../index/">
+				<div class="header-item">Repository Index</div>
 			</a>
 			<a href="../myrepos/">
 				<div class="header-item">My Repos</div>
@@ -32,19 +33,42 @@
 				<div class="header-item">Support</div>
 			</a>
 			<a href="../profile/">
-				<div class="header-item">Profile</div>
+				<div class="header-item header-item-active">Profile</div>
 			</a>
 		</header>
-
 		<main class="content">
-			<h1>Repository Index <a id="add_repo" class="button button-blue">Add a repo</a></h1>
-
-			<div id="repos"></div>
+			<h1>Profile</h1>
 		</main>
+
+		<div id="profile" class="profile">
+			<div class="entry">
+				<div class="entry-title">
+					Commit email
+					<img src="../img/info.svg" height="16" title="This email is used when committing files via Git Center">
+				</div>
+				<div class="entry-value">
+					<input type="text" class="input" id="commit_email" placeholder="me@zeroid.bit">
+				</div>
+			</div>
+
+			<div class="entry">
+				<div class="entry-title">
+					Commit name
+				</div>
+				<div class="entry-value">
+					<input type="text" class="input" id="commit_name" placeholder="Me the Developer">
+				</div>
+			</div>
+
+			<main class="content">
+				<a class="button button-blue" id="save">Save</a>
+			</main>
+		</div>
 
 		<script type="text/javascript" src="../js/ZeroFrame.js"></script>
 		<script type="text/javascript" src="../js/ZeroPage.js"></script>
 		<script type="text/javascript" src="../js/ZeroFS.js"></script>
+		<script type="text/javascript" src="../js/ZeroAuth.js"></script>
 		<script type="text/javascript" src="../js/ZeroDB.js"></script>
 		<script type="text/javascript" src="js/main.js"></script>
 	</body>

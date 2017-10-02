@@ -891,7 +891,7 @@ class Git {
 	}
 };
 
-Git.init = (root, zeroPage) => {
+Git.init = (root, zeroPage, name, email) => {
 	let zeroFS = new ZeroFS(zeroPage);
 
 	let git;
@@ -912,7 +912,7 @@ Git.init = (root, zeroPage) => {
 			let minutes = Math.abs((tz + 60) % 60);
 			tz = (tz > 0 ? "+" : "-") + (hours < 10 ? "0" : "") + hours + (minutes < 10 ? "0" : "") + minutes;
 
-			let author = "Git Center <gitcenter@zeroid.bit> " + Math.floor(+date / 1000) + " " + tz;
+			let author = name + " <" + email + "> " + Math.floor(+date / 1000) + " " + tz;
 
 			return git.writeCommit({
 				tree: [],
