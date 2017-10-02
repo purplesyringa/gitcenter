@@ -1,4 +1,24 @@
 #!/bin/bash
+python_path=`command -v python`
+if [ -z "$python_path" ]; then
+	python_path=`command -v python2`
+fi
+
+if [ -z "$python_path" ]; then
+	echo "Python not installed. If you want to automatically sign and publish after pushing, please install it."
+	exit 0
+fi
+
+################################################################################
+
+cat "$GIT_DIR/../content.json" | "$python_path" -c "import sys, json; content = json.load(sys.stdin); sys.exit(1 if content['hooks'] else 0)"
+if [ $? -eq 0 ]; then
+	# Hooks disabled
+	exit 0
+fi
+
+################################################################################
+
 sign=1
 publish=1
 
@@ -35,18 +55,6 @@ if [ -z "$zeronet_home" ]; then
 fi
 
 site=`basename $(realpath "$GIT_DIR/..")`
-
-python_path=`command -v python`
-if [ -z "$python_path" ]; then
-	python_path=`command -v python2`
-fi
-
-if [ -z "$python_path" ]; then
-	echo "Python not installed, rejecting to sign."
-	exit 0
-fi
-
-################################################################################
 
 echo "Retrieving data directory..."
 data_dir=`"$python_path" "$zeronet_home/zeronet.py" --silent getConfig | "$python_path" -c "import sys, json; config = json.load(sys.stdin); print config['data_dir']"`
