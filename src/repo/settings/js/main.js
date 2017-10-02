@@ -24,6 +24,26 @@ repo.addMerger()
 		showHeader(1, content.git);
 		showTabs(1);
 
+		// Hooks
+		let hooksSelect = document.getElementById("hooks_select");
+		hooksSelect.value = content.hooks ? "enabled" : "disabled";
+
+		let hooksSave = document.getElementById("hooks_save");
+		hooksSave.onclick = () => {
+			if(hooksSave.classList.contains("button-disabled")) {
+				return;
+			}
+			hooksSave.classList.add("button-disabled");
+
+			repo.changeHooks(hooksSelect.value == "enabled")
+				.then(() => {
+					hooksSave.classList.remove("button-disabled");
+				}, e => {
+					zeroPage.error(e);
+					hooksSave.classList.remove("button-disabled");
+				});
+		};
+
 		// Description
 		let input = document.getElementById("description");
 		let button = document.getElementById("description_save");
