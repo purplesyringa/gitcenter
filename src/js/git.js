@@ -135,7 +135,8 @@ class Git {
 			.then(object => {
 				return {
 					type: this.arrayToString(object.slice(0, object.indexOf(" ".charCodeAt(0)))),
-					content: object.slice(object.indexOf(0) + 1)
+					content: object.slice(object.indexOf(0) + 1),
+					id: id
 				};
 			});
 	}
@@ -211,7 +212,11 @@ class Git {
 			return Promise.reject("Unknown packed object " + object);
 		}
 
-		return this.readPackedObjectAt(packed);
+		return this.readPackedObjectAt(packed)
+			.then(result => {
+				result.id = object;
+				return result;
+			});
 	}
 	readPackedObjectAt(packed) {
 		return this.readFile(packed.pack)
@@ -317,6 +322,82 @@ class Git {
 							};
 						});
 				}
+			});
+	}
+
+	toBidirectional(leaves, depth) {
+		let cache = {};
+		let read = id => {
+			if(cache[id]) {
+				return cache[id];
+			}
+
+			return cache[id] = this.readUnknownObject(id);
+		};
+
+		let roots = [];
+
+		let handled = {};
+		let toAncestors = (leaf, depth) => {
+			if(handled[leaf]) {
+				return;
+			}
+
+			handled[leaf] = true;
+
+			let leafObject;
+			return read(leaf)
+				.then(l => {
+					leafObject = l;
+
+					if(depth <= 0) {
+						leafObject.content.parents = [];
+						if(roots.indexOf(leafObject) == -1) {
+							roots.push(leafObject);
+						}
+						return;
+					}
+
+					if(!leafObject.content.ancestors) {
+						leafObject.content.ancestors = [];
+					}
+
+					if(leafObject.content.parents.length == 0) {
+						if(roots.indexOf(leafObject) == -1) {
+							roots.push(leafObject);
+						}
+					}
+
+					return Promise.all(
+						leafObject.content.parents.map((parent, i) => {
+							return read(parent)
+								.then(parentObject => {
+									if(!parentObject.content.ancestors) {
+										parentObject.content.ancestors = [];
+									}
+
+									if(parentObject.content.ancestors.indexOf(leafObject) > -1) {
+										return;
+									}
+
+									parentObject.content.ancestors.push(leafObject);
+
+									leafObject.content.parents[i] = parentObject;
+
+									return toAncestors(parent, depth - 1);
+								});
+						})
+					);
+				})
+				.then(() => leafObject);
+		};
+
+		return Promise.all(leaves.map(leaf => toAncestors(leaf, depth)))
+			.then(leaves => {
+				return {
+					leaves: leaves,
+					roots: roots
+				};
 			});
 	}
 
