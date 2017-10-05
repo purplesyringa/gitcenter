@@ -16,6 +16,12 @@ function showTabs(level) {
 		"?" + address
 	);
 
+	document.getElementById("network_link").href = (
+		"../".repeat(level) +
+		"network/" +
+		"?" + address
+	);
+
 	document.getElementById("settings_link").href = (
 		"../".repeat(level) +
 		"settings/" +
