@@ -67,18 +67,10 @@ repo.addMerger()
 		});
 		*/
 
-		return repo.getCommits(branch, 100);
+		return repo.getCommits(branch, 10);
 	})
 	.then(commits => {
 		commits.forEach(commit => {
-			if(commit.content.parents.length > 1) {
-				let note = document.createElement("div");
-				note.className = "note";
-				note.innerHTML = "Commits " + commit.content.parents.map(commit => commit.id).join(", ") + " were merged into " + commit.id;
-				document.getElementById("commits").appendChild(note);
-			}
-
-
 			let node = document.createElement("div");
 			node.className = "commit";
 
@@ -101,6 +93,12 @@ repo.addMerger()
 
 			document.getElementById("commits").appendChild(node);
 
+			if(commit.content.parents.length > 1) {
+				let note = document.createElement("div");
+				note.className = "note";
+				note.innerHTML = "Commits " + commit.content.parents.map(commit => commit.id).join(", ") + " were merged into " + commit.id;
+				document.getElementById("commits").appendChild(note);
+			}
 
 			if(commit.content.delivered) {
 				let note = document.createElement("div");

@@ -16,9 +16,9 @@ function showTabs(level) {
 		"?" + address
 	);
 
-	document.getElementById("network_link").href = (
+	document.getElementById("log_link").href = (
 		"../".repeat(level) +
-		"network/" +
+		"log/" +
 		"?" + address
 	);
 
