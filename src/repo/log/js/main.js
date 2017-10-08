@@ -70,6 +70,8 @@ repo.addMerger()
 		return repo.getCommits(branch, 10);
 	})
 	.then(commits => {
+		document.getElementById("commits").innerHTML = "";
+
 		commits.forEach(commit => {
 			let node = document.createElement("div");
 			node.className = "commit";
