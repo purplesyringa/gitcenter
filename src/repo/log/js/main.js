@@ -2,7 +2,7 @@ if(address == "1RepoXU8bQE9m7ssNwL4nnxBnZVejHCc6") {
 	location.href = "../../default/";
 }
 
-branch = additional;
+count = isNaN(parseInt(path)) ? 10 : parseInt(path);
 
 let content;
 repo.addMerger()
@@ -67,7 +67,12 @@ repo.addMerger()
 		});
 		*/
 
-		return repo.getCommits(branch, 10);
+		document.getElementById("commit_count").value = count;
+		document.getElementById("commit_load").onclick = () => {
+			location.href = "?" + address + "/" + document.getElementById("commit_count").value + "@" + branch.replace(/@/g, "@@");
+		};
+
+		return repo.getCommits(branch, count);
 	})
 	.then(commits => {
 		document.getElementById("commits").innerHTML = "";
