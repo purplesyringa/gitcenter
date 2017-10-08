@@ -97,7 +97,7 @@ function showBranches(noPath) {
 			branches.value = branch;
 
 			branches.onchange = () => {
-				location.href = "?" + address + "/" + (noPath ? path.replace(/@/g, "@@") + "@" + branches.value.replace(/@/g, "@@") : branches.value);
+				location.href = "?" + address + "/" + (noPath ? branches.value : path.replace(/@/g, "@@") + "@" + branches.value.replace(/@/g, "@@"));
 			};
 		});
 }
