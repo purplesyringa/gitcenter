@@ -16,6 +16,12 @@ function showTabs(level) {
 		"?" + address
 	);
 
+	document.getElementById("log_link").href = (
+		"../".repeat(level) +
+		"log/" +
+		"?" + address
+	);
+
 	document.getElementById("settings_link").href = (
 		"../".repeat(level) +
 		"settings/" +
@@ -71,7 +77,7 @@ function showHeader(level, gitAddress) {
 	document.getElementById("git_url").value = "git clone $path_to_zeronet/data/" + address + "/" + gitAddress;
 }
 
-function showBranches() {
+function showBranches(noPath) {
 	return repo.getBranches()
 		.then(list => {
 			// Show branch list
@@ -91,7 +97,7 @@ function showBranches() {
 			branches.value = branch;
 
 			branches.onchange = () => {
-				location.href = "?" + address + "/" + path.replace(/@/g, "@@") + "@" + branches.value.replace(/@/g, "@@");
+				location.href = "?" + address + "/" + (noPath ? branches.value : path.replace(/@/g, "@@") + "@" + branches.value.replace(/@/g, "@@"));
 			};
 		});
 }

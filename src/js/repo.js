@@ -836,8 +836,67 @@ class Repository {
 		return (
 			date.getFullYear() + "-" +
 			(date.getMonth() >= 9 ? "" : "0") + (date.getMonth() + 1) + "-" +
-			date.getDate()
+			(date.getDate() >= 10 ? "" : "0") + date.getDate()
 		);
+	}
+	translateTime(date) {
+		date = new Date(date);
+
+		return (
+			date.getHours() + ":" +
+			(date.getMinutes() >= 10 ? "" : "0") + date.getMinutes() + ":" +
+			(date.getSeconds() >= 10 ? "" : "0") + date.getSeconds()
+		);
+	}
+
+	getCommits(leaf, count) {
+		let heads = [];
+		let commits = [];
+
+		return this.git.getBranchCommit(leaf)
+			.then(l => {
+				leaf = l;
+				return this.git.toBidirectional([leaf], count);
+			})
+			.then(bidirectional => {
+				let action = leaf => {
+					if(commits.length >= count) {
+						return;
+					}
+
+					commits.push(leaf);
+					for(let i = leaf.content.parents.length - 1; i >= 0; i--) {
+						let parent = leaf.content.parents[i];
+						if(parent.content.ancestors.indexOf(leaf) > 0) {
+							// Branch delivered
+							if(!leaf.content.delivered) {
+								leaf.content.delivered = [];
+							}
+
+							leaf.content.delivered.push(parent);
+							return;
+						}
+
+						action(parent);
+					}
+				};
+
+				return action(bidirectional.leaves[0]);
+			})
+			.then(() => commits);
+	}
+	parseAuthor(author) {
+		let name = author.substr(0, author.indexOf("<")).trim();
+		let email = author.substr(0, author.indexOf(">")).substr(author.indexOf("<") + 1);
+		let timestamp = author.substr(author.indexOf(">") + 1).trim().split(" ");
+		let tz = timestamp[1];
+		let offset = (new Date).getTimezoneOffset() * -1;
+
+		let utcDate = (parseInt(timestamp[0]) + (tz.substr(1, 2) * 3600 + tz.substr(3, 2) * 60) * (tz[0] == "+" ? 1 : -1)) * 1000;
+		let relativeDate = utcDate - offset * 60000;
+		let offsetString = offset == 0 ? "UTC" : "GMT " + (offset < 0 ? "-" : "+") + (Math.abs(offset) / 60) + ":" + (Math.abs(offset) % 60 >= 10 ? "" : "0") + (Math.abs(offset) % 60);
+
+		return name + " commited on " + this.translateDate(relativeDate) + " " + this.translateTime(relativeDate) + " " + offsetString;
 	}
 };
 
