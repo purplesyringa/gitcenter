@@ -39,14 +39,6 @@ function showTabs(level) {
 function showTitle(title) {
 	let name = document.getElementById("repo_name");
 	name.textContent = title;
-
-	zeroPage.isSignable("merged-GitCenter/" + address + "/content.json")
-		.then(signable => {
-			if(signable) {
-				name.innerHTML += document.getElementById("edit_icon_tmpl").innerHTML;
-				document.getElementById("edit_icon").onclick = renameRepo;
-			}
-		});
 }
 function showHeader(level, gitAddress) {
 	document.getElementById("fork").onclick = () => {
@@ -134,15 +126,4 @@ function showLinks() {
 				document.getElementById("permanent_link").href = "?" + address + "/" + path.replace(/@/g, "@@") + "@" + commit;
 			});
 	}
-}
-
-function renameRepo() {
-	let newName;
-	return zeroPage.prompt("New name:")
-		.then(n => {
-			newName = n;
-
-			return repo.rename(newName);
-		})
-		.then(() => showTitle(newName));
 }
