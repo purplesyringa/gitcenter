@@ -4,16 +4,14 @@
 }
 
 .entry-title {
-	display: inline-block;
-	width: 128px;
+	display: block;
 	vertical-align: middle;
 
 	font-size: 16px;
 }
 
 .entry-value {
-	display: inline-block;
-	width: calc(100% - 128px);
+	display: block;
 	vertical-align: middle;
 }
 .entry-value-margin {
