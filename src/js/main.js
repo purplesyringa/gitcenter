@@ -31,7 +31,6 @@ zeroPage.getSiteInfo()
 	.then(() => {
 		let button = document.getElementById("create_repository");
 		button.classList.remove("button-disabled");
-		button.classList.add("button-blue");
 		button.onclick = () => {
 			Repository.createRepo(zeroPage);
 		};
