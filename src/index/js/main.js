@@ -21,8 +21,4 @@ zeroDB.query("SELECT repo_index.*, json.cert_user_id FROM repo_index, json WHERE
 
 			document.getElementById("repos").appendChild(node);
 		});
-
-		document.getElementById("add_repo").onclick = () => {
-			zeroPage.alert("You can add a repo to index on repo's Settings tab");
-		};
 	});

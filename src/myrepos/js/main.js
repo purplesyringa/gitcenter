@@ -44,9 +44,4 @@ zeroPage.cmd("mergerSiteList")
 
 			document.getElementById("repos").appendChild(node);
 		});
-
-		document.getElementById("download_repo").onclick = () => {
-			let example = location.protocol + "//" + location.host + "/1RepoXU8bQE9m7ssNwL4nnxBnZVejHCc6/";
-			zeroPage.alert("You can download a new repo by simply visiting its address, like <b>" + example + "</b>");
-		};
 	});
