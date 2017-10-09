@@ -11,6 +11,13 @@ repo.addMerger()
 		let description = document.getElementById("description");
 		let gitAddress = document.getElementById("address");
 
+		title.oninput = () => {
+			gitAddress.value = title.value.replace(/[^a-zA-Z0-9]/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "");
+			if(gitAddress.value) {
+				gitAddress.value += ".git";
+			}
+		};
+
 		let installButton = document.getElementById("install");
 		installButton.onclick = () => {
 			if(installButton.classList.contains("button-disabled")) {
