@@ -23,6 +23,8 @@
 .button-disabled, .button-disabled:active {
 	cursor: not-allowed;
 	background-image: linear-gradient(to bottom, #888 0%, #666 100%);
+	color: #FFF;
+	text-shadow: none;
 }
 
 .button-blue {
@@ -71,4 +73,11 @@
 }
 .input-small {
 	width: 64px;
+}
+
+.input-disabled {
+	cursor: not-allowed;
+	background-image: linear-gradient(to bottom, #888 0%, #666 100%);
+	color: #FFF;
+	text-shadow: none;
 }
