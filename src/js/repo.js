@@ -753,7 +753,10 @@ class Repository {
 					data.repo_index = {};
 				}
 
-				data.repo_index[this.address] = content.description;
+				data.repo_index[this.address] = {
+					title: content.title,
+					description: content.description
+				};
 
 				data = JSON.stringify(data, null, "\t");
 
