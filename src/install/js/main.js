@@ -12,7 +12,7 @@ repo.addMerger()
 		let gitAddress = document.getElementById("address");
 
 		title.oninput = () => {
-			gitAddress.value = title.value.replace(/[^a-zA-Z0-9]/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "");
+			gitAddress.value = title.value.replace(/[^a-zA-Z0-9]/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "").toLowerCase();
 			if(gitAddress.value) {
 				gitAddress.value += ".git";
 			}
