@@ -30,7 +30,7 @@ repo.addMerger()
 	})
 	.then(commit => {
 		document.getElementById("commit_title").textContent = commit.content.message;
-		document.getElementById("commit_description").textContent = repo.parseAuthor(commit.content.committer);
+		document.getElementById("commit_description").appendChild(document.createTextNode(repo.parseAuthor(commit.content.committer)));
 
 		return repo.getFiles(head, path);
 	})
