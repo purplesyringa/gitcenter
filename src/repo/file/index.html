@@ -15,6 +15,7 @@
 		<link rel="stylesheet" type="text/css" href="../css/tabs.css">
 		<link rel="stylesheet" type="text/css" href="../css/info.css">
 		<link rel="stylesheet" type="text/css" href="css/file.css">
+		<link rel="stylesheet" type="text/css" href="../log/css/network.css">
 	</head>
 	<body>
 		<header class="header">
@@ -72,6 +73,13 @@
 			<select class="select branches" id="branches"></select>
 			<a class="info-link button" id="permanent_link" title="Link to current tree. Data won't change if branch moves">Permanent link</a>
 			<a class="info-link button" id="edit">Edit</a>
+		</div>
+
+		<div class="commits">
+			<div class="commit">
+				<div class="commit-title" id="commit_title"></div>
+				<div class="commit-description" id="commit_description"></div>
+			</div>
 		</div>
 
 		<table id="files" class="files">
