@@ -147,7 +147,7 @@ class Repository {
 				return this.setContent(content);
 			})
 			.then(() => {
-				return this.zeroFS.readFile("data/users/" + auth.address + "/data.json");
+				return this.zeroFS.readFile("data/users/" + auth.address + "/data.json").catch(() => "{}");
 			})
 			.then(profile => {
 				profile = JSON.parse(profile);
@@ -229,7 +229,7 @@ class Repository {
 			.then(a => {
 				auth = a;
 
-				return this.zeroFS.readFile("data/users/" + auth.address + "/data.json");
+				return this.zeroFS.readFile("data/users/" + auth.address + "/data.json").catch(() => "{}");
 			})
 			.then(profile => {
 				profile = JSON.parse(profile);
