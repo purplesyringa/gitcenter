@@ -2,6 +2,8 @@ if(address == "1RepoXU8bQE9m7ssNwL4nnxBnZVejHCc6") {
 	location.href = "../default/";
 }
 
+let head;
+
 repo.addMerger()
 	.then(() => {
 		return repo.getContent();
@@ -22,7 +24,14 @@ repo.addMerger()
 
 		return branch || repo.git.getHead();
 	})
-	.then(head => {
+	.then(h => {
+		head = h;
+		return repo.git.readBranchCommit(head);
+	})
+	.then(commit => {
+		document.getElementById("commit_title").textContent = commit.content.message;
+		document.getElementById("commit_description").textContent = repo.parseAuthor(commit.content.committer);
+
 		return repo.getFiles(head, path);
 	})
 	.then(files => {
