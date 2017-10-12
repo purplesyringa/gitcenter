@@ -15,7 +15,6 @@ repo.addMerger()
 		showHeader(1, content.git);
 		showBranches();
 		showPath(true);
-		showLinks();
 		showTabs(1);
 
 		document.getElementById("view").href = "../file/?" + address + "/" + path.replace(/@/g, "@@") + "@" + branch.replace(/@/g, "@@");
