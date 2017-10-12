@@ -123,7 +123,20 @@ function showLinks() {
 	} else {
 		repo.git.getBranchCommit(branch)
 			.then(commit => {
-				document.getElementById("permanent_link").href = "?" + address + "/" + path.replace(/@/g, "@@") + "@" + commit;
+				document.getElementById("permanent_link").onclick = () => {
+					let input = document.createElement("input");
+					input.value = location.href.replace(/\?.*/, "") + "?" + address + "/" + path.replace(/@/g, "@@") + "@" + commit;
+					document.body.appendChild(input);
+					input.select();
+					try {
+						document.execCommand("copy");
+						document.body.removeChild(input);
+						zeroPage.alert("Permanent link was copied to clipboard");
+					} catch(e) {
+						document.body.removeChild(input);
+						prompt("Permanent link:", input.value);
+					}
+				};
 			});
 	}
 }
