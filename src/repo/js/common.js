@@ -94,7 +94,7 @@ function showBranches(noPath) {
 		});
 }
 
-function showPath(isCurrentFile) {
+function showPath(isCurrentFile, prefix) {
 	// Show path
 	document.getElementById("files_root").href = (isCurrentFile ? "../?" + address : "?" + address) + "@" + branch.replace(/@/g, "@@");
 
@@ -102,13 +102,13 @@ function showPath(isCurrentFile) {
 	let parts = path.split("/").filter(part => part.length);
 	parts.forEach((part, i) => {
 		let node = document.createElement("span");
-		node.textContent = i == parts.length - 1 ? "" : " › ";
+		node.textContent = !prefix && i == parts.length - 1 ? "" : " › ";
 
-		let link = document.createElement(i == parts.length - 1 ? "span" : "a");
+		let link = document.createElement(!prefix && i == parts.length - 1 ? "span" : "a");
 		link.textContent = part;
 		if(!isCurrentFile) {
 			link.href = "?" + address + "/" + parts.slice(0, i + 1).join("/").replace(/@/g, "@@") + "@" + branch.replace(/@/g, "@@");
-		} else if(i < parts.length - 1) {
+		} else if(prefix || i < parts.length - 1) {
 			link.href = "../?" + address + "/" + parts.slice(0, i + 1).join("/").replace(/@/g, "@@") + "@" + branch.replace(/@/g, "@@");
 		}
 		node.insertBefore(link, node.firstChild);
