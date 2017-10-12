@@ -35,7 +35,7 @@ repo.addMerger()
 
 			repo.saveFile((path ? path + "/" : "") + fileName.value, repo.git.stringToArray(fileContent.value), branch, commitMessage.value)
 				.then(commit => {
-					location.href = "../edit/?" + address + "/" + ((path ? path + "/" : "") + fileName.value).replace(/@/g, "@@") + "@" + (repo.git.isSha(branch) ? commit : branch).replace(/@/g, "@@");
+					location.href = "../?" + address + "/" + path.replace(/@/g, "@@") + "@" + (repo.git.isSha(branch) ? commit : branch).replace(/@/g, "@@");
 				});
 		};
 	});
