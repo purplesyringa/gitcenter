@@ -13,6 +13,12 @@ if(isNaN(id) || json == "data/users/") {
 	location.href = "../?" + address;
 }
 
+marked.setOptions({
+	highlight: (code, lang) => {
+		return lang ? hljs.highlight(lang, code).value : hljs.highlightAuto(code).value;
+	}
+});
+
 function showComment(comment) {
 	let node = document.createElement("div");
 	node.className = "comment" + (json == comment.json ? " comment-owned" : "");
@@ -24,7 +30,7 @@ function showComment(comment) {
 
 	let content = document.createElement("div");
 	content.className = "comment-content";
-	content.textContent = comment.body;
+	content.innerHTML = marked(comment.body);
 	node.appendChild(content);
 
 	document.getElementById("comments").appendChild(node);
