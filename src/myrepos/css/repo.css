@@ -7,12 +7,17 @@
 	cursor: pointer;
 
 	box-shadow: 0 4px 4px #DDD;
-	background-image: linear-gradient(to bottom, #FCFCFC 0%, #EEE 100%);
+	background-color: #FCFCFC;
 	background-repeat: no-repeat;
 
 	font-size: 16px;
 	line-height: 24px;
 	text-decoration: none;
+
+	transition: all .5s;
+}
+.repo:hover {
+	background-color: #CCC;
 }
 
 .repo-title {
