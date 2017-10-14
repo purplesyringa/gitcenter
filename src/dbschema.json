@@ -41,10 +41,11 @@
 				["date_added", "INTEGER"],
 				["open", "INTEGER"],
 				["reopened", "INTEGER"],
+				["tags", "TEXT"],
 				["json_id", "INTEGER REFERENCES json (json_id)"]
 			],
 			"indexes": ["CREATE UNIQUE INDEX issues_key ON issues(json_id, id)"],
-			"schema_changed": 2
+			"schema_changed": 3
 		},
 		"issue_comments": {
 			"cols": [
@@ -67,10 +68,11 @@
 				["merged", "INTEGER"],
 				["fork_address", "TEXT"],
 				["fork_branch", "TEXT"],
+				["tags", "TEXT"],
 				["json_id", "INTEGER REFERENCES json (json_id)"]
 			],
 			"indexes": ["CREATE UNIQUE INDEX pull_requests_key ON pull_requests(json_id, id)"],
-			"schema_changed": 1
+			"schema_changed": 2
 		},
 		"pull_request_comments": {
 			"cols": [

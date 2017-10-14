@@ -65,6 +65,17 @@ repo.addMerger()
 		document.getElementById("pull_request_fork_address").textContent = pullRequest.fork_address;
 		document.getElementById("pull_request_fork_branch").textContent = pullRequest.fork_branch;
 
+		pullRequest.tags.forEach(tag => {
+			let color = repo.tagToColor(tag);
+
+			let node = document.createElement("div");
+			node.className = "tag";
+			node.style.backgroundColor = color.background;
+			node.style.color = color.foreground;
+			node.textContent = tag;
+			document.getElementById("tags").appendChild(node);
+		});
+
 		drawPullRequestStatus();
 
 		return repo.getPullRequestComments(id, json);

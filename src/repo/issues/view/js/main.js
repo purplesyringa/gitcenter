@@ -64,6 +64,17 @@ repo.addMerger()
 		document.getElementById("issue_id").textContent = id;
 		document.getElementById("issue_json_id").textContent = json.replace("data/users/", "");
 
+		issue.tags.forEach(tag => {
+			let color = repo.tagToColor(tag);
+
+			let node = document.createElement("div");
+			node.className = "tag";
+			node.textContent = tag;
+			node.style.backgroundColor = color.background;
+			node.style.color = color.foreground;
+			document.getElementById("tags").appendChild(node);
+		});
+
 		drawIssueStatus();
 
 		return repo.getIssueComments(id, json);

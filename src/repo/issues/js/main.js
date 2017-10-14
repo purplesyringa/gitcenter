@@ -37,6 +37,20 @@ repo.addMerger()
 			icon.className = "issue-icon";
 			title.insertBefore(icon, title.firstChild);
 
+			let tags = document.createElement("div");
+			tags.className = "tags";
+			issue.tags.forEach(tag => {
+				let color = repo.tagToColor(tag);
+
+				let node = document.createElement("div");
+				node.className = "tag";
+				node.textContent = tag;
+				node.style.backgroundColor = color.background;
+				node.style.color = color.foreground;
+				tags.appendChild(node);
+			});
+			title.appendChild(tags);
+
 			let info = document.createElement("td");
 			info.textContent = "Opened on " + repo.translateDate(issue.date_added) + " by " + issue.cert_user_id;
 			info.className = "issues-right";

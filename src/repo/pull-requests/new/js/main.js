@@ -15,7 +15,13 @@ repo.addMerger()
 		showTabs(2);
 
 		document.getElementById("submit").onclick = () => {
-			repo.addPullRequest(document.getElementById("title").value, document.getElementById("content").value, document.getElementById("fork_address").value, document.getElementById("fork_branch").value)
+			let tags = document.getElementById("tags").value
+				.split(",")
+				.map(tag => tag.trim())
+				.filter(tag => tag.length > 0)
+				.filter((tag, i, arr) => arr.indexOf(tag) == i);
+
+			repo.addPullRequest(document.getElementById("title").value, document.getElementById("content").value, document.getElementById("fork_address").value, document.getElementById("fork_branch").value, tags)
 				.then(pullRequest => {
 					location.href = "../view/?" + address + "/" + pullRequest.id + "@" + pullRequest.json.replace("data/users/", "");
 				});
