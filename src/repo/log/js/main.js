@@ -68,6 +68,11 @@ repo.addMerger()
 		*/
 
 		document.getElementById("commit_count").value = count;
+		document.getElementById("commit_count").onkeypress = e => {
+			if(e.keyCode == 13) {
+				location.href = "?" + address + "/" + document.getElementById("commit_count").value + "@" + branch.replace(/@/g, "@@");
+			}
+		};
 		document.getElementById("commit_load").onclick = () => {
 			location.href = "?" + address + "/" + document.getElementById("commit_count").value + "@" + branch.replace(/@/g, "@@");
 		};
