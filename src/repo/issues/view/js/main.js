@@ -7,15 +7,15 @@ if(additional.indexOf("@") == -1) {
 }
 
 let id = parseInt(additional.substr(0, additional.indexOf("@")));
-let jsonId = parseInt(additional.substr(additional.indexOf("@") + 1));
+let json = "data/users/" + additional.substr(additional.indexOf("@") + 1);
 
-if(isNaN(id) || isNaN(jsonId)) {
+if(isNaN(id) || json == "data/users/") {
 	location.href = "../?" + address;
 }
 
 function showComment(comment) {
 	let node = document.createElement("div");
-	node.className = "comment" + (jsonId == comment.json_id ? " comment-owned" : "");
+	node.className = "comment" + (json == comment.json ? " comment-owned" : "");
 
 	let header = document.createElement("div");
 	header.className = "comment-header";
@@ -55,18 +55,18 @@ repo.addMerger()
 		showHeader(2, content.git);
 		showTabs(2);
 
-		return repo.getIssue(id, jsonId);
+		return repo.getIssue(id, json);
 	})
 	.then(i => {
 		issue = i;
 
 		document.getElementById("issue_title").textContent = issue.title;
 		document.getElementById("issue_id").textContent = id;
-		document.getElementById("issue_json_id").textContent = jsonId;
+		document.getElementById("issue_json_id").textContent = json.replace("data/users/", "");
 
 		drawIssueStatus();
 
-		return repo.getIssueComments(id, jsonId);
+		return repo.getIssueComments(id, json);
 	})
 	.then(comments => {
 		comments.forEach(showComment);
@@ -79,7 +79,7 @@ repo.addMerger()
 
 			contentNode.disabled = true;
 
-			repo.addIssueComment(id, jsonId, contentNode.value)
+			repo.addIssueComment(id, json, contentNode.value)
 				.then(comment => {
 					showComment(comment);
 
@@ -102,7 +102,7 @@ repo.addMerger()
 				if(contentNode.value == "") {
 					promise = Promise.resolve();
 				} else {
-					promise = repo.addIssueComment(id, jsonId, contentNode.value)
+					promise = repo.addIssueComment(id, json, contentNode.value)
 						.then(comment => {
 							showComment(comment);
 						});
@@ -110,7 +110,7 @@ repo.addMerger()
 
 				promise
 					.then(() => {
-						return repo.changeIssueStatus(id, jsonId, !issue.open);
+						return repo.changeIssueStatus(id, json, !issue.open);
 					})
 					.then(() => {
 						if(issue.open) {

@@ -25,7 +25,7 @@ repo.addMerger()
 		pullRequests.pullRequests.forEach(pullRequest => {
 			let tr = document.createElement("tr");
 			tr.onclick = () => {
-				location.href = "view/?" + address + "/" + pullRequest.id + "@" + pullRequest.json_id;
+				location.href = "view/?" + address + "/" + pullRequest.id + "@" + pullRequest.json.replace("data/users/", "");
 			};
 
 			let title = document.createElement("td");

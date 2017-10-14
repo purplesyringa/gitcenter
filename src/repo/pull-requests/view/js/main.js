@@ -7,15 +7,15 @@ if(additional.indexOf("@") == -1) {
 }
 
 let id = parseInt(additional.substr(0, additional.indexOf("@")));
-let jsonId = parseInt(additional.substr(additional.indexOf("@") + 1));
+let json = "data/users/" + additional.substr(additional.indexOf("@") + 1);
 
-if(isNaN(id) || isNaN(jsonId)) {
+if(isNaN(id) || json == "data/users/") {
 	location.href = "../?" + address;
 }
 
 function showComment(comment) {
 	let node = document.createElement("div");
-	node.className = "comment" + (jsonId == comment.json_id ? " comment-owned" : "");
+	node.className = "comment" + (json == comment.json ? " comment-owned" : "");
 
 	let header = document.createElement("div");
 	header.className = "comment-header";
@@ -54,20 +54,20 @@ repo.addMerger()
 		showTitle(content.title);
 		showTabs(2);
 
-		return repo.getPullRequest(id, jsonId);
+		return repo.getPullRequest(id, json);
 	})
 	.then(i => {
 		pullRequest = i;
 
 		document.getElementById("pull_request_title").textContent = pullRequest.title;
 		document.getElementById("pull_request_id").textContent = id;
-		document.getElementById("pull_request_json_id").textContent = jsonId;
+		document.getElementById("pull_request_json_id").textContent = json.replace("data/users/", "");
 		document.getElementById("pull_request_fork_address").textContent = pullRequest.fork_address;
 		document.getElementById("pull_request_fork_branch").textContent = pullRequest.fork_branch;
 
 		drawPullRequestStatus();
 
-		return repo.getPullRequestComments(id, jsonId);
+		return repo.getPullRequestComments(id, json);
 	})
 	.then(comments => {
 		comments.forEach(showComment);
@@ -80,7 +80,7 @@ repo.addMerger()
 
 			contentNode.disabled = true;
 
-			repo.addPullRequestComment(id, jsonId, contentNode.value)
+			repo.addPullRequestComment(id, json, contentNode.value)
 				.then(comment => {
 					showComment(comment);
 
@@ -103,7 +103,7 @@ repo.addMerger()
 				if(contentNode.value == "") {
 					promise = Promise.resolve();
 				} else {
-					promise = repo.addPullRequestComment(id, jsonId, contentNode.value)
+					promise = repo.addPullRequestComment(id, json, contentNode.value)
 						.then(comment => {
 							showComment(comment);
 						});
@@ -111,7 +111,7 @@ repo.addMerger()
 
 				promise
 					.then(() => {
-						return repo.changePullRequestStatus(id, jsonId, !pullRequest.open);
+						return repo.changePullRequestStatus(id, json, !pullRequest.open);
 					})
 					.then(() => {
 						pullRequest.merged = !pullRequest.merged;
@@ -124,7 +124,7 @@ repo.addMerger()
 
 			let commentImport = document.getElementById("comment_import");
 			commentImport.style.display = "inline-block";
-			commentImport.title = "Import branch " + pullRequest.fork_address + "/" + pullRequest.fork_branch + " as " + address + "/pr-" + id + "-" + jsonId;
+			commentImport.title = "Import branch " + pullRequest.fork_address + "/" + pullRequest.fork_branch + " as " + address + "/pr-" + id + "-" + json;
 			commentImport.onclick = () => {
 				if(commentImport.classList.contains("button-disabled")) {
 					return;
@@ -133,7 +133,7 @@ repo.addMerger()
 
 				repo.importPullRequest(pullRequest)
 					.then(() => {
-						zeroPage.alert("Branch pr-" + id + "-" + jsonId + " was imported to your repository. Run git fetch to download and merge it.");
+						zeroPage.alert("Branch pr-" + id + "-" + pullRequest.cert_user_id.replace(/@.*/, "") + " was imported to your repository. Run git fetch to download and merge it.");
 						commentImport.classList.remove("button-disabled");
 					}, e => {
 						zeroPage.error(e);

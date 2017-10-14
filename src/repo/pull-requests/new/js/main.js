@@ -17,7 +17,7 @@ repo.addMerger()
 		document.getElementById("submit").onclick = () => {
 			repo.addPullRequest(document.getElementById("title").value, document.getElementById("content").value, document.getElementById("fork_address").value, document.getElementById("fork_branch").value)
 				.then(pullRequest => {
-					location.href = "../view/?" + address + "/" + pullRequest.id + "@" + pullRequest.json_id;
+					location.href = "../view/?" + address + "/" + pullRequest.id + "@" + pullRequest.json.replace("data/users/", "");
 				});
 		};
 	});

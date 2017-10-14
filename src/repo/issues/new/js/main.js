@@ -18,7 +18,7 @@ repo.addMerger()
 		document.getElementById("submit").onclick = () => {
 			repo.addIssue(document.getElementById("title").value, document.getElementById("content").value)
 				.then(issue => {
-					location.href = "../view/?" + address + "/" + issue.id + "@" + issue.json_id;
+					location.href = "../view/?" + address + "/" + issue.id + "@" + issue.json.replace("data/users/", "");
 				});
 		};
 	});
