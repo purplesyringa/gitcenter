@@ -66,7 +66,14 @@ function showHeader(level, gitAddress) {
 			}
 		});
 
-	document.getElementById("git_url").value = "git clone $path_to_zeronet/data/" + address + "/" + gitAddress;
+	document.getElementById("git_button").onclick = () => {
+		let command = "git clone $path_to_data/" + address + "/" + gitAddress;
+		if(copy(command)) {
+			zeroPage.alert("<b>" + command + "</b> was copied to the clipboard.<br>Replace <b>$path_to_data</b> with correct path to ZeroNet's data folder.");
+		} else {
+			prompt("Command", command);
+		}
+	};
 }
 
 function showBranches(noPath) {
@@ -117,6 +124,21 @@ function showPath(isCurrentFile, prefix) {
 	});
 }
 
+function copy(text) {
+	let input = document.createElement("input");
+	input.value = text;
+	document.body.appendChild(input);
+	input.select();
+	try {
+		document.execCommand("copy");
+		document.body.removeChild(input);
+		return true;
+	} catch(e) {
+		document.body.removeChild(input);
+		return false;
+	}
+}
+
 function showLinks() {
 	if(repo.git.isSha(branch)) {
 		document.getElementById("permanent_link").style.display = "none";
@@ -124,17 +146,11 @@ function showLinks() {
 		repo.git.getBranchCommit(branch)
 			.then(commit => {
 				document.getElementById("permanent_link").onclick = () => {
-					let input = document.createElement("input");
-					input.value = location.href.replace(/\?.*/, "") + "?" + address + "/" + path.replace(/@/g, "@@") + "@" + commit;
-					document.body.appendChild(input);
-					input.select();
-					try {
-						document.execCommand("copy");
-						document.body.removeChild(input);
+					let permanent = location.href.replace(/\?.*/, "") + "?" + address + "/" + path.replace(/@/g, "@@") + "@" + commit;
+					if(copy(permanent)) {
 						zeroPage.alert("Permanent link was copied to clipboard");
-					} catch(e) {
-						document.body.removeChild(input);
-						prompt("Permanent link:", input.value);
+					} else {
+						prompt("Permanent link", permanent);
 					}
 				};
 			});
