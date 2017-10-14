@@ -618,7 +618,7 @@ class Repository {
 				return this.git.importObjectWithDependencies(other.git, ref);
 			})
 			.then(() => {
-				return this.git.setRef("refs/heads/pr-" + pullRequest.id + "-" + pullRequest.json_id, ref);
+				return this.git.setRef("refs/heads/pr-" + pullRequest.id + "-" + pullRequest.cert_user_id.replace(/@.*/, ""), ref);
 			});
 	}
 

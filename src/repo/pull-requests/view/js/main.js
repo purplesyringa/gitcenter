@@ -133,7 +133,7 @@ repo.addMerger()
 
 				repo.importPullRequest(pullRequest)
 					.then(() => {
-						zeroPage.alert("Branch pr-" + id + "-" + json + " was imported to your repository. Run git fetch to download and merge it.");
+						zeroPage.alert("Branch pr-" + id + "-" + pullRequest.cert_user_id.replace(/@.*/, "") + " was imported to your repository. Run git fetch to download and merge it.");
 						commentImport.classList.remove("button-disabled");
 					}, e => {
 						zeroPage.error(e);
