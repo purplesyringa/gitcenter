@@ -282,7 +282,7 @@ class Repository {
 	}
 
 	// Issues
-	addIssue(title, content) {
+	addIssue(title, content, tags) {
 		let auth, row;
 		return this.zeroAuth.requestAuth()
 			.then(a => {
@@ -297,7 +297,8 @@ class Repository {
 						body: content,
 						date_added: Date.now(),
 						open: 1,
-						reopened: 0
+						reopened: 0,
+						tags: tags.join(",")
 					},
 					{
 						source: "next_issue_id",
@@ -321,7 +322,11 @@ class Repository {
 		})
 			.then(issues => {
 				return {
-					issues: issues.slice(0, 10),
+					issues: issues.slice(0, 10)
+						.map(issue => {
+							issue.tags = issue.tags ? issue.tags.split(",") : [];
+							return issue;
+						}),
 					nextPage: issues.length > 10
 				};
 			});
@@ -335,6 +340,7 @@ class Repository {
 		})
 			.then(i => {
 				issue = i[0];
+				issue.tags = issue.tags ? issue.tags.split(",") : [];
 
 				return this.zeroPage.isSignable("merged-GitCenter/" + this.address + "/" + issue.directory + "/content.json");
 			})
@@ -445,7 +451,7 @@ class Repository {
 	}
 
 	// Pull requests
-	addPullRequest(title, content, forkAddress, forkBranch) {
+	addPullRequest(title, content, forkAddress, forkBranch, tags) {
 		let auth, row;
 		return this.zeroAuth.requestAuth()
 			.then(a => {
@@ -461,7 +467,8 @@ class Repository {
 						date_added: Date.now(),
 						merged: 0,
 						fork_address: forkAddress,
-						fork_branch: forkBranch
+						fork_branch: forkBranch,
+						tags: tags.join(",")
 					},
 					{
 						source: "next_pull_request_id",
@@ -485,7 +492,11 @@ class Repository {
 		})
 			.then(pullRequests => {
 				return {
-					pullRequests: pullRequests.slice(0, 10),
+					pullRequests: pullRequests.slice(0, 10)
+						.map(pullRequest => {
+							pullRequest.tags = pullRequest.tags ? pullRequest.tags.split(",") : [];
+							return pullRequest;
+						}),
 					nextPage: pullRequests.length > 10
 				};
 			});
@@ -499,6 +510,7 @@ class Repository {
 		})
 			.then(p => {
 				pullRequest = p[0];
+				pullRequest.tags = pullRequest.tags ? pullRequest.tags.split(",") : [];
 
 				return this.zeroPage.isSignable("merged-GitCenter/" + this.address + "/" + pullRequest.directory + "/content.json");
 			})
