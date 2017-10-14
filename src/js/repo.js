@@ -423,28 +423,25 @@ class Repository {
 			});
 	}
 	changeIssueStatus(id, json, open) {
-		return this.zeroAuth.requestAuth()
-			.then(auth => {
-				return this.zeroDB.changeRow(
-					"merged-GitCenter/" + this.address + "/data/users/" + auth.address + "/data.json",
-					"merged-GitCenter/" + this.address + "/data/users/" + auth.address + "/content.json",
-					"issues",
-					issue => {
-						if(issue.id != id) {
-							return issue;
-						}
+		return this.zeroDB.changeRow(
+			"merged-GitCenter/" + this.address + "/" + json + "/data.json",
+			"merged-GitCenter/" + this.address + "/" + json + "/content.json",
+			"issues",
+			issue => {
+				if(issue.id != id) {
+					return issue;
+				}
 
-						if(open) {
-							issue.open = true;
-							issue.reopened = true;
-						} else {
-							issue.open = false;
-						}
+				if(open) {
+					issue.open = true;
+					issue.reopened = true;
+				} else {
+					issue.open = false;
+				}
 
-						return issue;
-					}
-				);
-			});
+				return issue;
+			}
+		);
 	}
 
 	// Pull requests
