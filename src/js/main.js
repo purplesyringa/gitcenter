@@ -1,3 +1,6 @@
+zeroFrame = new ZeroFrame();
+zeroPage = new ZeroPage(zeroFrame);
+
 let siteInfo, list;
 zeroPage.getSiteInfo()
 	.then(s => {
