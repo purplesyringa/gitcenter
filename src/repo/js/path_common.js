@@ -1,6 +1,6 @@
-let zeroFrame = new ZeroFrame();
-let zeroPage = new ZeroPage(zeroFrame);
-let zeroAuth = new ZeroAuth(zeroPage);
+zeroFrame = new ZeroFrame();
+zeroPage = new ZeroPage(zeroFrame);
+zeroAuth = new ZeroAuth(zeroPage);
 
 let address = location.search.replace(/[?&]wrapper_nonce=.*/, "").replace("?", "");
 if(!address) {
@@ -25,4 +25,4 @@ if(path.indexOf("@") > -1) {
 	path = path.replace(/@@/g, "@");
 }
 
-let repo = new Repository(address, zeroPage);
+repo = new Repository(address, zeroPage);

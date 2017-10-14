@@ -1,7 +1,7 @@
-let zeroFrame = new ZeroFrame();
-let zeroPage = new ZeroPage(zeroFrame);
-let zeroFS = new ZeroFS(zeroPage);
-let zeroAuth = new ZeroAuth(zeroPage);
+zeroFrame = new ZeroFrame();
+zeroPage = new ZeroPage(zeroFrame);
+zeroFS = new ZeroFS(zeroPage);
+zeroAuth = new ZeroAuth(zeroPage);
 
 let loadProfile = address => {
 	return zeroFS.readFile("data/users/" + address + "/data.json")

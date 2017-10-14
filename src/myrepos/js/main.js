@@ -1,7 +1,7 @@
-let zeroFrame = new ZeroFrame();
-let zeroPage = new ZeroPage(zeroFrame);
-let zeroFS = new ZeroFS(zeroPage);
-let zeroDB = new ZeroDB(zeroPage);
+zeroFrame = new ZeroFrame();
+zeroPage = new ZeroPage(zeroFrame);
+zeroFS = new ZeroFS(zeroPage);
+zeroDB = new ZeroDB(zeroPage);
 
 zeroPage.cmd("mergerSiteList")
 	.then(repos => {

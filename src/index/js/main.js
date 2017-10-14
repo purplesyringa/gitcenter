@@ -1,6 +1,6 @@
-let zeroFrame = new ZeroFrame();
-let zeroPage = new ZeroPage(zeroFrame);
-let zeroDB = new ZeroDB(zeroPage);
+zeroFrame = new ZeroFrame();
+zeroPage = new ZeroPage(zeroFrame);
+zeroDB = new ZeroDB(zeroPage);
 
 zeroDB.query("SELECT repo_index.*, json.cert_user_id FROM repo_index, json WHERE repo_index.json_id = json.json_id")
 	.then(index => {
