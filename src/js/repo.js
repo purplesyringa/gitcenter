@@ -907,6 +907,29 @@ class Repository {
 
 		return name + " commited on " + this.translateDate(relativeDate) + " " + this.translateTime(relativeDate) + " " + offsetString;
 	}
+
+	tagToColor(tag) {
+		tag = "##" + tag;
+
+		let hash = 0;
+		tag.split("").forEach(char => {
+			hash = char.charCodeAt(0) * 100 + ((hash << 5) - hash);
+		});
+		hash &= 0xFFFFFF;
+
+		let background = "#";
+		for(let i = 0; i < 3; i++) {
+			let value = (hash >> (i * 8)) & 0xFF;
+			background += ("00" + value.toString(16)).substr(-2);
+		}
+
+		let brightness = (0.299 * (hash & 0xFF) + 0.587 * ((hash << 8) & 0xFF) + 0.114 * ((hash << 16) & 0xFF));
+
+		return {
+			background: background,
+			foreground: brightness > 127 ? "#000" : "#FFF"
+		};
+	}
 };
 
 Repository.createRepo = zeroPage => {

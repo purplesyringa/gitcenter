@@ -16,7 +16,13 @@ repo.addMerger()
 		showTabs(2);
 
 		document.getElementById("submit").onclick = () => {
-			repo.addIssue(document.getElementById("title").value, document.getElementById("content").value)
+			let tags = document.getElementById("tags").value
+				.split(",")
+				.map(tag => tag.trim())
+				.filter(tag => tag.length > 0)
+				.filter((tag, i, arr) => arr.indexOf(tag) == i);
+
+			repo.addIssue(document.getElementById("title").value, document.getElementById("content").value, tags)
 				.then(issue => {
 					location.href = "../view/?" + address + "/" + issue.id + "@" + issue.json.replace("data/users/", "");
 				});
