@@ -23,7 +23,7 @@ repo.addMerger()
 	})
 	.then(() => {
 		showTitle(content.title);
-		showHeader(1);
+		showHeader(1, content.git);
 		showTabs(1);
 		showBranches();
 
