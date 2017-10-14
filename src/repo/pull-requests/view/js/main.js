@@ -13,6 +13,12 @@ if(isNaN(id) || json == "data/users/") {
 	location.href = "../?" + address;
 }
 
+marked.setOptions({
+	highlight: (code, lang) => {
+		return lang ? hljs.highlight(lang, code).value : hljs.highlightAuto(code).value;
+	}
+});
+
 function showComment(comment) {
 	let node = document.createElement("div");
 	node.className = "comment" + (json == comment.json ? " comment-owned" : "");
