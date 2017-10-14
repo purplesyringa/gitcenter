@@ -1,5 +1,3 @@
-zeroFrame = new ZeroFrame();
-zeroPage = new ZeroPage(zeroFrame);
 zeroFS = new ZeroFS(zeroPage);
 zeroDB = new ZeroDB(zeroPage);
 

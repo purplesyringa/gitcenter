@@ -1,4 +1,2 @@
-if(!window.zeroPage) {
-	zeroFrame = new ZeroFrame();
-	zeroPage = new ZeroPage(zeroFrame);
-}
+zeroFrame = new ZeroFrame();
+zeroPage = new ZeroPage(zeroFrame);

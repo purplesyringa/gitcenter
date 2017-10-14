@@ -1,5 +1,3 @@
-zeroFrame = new ZeroFrame();
-zeroPage = new ZeroPage(zeroFrame);
 zeroAuth = new ZeroAuth(zeroPage);
 
 let address = location.search.replace(/[?&]wrapper_nonce=.*/, "").replace("?", "");
