@@ -373,7 +373,7 @@ class Repository {
 			FROM issue_comments, json\
 			WHERE\
 				issue_comments.json_id = json.json_id AND\
-				issue_comments.json_id = :jsonId AND\
+				issue_comments.issue_json_id = :jsonId AND\
 				issue_comments.issue_id = :id AND\
 				json.site = :address\
 			\
@@ -540,7 +540,7 @@ class Repository {
 			FROM pull_request_comments, json\
 			WHERE\
 				pull_request_comments.json_id = json.json_id AND\
-				pull_request_comments.json_id = :jsonId AND\
+				pull_request_comments.pull_request_json_id = :jsonId AND\
 				pull_request_comments.pull_request_id = :id AND\
 				json.site = :address\
 			\
