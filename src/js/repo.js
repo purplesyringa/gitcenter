@@ -326,10 +326,10 @@ class Repository {
 				};
 			});
 	}
-	getIssue(id, jsonId) {
+	getIssue(id, json) {
 		let issue;
-		return this.zeroDB.query("SELECT issues.*, json.directory, json.cert_user_id FROM issues, json WHERE issues.json_id = json.json_id AND issues.json_id = :jsonId AND issues.id = :id AND json.site = :address", {
-			jsonId: jsonId,
+		return this.zeroDB.query("SELECT issues.*, json.directory, json.cert_user_id FROM issues, json WHERE issues.json_id = json.json_id AND json.directory = :json AND issues.id = :id AND json.site = :address", {
+			json: json,
 			id: id,
 			address: this.address
 		})
@@ -343,20 +343,20 @@ class Repository {
 				return issue;
 			});
 	}
-	getIssueComments(id, jsonId) {
+	getIssueComments(id, json) {
 		return this.zeroDB.query("\
 			SELECT\
 				-1 AS id,\
 				issues.body AS body,\
 				issues.date_added AS date_added,\
-				issues.json_id AS json_id,\
+				json.directory AS json,\
 				json.cert_user_id AS cert_user_id,\
 				issues.id AS issue_id,\
-				issues.json_id AS issue_json_id\
+				json.directory AS issue_json\
 			FROM issues, json\
 			WHERE\
 				issues.json_id = json.json_id AND\
-				issues.json_id = :jsonId AND\
+				json.directory = :json AND\
 				issues.id = :id AND\
 				json.site = :address\
 			\
@@ -366,25 +366,25 @@ class Repository {
 				issue_comments.id AS id,\
 				issue_comments.body AS body,\
 				issue_comments.date_added AS date_added,\
-				issue_comments.json_id AS json_id,\
+				json.directory AS json,\
 				json.cert_user_id AS cert_user_id,\
 				issue_comments.issue_id AS issue_id,\
-				issue_comments.issue_json_id AS issue_json_id\
+				issue_comments.issue_json AS issue_json\
 			FROM issue_comments, json\
 			WHERE\
 				issue_comments.json_id = json.json_id AND\
-				issue_comments.issue_json_id = :jsonId AND\
+				issue_comments.issue_json = :json AND\
 				issue_comments.issue_id = :id AND\
 				json.site = :address\
 			\
 			ORDER BY date_added ASC\
 		", {
-			jsonId: jsonId,
+			json: json,
 			id: id,
 			address: this.address
 		});
 	}
-	addIssueComment(issueId, issueJsonId, content) {
+	addIssueComment(issueId, issueJson, content) {
 		let auth, row;
 		return this.zeroAuth.requestAuth()
 			.then(a => {
@@ -396,7 +396,7 @@ class Repository {
 					"issue_comments",
 					{
 						issue_id: issueId,
-						issue_json_id: issueJsonId,
+						issue_json: issueJson,
 						body: content,
 						date_added: Date.now()
 					},
@@ -422,7 +422,7 @@ class Repository {
 				return row;
 			});
 	}
-	changeIssueStatus(id, jsonId, open) {
+	changeIssueStatus(id, json, open) {
 		return this.zeroAuth.requestAuth()
 			.then(auth => {
 				return this.zeroDB.changeRow(
@@ -493,10 +493,10 @@ class Repository {
 				};
 			});
 	}
-	getPullRequest(id, jsonId) {
+	getPullRequest(id, json) {
 		let pullRequest;
-		return this.zeroDB.query("SELECT pull_requests.*, json.directory, json.cert_user_id FROM pull_requests, json WHERE pull_requests.json_id = json.json_id AND pull_requests.json_id = :jsonId AND pull_requests.id = :id AND json.site = :address", {
-			jsonId: jsonId,
+		return this.zeroDB.query("SELECT pull_requests.*, json.directory, json.cert_user_id FROM pull_requests, json WHERE pull_requests.json_id = json.json_id AND json.directory = :json AND pull_requests.id = :id AND json.site = :address", {
+			json: json,
 			id: id,
 			address: this.address
 		})
@@ -510,20 +510,20 @@ class Repository {
 				return pullRequest;
 			});
 	}
-	getPullRequestComments(id, jsonId) {
+	getPullRequestComments(id, json) {
 		return this.zeroDB.query("\
 			SELECT\
 				-1 AS id,\
 				pull_requests.body AS body,\
 				pull_requests.date_added AS date_added,\
-				pull_requests.json_id AS json_id,\
+				directory.json AS json,\
 				json.cert_user_id AS cert_user_id,\
 				pull_requests.id AS pull_request_id,\
-				pull_requests.json_id AS pull_request_json_id\
+				json.directory AS pull_request_json\
 			FROM pull_requests, json\
 			WHERE\
 				pull_requests.json_id = json.json_id AND\
-				pull_requests.json_id = :jsonId AND\
+				json.directory = :json AND\
 				pull_requests.id = :id AND\
 				json.site = :address\
 			\
@@ -533,25 +533,25 @@ class Repository {
 				pull_request_comments.id AS id,\
 				pull_request_comments.body AS body,\
 				pull_request_comments.date_added AS date_added,\
-				pull_request_comments.json_id AS json_id,\
+				json.directory AS json,\
 				json.cert_user_id AS cert_user_id,\
 				pull_request_comments.pull_request_id AS pull_request_id,\
-				pull_request_comments.pull_request_json_id AS pull_request_json_id\
+				pull_request_comments.pull_request_json AS pull_request_json\
 			FROM pull_request_comments, json\
 			WHERE\
 				pull_request_comments.json_id = json.json_id AND\
-				pull_request_comments.pull_request_json_id = :jsonId AND\
+				pull_request_comments.pull_request_json = :json AND\
 				pull_request_comments.pull_request_id = :id AND\
 				json.site = :address\
 			\
 			ORDER BY date_added ASC\
 		", {
-			jsonId: jsonId,
+			json: json,
 			id: id,
 			address: this.address
 		});
 	}
-	addPullRequestComment(pullRequestId, pullRequestJsonId, content) {
+	addPullRequestComment(pullRequestId, pullRequestJson, content) {
 		let auth, row;
 		return this.zeroAuth.requestAuth()
 			.then(a => {
@@ -563,7 +563,7 @@ class Repository {
 					"pull_request_comments",
 					{
 						pull_request_id: pullRequestId,
-						pull_request_json_id: pullRequestJsonId,
+						pull_request_json: pullRequestJson,
 						body: content,
 						date_added: Date.now()
 					},
@@ -589,24 +589,21 @@ class Repository {
 				return row;
 			});
 	}
-	changePullRequestStatus(id, jsonId, merged) {
-		return this.zeroAuth.requestAuth()
-			.then(auth => {
-				return this.zeroDB.changeRow(
-					"merged-GitCenter/" + this.address + "/data/users/" + auth.address + "/data.json",
-					"merged-GitCenter/" + this.address + "/data/users/" + auth.address + "/content.json",
-					"pull_requests",
-					pullRequest => {
-						if(pullRequest.id != id) {
-							return pullRequest;
-						}
+	changePullRequestStatus(id, json, merged) {
+		return this.zeroDB.changeRow(
+			"merged-GitCenter/" + this.address + "/" + json + "/data.json",
+			"merged-GitCenter/" + this.address + "/" + json + "/content.json",
+			"pull_requests",
+			pullRequest => {
+				if(pullRequest.id != id) {
+					return pullRequest;
+				}
 
-						pullRequest.merged = merged;
+				pullRequest.merged = merged;
 
-						return pullRequest;
-					}
-				);
-			});
+				return pullRequest;
+			}
+		);
 	}
 	importPullRequest(pullRequest) {
 		let other = new Repository(pullRequest.fork_address, this.zeroPage);
