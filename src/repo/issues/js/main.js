@@ -25,7 +25,7 @@ repo.addMerger()
 		issues.issues.forEach(issue => {
 			let tr = document.createElement("tr");
 			tr.onclick = () => {
-				location.href = "view/?" + address + "/" + issue.id + "@" + issue.json_id;
+				location.href = "view/?" + address + "/" + issue.id + "@" + issue.json.replace("data/users/", "");
 			};
 
 			let title = document.createElement("td");

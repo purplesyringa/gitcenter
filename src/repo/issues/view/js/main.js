@@ -14,7 +14,6 @@ if(isNaN(id) || json == "data/users/") {
 }
 
 function showComment(comment) {
-	console.log(comment);
 	let node = document.createElement("div");
 	node.className = "comment" + (json == comment.json ? " comment-owned" : "");
 
