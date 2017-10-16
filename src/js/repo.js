@@ -915,17 +915,16 @@ class Repository {
 		});
 		hash &= 0xFFFFFF;
 
-		let background = "#";
-		for(let i = 0; i < 3; i++) {
-			let value = (hash >> (i * 8)) & 0xFF;
-			background += ("00" + value.toString(16)).substr(-2);
-		}
+		let hue = Math.floor((hash & 0xFF) / 256 * 360);
+		let saturation = Math.floor(((hash >> 8) & 0xFF) / 256 * 100);
+		let lightness = Math.floor(((hash >> 16) & 0xFF) / 256 * 50);
+		let background = "hsl(" + hue + ", " + saturation + "%, " + lightness + "%)";
 
-		let brightness = (0.299 * (hash & 0xFF) + 0.587 * ((hash << 8) & 0xFF) + 0.114 * ((hash << 16) & 0xFF));
+		console.log(background);
 
 		return {
 			background: background,
-			foreground: brightness > 127 ? "#000" : "#FFF"
+			foreground: "#FFF"
 		};
 	}
 };
