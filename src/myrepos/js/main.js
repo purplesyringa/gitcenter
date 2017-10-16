@@ -19,7 +19,8 @@ zeroPage.cmd("mergerSiteList")
 						content = JSON.parse(content);
 
 						return {
-							description: content.title + " (" + content.description + ")",
+							title: content.title,
+							description: content.description,
 							address: repo
 						};
 					});
@@ -34,12 +35,14 @@ zeroPage.cmd("mergerSiteList")
 
 			let title = document.createElement("div");
 			title.className = "repo-title";
-			title.textContent = repo.description;
+			title.textContent = repo.title;
 			node.appendChild(title);
 
 			let address = document.createElement("div");
 			address.className = "repo-address";
-			address.textContent = repo.address;
+			address.textContent = repo.description;
+			address.appendChild(document.createElement("br"));
+			address.appendChild(document.createTextNode(repo.address));
 			node.appendChild(address);
 
 			document.getElementById("repos").appendChild(node);
