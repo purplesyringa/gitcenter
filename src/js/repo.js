@@ -635,14 +635,22 @@ class Repository {
 	getUsers() {
 		let users;
 
+		let worker = new WorkerOut();
+
 		return this.zeroFS.readFile("cors-1iD5ZQJMNXu43w1qLB8sfdHVKppVMduGz/data/users.json")
+			.then(users => {
+				return worker.JSON.parse(users);
+			})
 			.then(u => {
-				users = JSON.parse(u).users;
+				users = u.users;
 
 				return this.zeroFS.readFile("cors-1iD5ZQJMNXu43w1qLB8sfdHVKppVMduGz/data/users_archive.json");
 			})
 			.then(archived => {
-				archived = JSON.parse(archived).users;
+				return worker.JSON.parse(archived);
+			})
+			.then(archived => {
+				archived = archived.users;
 				users = Object.assign(users, archived);
 
 				Object.keys(users).forEach(name => {
