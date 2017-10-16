@@ -81,23 +81,22 @@ function showBranches(noPath) {
 		.then(list => {
 			// Show branch list
 			let branches = document.getElementById("branches");
-			list.forEach(branch => {
-				let option = document.createElement("option");
-				option.textContent = branch;
+			list.forEach(curBranch => {
+				let option = document.createElement("div");
+				option.className = "branch" + (curBranch == branch ? " branch-active" : "");
+				option.textContent = curBranch;
+				option.onclick = () => {
+					location.href = "?" + address + "/" + (noPath ? curBranch : path.replace(/@/g, "@@") + "@" + curBranch.replace(/@/g, "@@"));
+				};
 				branches.appendChild(option);
 			});
 
 			if(repo.git.isSha(branch)) {
-				let option = document.createElement("option");
+				let option = document.createElement("div");
+				option.className = "branch";
 				option.textContent = branch;
 				branches.insertBefore(option, branches.firstChild);
 			}
-
-			branches.value = branch;
-
-			branches.onchange = () => {
-				location.href = "?" + address + "/" + (noPath ? branches.value : path.replace(/@/g, "@@") + "@" + branches.value.replace(/@/g, "@@"));
-			};
 		});
 }
 

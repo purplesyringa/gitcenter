@@ -1,3 +1,22 @@
 .branches {
 	width: 128px;
 }
+
+.branch {
+	display: block;
+	width: 96px;
+	height: 16px;
+	padding: 8px 16px;
+	background-color: #EEE;
+	cursor: pointer;
+
+	font-size: 16px;
+	line-height: 14px;
+}
+.branch:hover {
+	background-color: #CCC;
+}
+
+.branch-active {
+	background-color: #CCC;
+}
