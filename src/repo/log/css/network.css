@@ -23,7 +23,7 @@
 	transition: all .5s;
 }
 .commit:hover {
-	background-color: #CCC;
+	background-color: #DDF;
 }
 
 .commit-title {

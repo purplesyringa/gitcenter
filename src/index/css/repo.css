@@ -17,7 +17,7 @@
 	transition: all .5s;
 }
 .repo:hover {
-	background-color: #CCC;
+	background-color: #DDF;
 }
 
 .repo-title {

@@ -14,9 +14,9 @@
 	line-height: 14px;
 }
 .branch:hover {
-	background-color: #CCC;
+	background-color: #DDF;
 }
 
 .branch-active {
-	background-color: #CCC;
+	background-color: #DDF;
 }
