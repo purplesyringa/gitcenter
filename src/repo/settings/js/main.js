@@ -27,19 +27,18 @@ repo.addMerger()
 		let hooksSelect = document.getElementById("hooks_select");
 		hooksSelect.value = content.hooks ? "enabled" : "disabled";
 
-		let hooksSave = document.getElementById("hooks_save");
-		hooksSave.onclick = () => {
-			if(hooksSave.classList.contains("button-disabled")) {
+		hooksSelect.onchange = () => {
+			if(hooksSelect.classList.contains("select-disabled")) {
 				return;
 			}
-			hooksSave.classList.add("button-disabled");
+			hooksSelect.classList.add("select-disabled");
 
 			repo.changeHooks(hooksSelect.value == "enabled")
 				.then(() => {
-					hooksSave.classList.remove("button-disabled");
+					hooksSelect.classList.remove("select-disabled");
 				}, e => {
 					zeroPage.error(e);
-					hooksSave.classList.remove("button-disabled");
+					hooksSelect.classList.remove("select-disabled");
 				});
 		};
 
