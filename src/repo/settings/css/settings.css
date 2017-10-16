@@ -5,14 +5,12 @@
 
 .entry-title {
 	display: block;
-	vertical-align: middle;
 
-	font-size: 16px;
+	font-size: 24px;
 }
 
 .entry-description {
 	display: block;
-	vertical-align: middle;
 
 	font-size: 16px;
 	color: #888;
@@ -20,7 +18,7 @@
 
 .entry-value {
 	display: block;
-	vertical-align: middle;
+	margin-top: 8px;
 }
 .entry-value-margin {
 	margin-left: 16px;
