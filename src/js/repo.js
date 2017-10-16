@@ -779,7 +779,7 @@ class Repository {
 			.then(() => {
 				return this.zeroPage.cmd("sitePublish", {inner_path: "merged-GitCenter/1iNDExENNBsfHc6SKmy1HaeasHhm3RPcL/data/users/" + auth.address + "/content.json"})
 					.then(res => {
-						if(res != "ok" && res.error != "Port not opened.") {
+						if(res != "ok" && res.error != "Port not opened." && res.error != "Content publish failed.") {
 							return Promise.reject(res);
 						}
 					});
@@ -808,7 +808,7 @@ class Repository {
 			.then(() => {
 				return this.zeroPage.cmd("sitePublish", {inner_path: "merged-GitCenter/1iNDExENNBsfHc6SKmy1HaeasHhm3RPcL/data/users/" + auth.address + "/content.json"})
 					.then(res => {
-						if(res != "ok" && res.error != "Port not opened.") {
+						if(res != "ok" && res.error != "Port not opened." && res.error != "Content publish failed.") {
 							return Promise.reject(res);
 						}
 					});
