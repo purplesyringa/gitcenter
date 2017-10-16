@@ -413,7 +413,7 @@ class Repository {
 				return this.zeroDB.getJsonID(this.address + "/data/users/" + auth.address + "/data.json", 3);
 			})
 			.then(json_id => {
-				row.json_id = json_id;
+				row.json = "data/users/" + auth.address;
 
 				return this.zeroDB.query("SELECT * FROM json WHERE json_id = :jsonId", {jsonId: json_id});
 			})
@@ -578,7 +578,7 @@ class Repository {
 				return this.zeroDB.getJsonID(this.address + "/data/users/" + auth.address + "/data.json", 3);
 			})
 			.then(json_id => {
-				row.json_id = json_id;
+				row.json = "data/users/" + auth.address;
 
 				return this.zeroDB.query("SELECT * FROM json WHERE json_id = :jsonId", {jsonId: json_id});
 			})
