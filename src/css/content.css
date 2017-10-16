@@ -61,7 +61,7 @@ p, ul, ol {
 
 	display: block;
 	width: 128px;
-	padding: 0 calc(50% - 512px);
+	padding-left: calc(50% - 512px);
 	margin-top: 16px;
 	margin-left: -144px;
 }
