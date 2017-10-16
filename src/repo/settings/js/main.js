@@ -4,11 +4,10 @@ if(address == "1RepoXU8bQE9m7ssNwL4nnxBnZVejHCc6") {
 
 let indexation;
 function showIndexation() {
-	document.getElementById("indexation_you").src = indexation & 2 ? "../../img/tick.svg" : "../../img/cross.svg";
-	document.getElementById("indexation_you").title = "The repository is" + (indexation & 2 ? " " : " not ") + "indexed by you";
+	let index = document.getElementById("indexation_index");
 
-	document.getElementById("indexation_other").src = indexation & 1 ? "../../img/tick.svg" : "../../img/cross.svg";
-	document.getElementById("indexation_other").title = "The repository is" + (indexation & 1 ? " " : " not ") + "indexed by somebody else";
+	index.classList.toggle("button-disabled", indexation & 2);
+	index.innerHTML = indexation & 2 ? "The repository was published to Repository Index" : "Publish to Repository Index";
 }
 
 repo.addMerger()
@@ -76,54 +75,14 @@ repo.addMerger()
 				return;
 			}
 
-			if(indexation & 2) {
-				zeroPage.alert("You cannot index a repo which is already indexed by you");
-			} else {
+			if(!(indexation & 2)) {
 				index.classList.add("button-disabled");
-				unindex.classList.add("button-disabled");
 
 				repo.addToIndex()
 					.then(() => {
 						indexation |= 2;
-						zeroPage.alert("The repo was added to your index");
 						showIndexation();
-
-						index.classList.remove("button-disabled");
-						unindex.classList.remove("button-disabled");
 					});
-			}
-		};
-
-		let unindex = document.getElementById("indexation_unindex");
-		unindex.onclick = () => {
-			if(unindex.classList.contains("button-disabled"))  {
-				return;
-			}
-
-			if(indexation & 2) {
-				index.classList.add("button-disabled");
-				unindex.classList.add("button-disabled");
-
-				repo.removeFromIndex()
-					.then(indexers => {
-						if(indexers) {
-							indexation = 1;
-							zeroPage.alert("The repo was removed from your index but not from " + indexers.map(indexer => "<b>" + indexer + "</b>").join(", ") + " index(es)");
-						} else {
-							indexation = 0;
-							zeroPage.alert("The repo was completely removed from index");
-						}
-						showIndexation();
-
-						index.classList.remove("button-disabled");
-						unindex.classList.remove("button-disabled");
-					});
-			} else {
-				if(indexation & 1) {
-					zeroPage.alert("You cannot unindex a repo which is indexed by somebody else");
-				} else {
-					zeroPage.alert("You cannot unindex a repo which is not indexed at all");
-				}
 			}
 		};
 
