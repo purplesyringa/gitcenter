@@ -20,7 +20,7 @@
 	background-image: linear-gradient(to top, #FCFCFC 0%, #EEE 100%);
 }
 
-.button-disabled, .button-disabled:active {
+.button-disabled, .button-disabled:active, .select-disabled, .select-disabled:active {
 	cursor: not-allowed;
 	background-image: linear-gradient(to bottom, #888 0%, #666 100%);
 	color: #FFF;

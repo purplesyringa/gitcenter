@@ -96,6 +96,10 @@ repo.addMerger()
 			select.appendChild(option);
 		});
 
+		select.onchange = () => {
+			document.getElementById("maintainers_remove").classList.remove("button-disabled");
+		};
+
 		let removeButton = document.getElementById("maintainers_remove");
 		removeButton.onclick = () => {
 			if(removeButton.classList.contains("button-disabled")) {
