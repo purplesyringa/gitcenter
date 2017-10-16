@@ -52,3 +52,16 @@ p, ul, ol {
 	margin-left: 16px;
 	font-size: 16px;
 }
+.info-link-nomargin {
+	font-size: 16px;
+}
+
+.sidebar {
+	position: absolute;
+
+	display: block;
+	width: 128px;
+	padding: 0 calc(50% - 512px);
+	margin-top: 16px;
+	margin-left: -144px;
+}
