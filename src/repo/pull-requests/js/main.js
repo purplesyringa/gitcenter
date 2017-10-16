@@ -39,7 +39,7 @@ repo.addMerger()
 
 			let tags = document.createElement("div");
 			tags.className = "tags";
-			issue.tags.forEach(tag => {
+			pullRequest.tags.forEach(tag => {
 				let color = repo.tagToColor(tag);
 
 				let node = document.createElement("div");

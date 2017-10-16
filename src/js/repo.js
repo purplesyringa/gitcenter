@@ -306,13 +306,8 @@ class Repository {
 					}
 				);
 			})
-			.then(r => {
-				row = r;
-
-				return this.zeroDB.getJsonID(this.address + "/data/users/" + auth.address + "/data.json", 3);
-			})
-			.then(json_id => {
-				row.json_id = json_id;
+			.then(row => {
+				row.json = "data/users/" + auth.address;
 				return row;
 			});
 	}
@@ -476,13 +471,8 @@ class Repository {
 					}
 				);
 			})
-			.then(r => {
-				row = r;
-
-				return this.zeroDB.getJsonID(this.address + "/data/users/" + auth.address + "/data.json", 3);
-			})
-			.then(json_id => {
-				row.json_id = json_id;
+			.then(row => {
+				row.json = "data/users/" + auth.address;
 				return row;
 			});
 	}
