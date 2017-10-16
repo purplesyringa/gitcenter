@@ -33,6 +33,10 @@
 	background-color: #888;
 }
 
+.entry-value .input {
+	width: 300px;
+}
+
 
 .maintainers-select {
 	display: block;
