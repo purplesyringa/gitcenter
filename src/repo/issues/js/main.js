@@ -32,9 +32,8 @@ repo.addMerger()
 			title.textContent = issue.title;
 			tr.appendChild(title);
 
-			let icon = document.createElement("img");
-			icon.src = "../../img/issue-" + (issue.open ? (issue.reopened ? "reopened" : "open") : "closed") + ".svg";
-			icon.className = "issue-icon";
+			let icon = document.createElement("div");
+			icon.className = "issue-icon issue-status-" + (issue.open ? (issue.reopened ? "reopened" : "open") : "closed");
 			title.insertBefore(icon, title.firstChild);
 
 			let tags = document.createElement("div");

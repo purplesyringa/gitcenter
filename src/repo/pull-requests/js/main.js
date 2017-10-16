@@ -32,9 +32,8 @@ repo.addMerger()
 			title.textContent = pullRequest.title;
 			tr.appendChild(title);
 
-			let icon = document.createElement("img");
-			icon.src = "../../img/pr-" + (pullRequest.merged ? "merged" : "opened") + ".svg";
-			icon.className = "pull-request-icon";
+			let icon = document.createElement("div");
+			icon.className = "pull-request-icon pull-request-status-" + (pullRequest.merged ? "merged" : "opened");
 			title.insertBefore(icon, title.firstChild);
 
 			let tags = document.createElement("div");

@@ -36,10 +36,21 @@
 }
 
 .issue-icon {
-	height: auto;
+	display: inline-block;
 	width: 16px;
+	height: 16px;
 	margin-right: 8px;
-	vertical-align: top;
+	vertical-align: middle;
+	border-radius: 50%;
+}
+.issue-status-open {
+	background-color: #2B3;
+}
+.issue-status-closed {
+	background-color: #B23;
+}
+.issue-status-reopened {
+	background-color: #B2E;
 }
 
 

@@ -36,10 +36,18 @@
 }
 
 .pull-request-icon {
-	height: auto;
+	display: inline-block;
 	width: 16px;
+	height: 16px;
 	margin-right: 8px;
-	vertical-align: top;
+	vertical-align: middle;
+	border-radius: 50%;
+}
+.pull-request-status-opened {
+	background-color: #2B3;
+}
+.pull-request-status-merged {
+	background-color: #B2E;
 }
 
 
