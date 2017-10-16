@@ -90,13 +90,6 @@ function showBranches(noPath) {
 				};
 				branches.appendChild(option);
 			});
-
-			if(repo.git.isSha(branch)) {
-				let option = document.createElement("div");
-				option.className = "branch";
-				option.textContent = branch;
-				branches.insertBefore(option, branches.firstChild);
-			}
 		});
 }
 
@@ -140,7 +133,16 @@ function copy(text) {
 
 function showLinks() {
 	if(repo.git.isSha(branch)) {
-		document.getElementById("permanent_link").style.display = "none";
+		document.getElementById("permanent_link").textContent = branch;
+
+		document.getElementById("permanent_link").onclick = () => {
+			let permanent = location.href.replace(/\?.*/, "") + "?" + address + "/" + path.replace(/@/g, "@@") + "@" + branch;
+			if(copy(permanent)) {
+				zeroPage.alert("Permanent link was copied to clipboard");
+			} else {
+				prompt("Permanent link", permanent);
+			}
+		};
 	} else {
 		repo.git.getBranchCommit(branch)
 			.then(commit => {
