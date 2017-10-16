@@ -14,7 +14,7 @@
 	line-height: 24px;
 	text-decoration: none;
 
-	transition: all .5s;
+	transition: all .1s;
 }
 .repo:hover {
 	background-color: #DDF;
