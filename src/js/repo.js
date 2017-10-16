@@ -907,7 +907,7 @@ class Repository {
 	}
 
 	tagToColor(tag) {
-		tag = "##" + tag;
+		tag = tag + tag + tag;
 
 		let hash = 0;
 		tag.split("").forEach(char => {
@@ -919,8 +919,6 @@ class Repository {
 		let saturation = Math.floor(((hash >> 8) & 0xFF) / 256 * 100);
 		let lightness = Math.floor(((hash >> 16) & 0xFF) / 256 * 50);
 		let background = "hsl(" + hue + ", " + saturation + "%, " + lightness + "%)";
-
-		console.log(background);
 
 		return {
 			background: background,
