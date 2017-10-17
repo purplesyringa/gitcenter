@@ -20,7 +20,13 @@ repo.addMerger()
 		showLinks();
 		showTabs(0);
 
-		document.getElementById("new_file").href = "newfile/?" + address + "/" + path.replace(/@/g, "@@") + "@" + branch.replace(/@/g, "@@");
+		repo.isSignable()
+			.then(signable => {
+				if(signable) {
+					document.getElementById("new_file").style.display = "inline-block";
+					document.getElementById("new_file").href = "newfile/?" + address + "/" + path.replace(/@/g, "@@") + "@" + branch.replace(/@/g, "@@");
+				}
+			});
 
 		return branch || repo.git.getHead();
 	})

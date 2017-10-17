@@ -42,3 +42,7 @@
 	margin-right: 8px;
 	vertical-align: top;
 }
+
+.new-file {
+	display: none;
+}

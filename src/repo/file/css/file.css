@@ -35,3 +35,7 @@
 	white-space: pre;
 	overflow: auto;
 }
+
+.edit {
+	display: none;
+}
