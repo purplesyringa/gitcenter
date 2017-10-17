@@ -178,32 +178,37 @@ class Repository {
 			});
 	}
 	getTree(tree, dir) {
-		return this.git.readTreeItem(tree, dir)
+		let submodules;
+
+		return this.git.getSubmodules(tree)
+			.then(s => {
+				submodules = s;
+
+				return this.git.readTreeItem(tree, dir);
+			})
 			.then(tree => {
 				if(tree.type != "tree") {
 					return Promise.reject("Commit tree must be a tree");
 				}
 
-				return Promise.all(
-					tree.content.map(file => {
-						return this.git.readUnknownObject(file.id)
-							.then(object => {
-								if(object.type == "blob") {
-									file.type = "file";
-								} else if(object.type == "tree") {
-									file.type = "directory";
-								} else {
-									file.type = "unknown";
-								}
+				tree.content.forEach(file => {
+					file.type = {
+						blob: "file",
+						tree: "directory",
+						submodule: "submodule"
+					}[file.type] || "unknown";
 
-								return file;
-							})
-							.catch(object => {
-								file.type = "error";
-								return file;
-							});
-					})
-				);
+					if(file.type == "submodule") {
+						let submodule = submodules.find(submodule => submodule.path == (dir ? dir + "/" + file.name : file.name));
+						if(submodule) {
+							file.submodule = submodule;
+						} else {
+							file.type = "error";
+						}
+					}
+				});
+
+				return tree.content;
 			});
 	}
 	getFile(branch, path) {
