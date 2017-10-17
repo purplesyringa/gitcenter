@@ -90,6 +90,32 @@ class Git {
 			})
 		);
 	}
+	parseConfig(config) {
+		let result = {
+			"": {}
+		};
+		let currentGroup = "";
+
+		config.split("\n").forEach(line => {
+			line = line.trim();
+
+			if(line[0] == ";") {
+				// Comment
+				return;
+			} else if(line[0] == "[" && line[line.length - 1] == "]") {
+				// Group
+				currentGroup = line.substr(1, line.length - 2);
+				result[currentGroup] = {};
+			} else {
+				let key = line.substr(0, line.indexOf("=")).trim();
+				let value = line.substr(line.indexOf("=") + 1).trim();
+
+				result[currentGroup][key] = value;
+			}
+		});
+
+		return result;
+	}
 
 	// FileSystem commands
 	readFile(path) {
@@ -480,7 +506,7 @@ class Git {
 			currentPos += 20;
 
 			items.push({
-				type: mode.length == 6 && mode.indexOf("10") == 0 ? "blob" : "tree",
+				type: mode.length == 6 && mode.indexOf("10") == 0 ? "blob" : mode.indexOf("16") == 0 ? "submodule" : "tree",
 				name: name,
 				id: objectId
 			});
@@ -965,6 +991,44 @@ class Git {
 		});
 
 		return this.makeTreeDelta(base, tree.content);
+	}
+
+	// Submodules
+	getSubmodules(tree) {
+		return this.readUnknownObject(tree)
+			.then(tree => {
+				let blob = tree.content.find(item => item.type == "blob" && item.name == ".gitmodules");
+				if(!blob) {
+					return Promise.reject("No .gitmodules");
+				}
+
+				return this.readUnknownObject(blob.id);
+			})
+			.then(gitmodules => {
+				return this.parseConfig(this.arrayToString(gitmodules.content));
+			})
+			.then(moduleList => {
+				let submodules = [];
+
+				Object.keys(moduleList).forEach(group => {
+					if(group.indexOf("submodule") == -1) {
+						return;
+					}
+
+					let name = group.match(/^submodule "(.*)"$/)[1];
+					let path = moduleList[group].path;
+					let url = moduleList[group].url;
+
+					submodules.push({
+						name: name,
+						path: path,
+						url: url
+					});
+				});
+
+				return submodules;
+			})
+			.catch(() => []);
 	}
 
 	toString() {
