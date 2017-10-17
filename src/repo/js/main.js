@@ -2,13 +2,21 @@ if(address == "1RepoXU8bQE9m7ssNwL4nnxBnZVejHCc6") {
 	location.href = "../default/";
 }
 
-let head;
+let content, head;
+
+marked.setOptions({
+	highlight: (code, lang) => {
+		return lang ? hljs.highlight(lang, code).value : hljs.highlightAuto(code).value;
+	}
+});
 
 repo.addMerger()
 	.then(() => {
 		return repo.getContent();
 	})
-	.then(content => {
+	.then(c => {
+		content = c;
+
 		if(!content.installed) {
 			location.href = "../install/?" + address;
 		}
@@ -80,5 +88,16 @@ repo.addMerger()
 				parts.pop();
 				location.href = "?" + address + "/" + parts.join("/").replace(/@/g, "@@") + "@" + branch.replace(/@/g, "@@");
 			};
+		}
+
+		let readme = files.find(file => file.name.toLowerCase() == "readme" || file.name.toLowerCase() == "readme.md");
+		if(readme && readme.type == "file") {
+			return repo.getFile(head, (path ? path + "/" : "") + readme.name)
+				.then(readme => {
+					readme = repo.git.arrayToString(readme);
+					document.getElementById("readme").innerHTML = marked(readme);
+				});
+		} else {
+			document.getElementById("readme").innerHTML = marked("# " + content.title + "\n" + content.description);
 		}
 	});

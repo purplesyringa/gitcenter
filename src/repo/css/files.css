@@ -46,3 +46,16 @@
 .new-file {
 	display: none;
 }
+
+/* readme */
+
+.readme {
+	width: 1006px;
+	margin: 16px auto;
+	padding: 8px;
+	background-color: #DDF;
+	border: 1px solid #AAF;
+	border-radius: 4px;
+
+	font-size: 16px;
+}
