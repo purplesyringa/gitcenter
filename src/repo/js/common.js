@@ -28,7 +28,7 @@ function showTabs(level) {
 		"?" + address
 	);
 
-	zeroPage.isSignable("merged-GitCenter/" + address + "/content.json")
+	repo.isSignable()
 		.then(signable => {
 			if(signable) {
 				document.getElementById("settings_link").style.display = "inline-block";
@@ -46,7 +46,7 @@ function showHeader(level, gitAddress) {
 	};
 
 	let publish = document.getElementById("publish");
-	zeroPage.isSignable("merged-GitCenter/" + address + "/content.json")
+	repo.isSignable()
 		.then(signable => {
 			if(signable) {
 				publish.style.display = "inline-block";

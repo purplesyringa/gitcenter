@@ -7,6 +7,10 @@ class Repository {
 		this.zeroDB = new ZeroDB(zeroPage);
 	}
 
+	isSignable() {
+		return this.zeroPage.isSignable("merged-GitCenter/" + this.address + "/content.json");
+	}
+
 	// Permission actions
 	addMerger() {
 		let siteInfo, list;
