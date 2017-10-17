@@ -59,12 +59,22 @@ repo.addMerger()
 						return;
 					}
 
-					location.href = (
-						(file.type == "file" ? "file/" : "") +
-						"?" + address +
-						"/" + ((path ? path + "/" : "") + file.name).replace(/@/g, "@@") +
-						"@" + branch.replace(/@/g, "@@")
-					);
+					if(file.type == "submodule") {
+						let url = file.submodule.url.match(/(1[A-Za-z0-9]{25,34})/);
+						if(url) {
+							// Likely Git Center URL
+							location.href = "?" + url[1];
+						} else {
+							parent.location.href = file.submodule.url.replace(/\.git$/, "");
+						}
+					} else {
+						location.href = (
+							(file.type == "file" ? "file/" : "") +
+							"?" + address +
+							"/" + ((path ? path + "/" : "") + file.name).replace(/@/g, "@@") +
+							"@" + branch.replace(/@/g, "@@")
+						);
+					}
 				};
 
 				let name = document.createElement("td");
