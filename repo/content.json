@@ -6,7 +6,7 @@
  "cloneable": true,
  "cloned_from": "1HeLLo4uzjaLetFx6NH3PMwFP3qbRbTf3D",
  "description": "Default Git Center Repo",
- "favicon": "img/logo-red.svg",
+ "favicon": "img/logo-red.png",
  "files": {
   "data-default/users/content.json-default": {
    "sha512": "091029acc8d6ba0f1c8c19dbb0df97ec810b454d690668bbb844c334fae396c4",
