@@ -1,7 +1,7 @@
 .comments {
 	display: block;
-	width: 1024px;
-	padding: 0 calc(50% - 512px);
+	width: 896px;
+	padding: 0 calc(50% - 448px);
 }
 
 .comment {

@@ -1,5 +1,5 @@
 .files {
-	width: 1024px;
+	width: 896px;
 	margin: 0 auto;
 	border-spacing: 0;
 
@@ -50,7 +50,7 @@
 /* readme */
 
 .readme {
-	width: 1006px;
+	width: 880px;
 	margin: 16px auto;
 	padding: 8px;
 	background-color: #DDF;

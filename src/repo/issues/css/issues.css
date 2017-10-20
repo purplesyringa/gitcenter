@@ -1,5 +1,5 @@
 .issues {
-	width: 1024px;
+	width: 896px;
 	margin: 0 auto 16px;
 	border-spacing: 0;
 
@@ -55,7 +55,7 @@
 
 
 .navigation {
-	width: 1024px;
+	width: 896px;
 	margin: 16px auto;
 }
 .navigation > * {

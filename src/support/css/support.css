@@ -1,10 +1,11 @@
 .support-item {
 	display: inline-block;
 	width: 32%;
-	height: 64px;
+	height: 72px;
 	padding: 8px;
 	margin-bottom: 8px;
 	box-sizing: border-box;
+	vertical-align: top;
 
 	border: 1px solid #D5D5D5;
 	border-radius: 4px;
