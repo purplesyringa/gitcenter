@@ -1,0 +1,44 @@
+{
+ "address": "1RepoXU8bQE9m7ssNwL4nnxBnZVejHCc6",
+ "address_index": 80074647,
+ "background-color": "#FFF",
+ "clone_root": "template-new",
+ "cloneable": true,
+ "cloned_from": "1HeLLo4uzjaLetFx6NH3PMwFP3qbRbTf3D",
+ "description": "My new Git Center repository",
+ "favicon": "img/logo-red.svg",
+ "files": {
+  "img/logo-red.svg": {
+   "sha512": "9f5481798d939ab8018a4e8a8baebf094e070eebd41b3ec5dd305e55430df5e3",
+   "size": 888
+  },
+  "index.html": {
+   "sha512": "f05f08df94e7bd7f1638cbdd5cdc5e56a4f769a38e88fb599e519cf29ac4ff9c",
+   "size": 1064
+  },
+  "js/ZeroFrame.js": {
+   "sha512": "672291eadcac614188b41e2df665cacf0c3b1b1d775cbf8291abab2d9e669f9d",
+   "size": 2502
+  }
+ },
+ "ignore": "data/.*",
+ "includes": {
+  "data/users/content.json": {
+   "signers": [],
+   "signers_required": 1
+  }
+ },
+ "inner_path": "content.json",
+ "merged_type": "GitCenter",
+ "modified": 1505931588,
+ "postmessage_nonce_security": true,
+ "signers_sign": "HIbkXHjK35NbjH6FiPXQ6yWz6FagbYVIRVKKA+XdtHUwbgSErgTMH5KoEiJSm3UbygccjfySXI/qIH6C4I+xLAc=",
+ "signs": {
+  "1RepoXU8bQE9m7ssNwL4nnxBnZVejHCc6": "HKCaPyof2vlzqlC6uCvkdF4rQOwvoip2Pvj2keAgQ9jBI5ejFrS4OgQS0rYz4uQP80YzQaGCn85L+tcAaUN9LxQ="
+ },
+ "installed": false,
+ "signs_required": 1,
+ "title": " new repository",
+ "translate": ["js/all.js"],
+ "zeronet_version": "0.5.7"
+}
