@@ -1046,7 +1046,7 @@ Git.init = (root, zeroPage, name, email) => {
 			return zeroFS.writeFile(root + "/description", "Git Center repository");
 		})
 		.then(() => {
-			return zeroFS.writeFile(root + "/config", "[core]\n\trepositoryformatversion = 0\n\tfilemode = false\n\tbare = true\n\tsymlinks = false\n\tignorecase = true\n[receive]\n\tadvertisePushOptions = true\n");
+			return zeroFS.writeFile(root + "/config", "[core]\n\trepositoryformatversion = 0\n\tfilemode = false\n\tbare = true\n\tsymlinks = false\n\tignorecase = true\n[receive]\n\tadvertisePushOptions = true\n\tdenyDeleteCurrent = warn\n");
 		})
 		.then(() => {
 			git = new Git(root, zeroPage);
