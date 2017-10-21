@@ -1,14 +1,14 @@
 .content {
 	display: block;
-	width: 1024px;
-	padding: 0 calc(50% - 512px);
+	width: 896px;
+	padding: 0 calc(50% - 448px);
 	margin: 16px 0;
 }
 
 .middle {
 	display: block;
-	width: 1024px;
-	padding: 16px calc(50% - 512px) 0;
+	width: 896px;
+	padding: 16px calc(50% - 448px) 0;
 	background-color: #EEE;
 	border-bottom: 1px solid #888;
 }
@@ -44,8 +44,8 @@ p, ul, ol {
 
 .info {
 	display: block;
-	width: 1024px;
-	padding: 0 calc(50% - 512px);
+	width: 896px;
+	padding: 0 calc(50% - 448px);
 	margin: 16px 0;
 }
 .info-link {
@@ -61,7 +61,7 @@ p, ul, ol {
 
 	display: block;
 	width: 128px;
-	padding-left: calc(50% - 512px);
+	padding-left: calc(50% - 448px);
 	margin-top: 16px;
 	margin-left: -144px;
 }
