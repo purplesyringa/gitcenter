@@ -29,6 +29,20 @@ class ZeroAuth {
 		return this.activeAuth;
 	}
 
+	getAuthAsync() {
+		return this.page.getSiteInfo()
+			.then(siteInfo => {
+				if(siteInfo.cert_user_id) {
+					return {
+						user: siteInfo.cert_user_id,
+						address: siteInfo.auth_address
+					};
+				} else {
+					return null;
+				}
+			});
+	}
+
 	requestAuth() {
 		if(this.activeAuth !== null && this.activeAuth !== undefined) {
 			return Promise.resolve(this.activeAuth);
