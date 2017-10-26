@@ -524,7 +524,7 @@ class Repository {
 				-1 AS id,\
 				pull_requests.body AS body,\
 				pull_requests.date_added AS date_added,\
-				directory.json AS json,\
+				json.directory AS json,\
 				json.cert_user_id AS cert_user_id,\
 				pull_requests.id AS pull_request_id,\
 				json.directory AS pull_request_json\
