@@ -96,5 +96,11 @@
 			"indexes": ["CREATE INDEX repo_index_address ON repo_index(address)"],
 			"schema_changed": 3
 		}
+	},
+	"feeds": {
+		"Issues": "SELECT 'issue' AS type, issues.date_added / 1000 AS date_added, issues.title AS title, issues.body AS body, 'repo/issues/view/?' || json.site || '/' || issues.id || '@' || REPLACE(json.directory, 'data/users/', '') AS url FROM issues, json WHERE issues.json_id = json.json_id",
+		"Pull requests": "SELECT 'pull_request' AS type, pull_requests.date_added / 1000 AS date_added, pull_requests.title AS title, pull_requests.body AS body, 'repo/pull-requests/view/?' || json.site || '/' || pull_requests.id || '@' || REPLACE(json.directory, 'data/users/', '') AS url FROM pull_requests, json WHERE pull_requests.json_id = json.json_id",
+		"Issue comments": "SELECT 'comment' AS type, issue_comments.date_added / 1000 AS date_added, issues.title AS title, issue_comments.body AS body, 'repo/issues/view/?' || json.site || '/' || issues.id || '@' || REPLACE(json.directory, 'data/users/', '') AS url FROM issues, issue_comments, json, json AS json2 WHERE issues.json_id = json.json_id AND issue_comments.issue_id = issues.id AND issue_comments.json_id = json2.json_id AND issue_comments.issue_json = json2.directory AND json.site = json2.site",
+		"Pull request comments": "SELECT 'comment' AS type, pull_request_comments.date_added / 1000 AS date_added, pull_requests.title AS title, pull_request_comments.body AS body, 'repo/pull-requests/view/?' || json.site || '/' || pull_requests.id || '@' || REPLACE(json.directory, 'data/users/', '') AS url FROM pull_requests, pull_request_comments, json, json AS json2 WHERE pull_requests.json_id = json.json_id AND pull_request_comments.pull_request_id = pull_requests.id AND pull_request_comments.json_id = json2.json_id AND pull_request_comments.pull_request_json = json2.directory AND json.site = json2.site"
 	}
 }
