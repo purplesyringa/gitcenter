@@ -6,6 +6,9 @@ let indexation;
 function showIndexation() {
 	let index = document.getElementById("indexation_index");
 
+	document.getElementById("description").classList.toggle("input-disabled", indexation);
+	document.getElementById("description_save").classList.toggle("input-disabled", indexation);
+
 	index.classList.toggle("button-disabled", indexation & 2);
 	index.innerHTML = indexation & 2 ? "The repository was published to Repository Index" : "Publish to Repository Index";
 }
