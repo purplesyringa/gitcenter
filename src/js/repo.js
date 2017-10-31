@@ -638,6 +638,97 @@ class Repository {
 	}
 
 	// Maintainers
+	getZeroIdFile(name, cache, property) {
+		if(this[cache]) {
+			return Promise.resolve(this[cache]);
+		}
+
+		let worker = new WorkerOut();
+
+		return this.zeroFS.readFile("cors-1iD5ZQJMNXu43w1qLB8sfdHVKppVMduGz/" + name)
+			.then(users => {
+				return worker.JSON.parse(users);
+			})
+			.then(u => {
+				this[cache] = u[property];
+				return this[cache];
+			});
+	}
+	findUser(id) {
+		return this.getZeroIdFile("data/users.json", "_cached_users_json", "users")
+			.then(users => {
+				let userName = Object.keys(users).find(userName => {
+					return users[userName].split(",")[1] == id;
+				});
+				if(userName) {
+					let info = users[userName].split(",");
+					return {
+						name: userName,
+						type: info[0],
+						id: info[1],
+						hash: info[2]
+					};
+				}
+
+				return this.getZeroIdFile("data/users_archive.json", "_cached_users_archive_json", "users")
+					.then(users => {
+						let userName = Object.keys(users).find(userName => {
+							return users[userName].split(",")[1] == id;
+						});
+						if(userName) {
+							let info = users[userName].split(",");
+							return {
+								name: userName,
+								type: info[0],
+								id: info[1],
+								hash: info[2]
+							};
+						}
+
+						let userNames = Object.keys(users).filter(userName => {
+							return users[userName][0] == "@" && id.indexOf(users[userName].split(",")[1]) == 0;
+						});
+
+						if(userNames.length == 0) {
+							return Promise.reject("ID " + id + " was not found");
+						}
+
+						let resolver, rejecter;
+						let resulted = 0;
+						let promise = new Promise((resolve, reject) => {
+							resolver = resolve;
+							rejecter = reject;
+						});
+
+						userNames.forEach(userName => {
+							let pack = users[userName].substr(1).split(",")[0];
+							this.getZeroIdFile("data/certs_" + pack + ".json", "_cached_pack_" + pack, "certs")
+								.then(users => {
+									let userName = Object.keys(users).find(userName => {
+										return users[userName].split(",")[1] == id;
+									});
+									if(userName) {
+										let info = users[userName].split(",");
+										resolver({
+											name: userName,
+											type: info[0],
+											id: info[1],
+											hash: info[2]
+										});
+										return;
+									}
+
+									resulted++;
+									if(resulted == userNames.length) {
+										rejecter("ID " + id + " was not found");
+									}
+								});
+						});
+
+						return promise;
+					});
+			});
+	}
 	getUsers() {
 		let users;
 
@@ -678,25 +769,13 @@ class Repository {
 			.then(content => {
 				signers = content.signers || [];
 
-				return this.getUsers();
-			})
-			.then(users => {
-				let userNames = Object.keys(users);
-				signers = signers
-					.map(id => {
-						let name = userNames.find(name => users[name].id == id);
-						if(!name) {
-							return false;
-						}
-
-						return Object.assign({
-							name: name
-						}, users[name]);
+				return Promise.all(
+					signers.map(signer => {
+						return this.findUser(signer).catch(() => null);
 					})
-					.filter(signer => signer);
-
-				return signers;
-			});
+				);
+			})
+			.then(userNames => userNames.filter(userName => userName));
 	}
 	removeMaintainer(name) {
 		let content, signers;
