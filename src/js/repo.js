@@ -654,7 +654,7 @@ class Repository {
 				return this[cache];
 			});
 	}
-	findUser(id) {
+	findUserById(id) {
 		return this.getZeroIdFile("data/users.json", "_cached_users_json", "users")
 			.then(users => {
 				let userName = Object.keys(users).find(userName => {
@@ -729,7 +729,7 @@ class Repository {
 					});
 			});
 	}
-	findPublicKey(userName) {
+	findUserByName(userName) {
 		return this.getZeroIdFile("data/users.json", "_cached_users_json", "users")
 			.then(users => {
 				if(users[userName]) {
@@ -785,7 +785,7 @@ class Repository {
 
 				return Promise.all(
 					signers.map(signer => {
-						return this.findUser(signer).catch(() => null);
+						return this.findUserById(signer).catch(() => null);
 					})
 				);
 			})
@@ -793,7 +793,7 @@ class Repository {
 	}
 	removeMaintainer(name) {
 		let cert, content, signers;
-		return this.findPublicKey(name)
+		return this.findUserByName(name)
 			.then(c => {
 				cert = c;
 
@@ -816,7 +816,7 @@ class Repository {
 	}
 	addMaintainer(name, signStyle) {
 		let cert, content, signers;
-		return this.findPublicKey(name)
+		return this.findUserByName(name)
 			.then(c => {
 				cert = c;
 
