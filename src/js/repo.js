@@ -729,6 +729,53 @@ class Repository {
 					});
 			});
 	}
+	findPublicKey(userName) {
+		return this.getZeroIdFile("data/users.json", "_cached_users_json", "users")
+			.then(users => {
+				if(users[userName]) {
+					return {
+						name: userName,
+						type: info[0],
+						id: info[1],
+						hash: info[2]
+					};
+				}
+
+				return this.getZeroIdFile("data/users_archive.json", "_cached_users_archive_json", "users")
+					.then(users => {
+						if(!users[userName]) {
+							return Promise.reject("User " + userName + " was not found");
+						}
+
+						if(users[userName][0] != "@") {
+							let info = users[userName].split(",");
+							return {
+								name: userName,
+								type: info[0],
+								id: info[1],
+								hash: info[2]
+							};
+						}
+
+						let pack = users[userName].substr(1).split(",")[0];
+
+						return this.getZeroIdFile("data/certs_" + pack + ".json", "_cached_pack_" + pack, "certs")
+							.then(users => {
+								if(users[userName]) {
+									let info = users[userName].split(",");
+									return {
+										name: userName,
+										type: info[0],
+										id: info[1],
+										hash: info[2]
+									};
+								}
+
+								return Promise.reject("User " + userName + " was not found");
+							});
+					});
+			});
+	}
 	getUsers() {
 		let users;
 
@@ -778,27 +825,21 @@ class Repository {
 			.then(userNames => userNames.filter(userName => userName));
 	}
 	removeMaintainer(name) {
-		let content, signers;
+		let cert, content, signers;
+		return this.findPublicKey(name)
+			.then(c => {
+				cert = c;
 
-		return this.getContent()
+				return this.getContent();
+			})
 			.then(c => {
 				content = c;
-				signers = content.signers || [];
-
-				return this.getUsers();
-			})
-			.then(users => {
-				if(!users[name]) {
-					return;
+				if(content.signers) {
+					let index = content.signers.indexOf(cert.id);
+					if(index != -1) {
+						content.signers.splice(index, 1);
+					}
 				}
-
-				let index = signers.indexOf(users[name].id);
-				if(index == -1) {
-					return;
-				}
-
-				signers.splice(index, 1);
-				content.signers = signers;
 
 				return this.setContent(content);
 			})
@@ -807,22 +848,24 @@ class Repository {
 			});
 	}
 	addMaintainer(name, signStyle) {
-		let content, signers;
+		let cert, content, signers;
+		return this.findPublicKey(name)
+			.then(c => {
+				cert = c;
 
-		return this.getContent()
+				return this.getContent();
+			})
 			.then(c => {
 				content = c;
-				signers = content.signers || [];
 
-				return this.getUsers();
-			})
-			.then(users => {
-				if(!users[name]) {
-					return;
+				if(!content.signers) {
+					content.signers = [];
 				}
 
-				signers.push(users[name].id);
-				content.signers = signers;
+				let index = content.signers.indexOf(cert.id);
+				if(index == -1) {
+					content.signers.push(cert.id);
+				}
 
 				return this.setContent(content);
 			})
