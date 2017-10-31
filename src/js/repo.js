@@ -1,3 +1,10 @@
+FOLLOW_QUERIES = {
+	issues: "SELECT 'issue' AS type, issues.date_added AS date_added, issues.title AS title, issues.body AS body, 'repo/issues/view/?' || json.site || '/' || issues.id || '@' || REPLACE(json.directory, 'data/users/', '') AS url FROM issues, json WHERE issues.json_id = json.json_id AND json.site IN (:params)",
+	pullRequests: "SELECT 'pull_request' AS type, pull_requests.date_added AS date_added, pull_requests.title AS title, pull_requests.body AS body, 'repo/pull-requests/view/?' || json.site || '/' || pull_requests.id || '@' || REPLACE(json.directory, 'data/users/', '') AS url FROM pull_requests, json WHERE pull_requests.json_id = json.json_id AND json.site IN (:params)",
+	issueComments: "SELECT 'comment' AS type, issue_comments.date_added AS date_added, issues.title AS title, issue_comments.body AS body, 'repo/issues/view/?' || json.site || '/' || issues.id || '@' || REPLACE(json.directory, 'data/users/', '') AS url FROM issues, issue_comments, json, json AS json2 WHERE issues.json_id = json.json_id AND issue_comments.issue_id = issues.id AND issue_comments.json_id = json2.json_id AND issue_comments.issue_json = json2.directory AND json.site = json2.site AND json.site IN (:params)",
+	pullRequestComments: "SELECT 'comment' AS type, pull_request_comments.date_added AS date_added, pull_requests.title AS title, pull_request_comments.body AS body, 'repo/pull-requests/view/?' || json.site || '/' || pull_requests.id || '@' || REPLACE(json.directory, 'data/users/', '') AS url FROM pull_requests, pull_request_comments, json, json AS json2 WHERE pull_requests.json_id = json.json_id AND pull_request_comments.pull_request_id = pull_requests.id AND pull_request_comments.json_id = json2.json_id AND pull_request_comments.pull_request_json = json2.directory AND json.site = json2.site AND json.site IN (:params)"
+};
+
 class Repository {
 	constructor(address, zeroPage) {
 		this.address = address;
@@ -742,6 +749,51 @@ class Repository {
 			})
 			.then(() => {
 				return this.signContent(signStyle);
+			});
+	}
+
+	// Follow
+	follow() {
+		return this.zeroPage.cmd("feedListFollow")
+			.then(feedList => {
+				if(!feedList["Issues"]) {
+					feedList["Issues"] = [FOLLOW_QUERIES.issues, []];
+				}
+				if(!feedList["Pull requests"]) {
+					feedList["Pull requests"] = [FOLLOW_QUERIES.pullRequests, []];
+				}
+				if(!feedList["Issue comments"]) {
+					feedList["Issue comments"] = [FOLLOW_QUERIES.issueComments, []];
+				}
+				if(!feedList["Pull request comments"]) {
+					feedList["Pull request comments"] = [FOLLOW_QUERIES.pullRequestComments, []];
+				}
+
+				Object.values(feedList).forEach(feed => feed[1].push(this.address));
+
+				return this.zeroPage.cmd("feedFollow", [feedList]);
+			});
+	}
+	unfollow() {
+		return this.zeroPage.cmd("feedListFollow")
+			.then(feedList => {
+				Object.values(feedList).forEach(feed => {
+					let index = feed[1].indexOf(this.address);
+					if(index > -1) {
+						feed[1].splice(index, 1);
+					}
+				});
+
+				return this.zeroPage.cmd("feedFollow", [feedList]);
+			});
+	}
+	isFollowing() {
+		return this.zeroPage.cmd("feedListFollow")
+			.then(feedList => {
+				return (
+					Object.values(feedList).length > 0 &&
+					Object.values(feedList).every(feed => feed[1].indexOf(this.address) > -1)
+				);
 			});
 	}
 
