@@ -638,37 +638,142 @@ class Repository {
 	}
 
 	// Maintainers
-	getUsers() {
-		let users;
+	getZeroIdFile(name, cache, property) {
+		if(this[cache]) {
+			return Promise.resolve(this[cache]);
+		}
 
 		let worker = new WorkerOut();
 
-		return this.zeroFS.readFile("cors-1iD5ZQJMNXu43w1qLB8sfdHVKppVMduGz/data/users.json")
+		return this.zeroFS.readFile("cors-1iD5ZQJMNXu43w1qLB8sfdHVKppVMduGz/" + name)
 			.then(users => {
 				return worker.JSON.parse(users);
 			})
 			.then(u => {
-				users = u.users;
-
-				return this.zeroFS.readFile("cors-1iD5ZQJMNXu43w1qLB8sfdHVKppVMduGz/data/users_archive.json");
-			})
-			.then(archived => {
-				return worker.JSON.parse(archived);
-			})
-			.then(archived => {
-				archived = archived.users;
-				users = Object.assign(users, archived);
-
-				Object.keys(users).forEach(name => {
-					let data = users[name].split(",");
-					users[name] = {
-						type: data[0],
-						id: data[1],
-						hash: data[2]
-					};
+				this[cache] = u[property];
+				return this[cache];
+			});
+	}
+	findUserById(id) {
+		return this.getZeroIdFile("data/users.json", "_cached_users_json", "users")
+			.then(users => {
+				let userName = Object.keys(users).find(userName => {
+					return users[userName].split(",")[1] == id;
 				});
+				if(userName) {
+					let info = users[userName].split(",");
+					return {
+						name: userName,
+						type: info[0],
+						id: info[1],
+						hash: info[2]
+					};
+				}
 
-				return users;
+				return this.getZeroIdFile("data/users_archive.json", "_cached_users_archive_json", "users")
+					.then(users => {
+						let userName = Object.keys(users).find(userName => {
+							return users[userName].split(",")[1] == id;
+						});
+						if(userName) {
+							let info = users[userName].split(",");
+							return {
+								name: userName,
+								type: info[0],
+								id: info[1],
+								hash: info[2]
+							};
+						}
+
+						let userNames = Object.keys(users).filter(userName => {
+							return users[userName][0] == "@" && id.indexOf(users[userName].split(",")[1]) == 0;
+						});
+
+						if(userNames.length == 0) {
+							return Promise.reject("ID " + id + " was not found");
+						}
+
+						let resolver, rejecter;
+						let resulted = 0;
+						let promise = new Promise((resolve, reject) => {
+							resolver = resolve;
+							rejecter = reject;
+						});
+
+						userNames.forEach(userName => {
+							let pack = users[userName].substr(1).split(",")[0];
+							this.getZeroIdFile("data/certs_" + pack + ".json", "_cached_pack_" + pack, "certs")
+								.then(users => {
+									let userName = Object.keys(users).find(userName => {
+										return users[userName].split(",")[1] == id;
+									});
+									if(userName) {
+										let info = users[userName].split(",");
+										resolver({
+											name: userName,
+											type: info[0],
+											id: info[1],
+											hash: info[2]
+										});
+										return;
+									}
+
+									resulted++;
+									if(resulted == userNames.length) {
+										rejecter("ID " + id + " was not found");
+									}
+								});
+						});
+
+						return promise;
+					});
+			});
+	}
+	findUserByName(userName) {
+		return this.getZeroIdFile("data/users.json", "_cached_users_json", "users")
+			.then(users => {
+				if(users[userName]) {
+					return {
+						name: userName,
+						type: info[0],
+						id: info[1],
+						hash: info[2]
+					};
+				}
+
+				return this.getZeroIdFile("data/users_archive.json", "_cached_users_archive_json", "users")
+					.then(users => {
+						if(!users[userName]) {
+							return Promise.reject("User " + userName + " was not found");
+						}
+
+						if(users[userName][0] != "@") {
+							let info = users[userName].split(",");
+							return {
+								name: userName,
+								type: info[0],
+								id: info[1],
+								hash: info[2]
+							};
+						}
+
+						let pack = users[userName].substr(1).split(",")[0];
+
+						return this.getZeroIdFile("data/certs_" + pack + ".json", "_cached_pack_" + pack, "certs")
+							.then(users => {
+								if(users[userName]) {
+									let info = users[userName].split(",");
+									return {
+										name: userName,
+										type: info[0],
+										id: info[1],
+										hash: info[2]
+									};
+								}
+
+								return Promise.reject("User " + userName + " was not found");
+							});
+					});
 			});
 	}
 	getMaintainers() {
@@ -678,48 +783,30 @@ class Repository {
 			.then(content => {
 				signers = content.signers || [];
 
-				return this.getUsers();
-			})
-			.then(users => {
-				let userNames = Object.keys(users);
-				signers = signers
-					.map(id => {
-						let name = userNames.find(name => users[name].id == id);
-						if(!name) {
-							return false;
-						}
-
-						return Object.assign({
-							name: name
-						}, users[name]);
+				return Promise.all(
+					signers.map(signer => {
+						return this.findUserById(signer).catch(() => null);
 					})
-					.filter(signer => signer);
-
-				return signers;
-			});
+				);
+			})
+			.then(userNames => userNames.filter(userName => userName));
 	}
 	removeMaintainer(name) {
-		let content, signers;
+		let cert, content, signers;
+		return this.findUserByName(name)
+			.then(c => {
+				cert = c;
 
-		return this.getContent()
+				return this.getContent();
+			})
 			.then(c => {
 				content = c;
-				signers = content.signers || [];
-
-				return this.getUsers();
-			})
-			.then(users => {
-				if(!users[name]) {
-					return;
+				if(content.signers) {
+					let index = content.signers.indexOf(cert.id);
+					if(index != -1) {
+						content.signers.splice(index, 1);
+					}
 				}
-
-				let index = signers.indexOf(users[name].id);
-				if(index == -1) {
-					return;
-				}
-
-				signers.splice(index, 1);
-				content.signers = signers;
 
 				return this.setContent(content);
 			})
@@ -728,22 +815,24 @@ class Repository {
 			});
 	}
 	addMaintainer(name, signStyle) {
-		let content, signers;
+		let cert, content, signers;
+		return this.findUserByName(name)
+			.then(c => {
+				cert = c;
 
-		return this.getContent()
+				return this.getContent();
+			})
 			.then(c => {
 				content = c;
-				signers = content.signers || [];
 
-				return this.getUsers();
-			})
-			.then(users => {
-				if(!users[name]) {
-					return;
+				if(!content.signers) {
+					content.signers = [];
 				}
 
-				signers.push(users[name].id);
-				content.signers = signers;
+				let index = content.signers.indexOf(cert.id);
+				if(index == -1) {
+					content.signers.push(cert.id);
+				}
 
 				return this.setContent(content);
 			})
