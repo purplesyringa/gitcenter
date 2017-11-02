@@ -20,3 +20,13 @@
 .branch-active {
 	background-color: #DDF;
 }
+
+.tag {
+	background-color: #EDD;
+}
+.tag:hover {
+	background-color: #FBB;
+}
+.tag.branch-active {
+	background-color: #FBB;
+}
