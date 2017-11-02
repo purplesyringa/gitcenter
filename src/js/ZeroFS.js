@@ -19,10 +19,10 @@ class ZeroFS {
 				return Promise.resolve(children.indexOf(basePath) > -1);
 			});
 	}
-	readFile(file, bytes) {
+	readFile(file, bytes, required) {
 		return this.page.cmd("fileGet", [
 			file, // file
-			false, // required (wait until file exists)
+			required, // required (wait until file exists)
 			"base64", // text or base64
 			300 // timeout
 		]).then(res => {
