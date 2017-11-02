@@ -759,7 +759,10 @@ class Git {
 			return Promise.resolve(branch);
 		}
 
-		return this.getRef("refs/heads/" + branch);
+		return this.getRef("refs/heads/" + branch)
+			.catch(() => {
+				return this.getRef("refs/tags/" + branch);
+			});
 	}
 	readBranchCommit(branch) {
 		return this.getBranchCommit(branch)

@@ -82,11 +82,12 @@ function showBranches(noPath) {
 			// Show branch list
 			let branches = document.getElementById("branches");
 			list.forEach(curBranch => {
+				let plain = curBranch.replace(/^refs\/.*?\//, "");
 				let option = document.createElement("div");
-				option.className = "branch" + (curBranch == branch ? " branch-active" : "");
-				option.textContent = curBranch;
+				option.className = "branch" + (plain == branch ? " branch-active" : "") + (curBranch.indexOf("refs/tags/") == 0 ? " tag" : "");
+				option.textContent = plain;
 				option.onclick = () => {
-					location.href = "?" + address + "/" + (noPath ? curBranch : path.replace(/@/g, "@@") + "@" + curBranch.replace(/@/g, "@@"));
+					location.href = "?" + address + "/" + (noPath ? plain : path.replace(/@/g, "@@") + "@" + plain.replace(/@/g, "@@"));
 				};
 				branches.appendChild(option);
 			});
