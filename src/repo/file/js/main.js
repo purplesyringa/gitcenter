@@ -44,9 +44,18 @@ repo.addMerger()
 		// Tree exists
 		return repo.getFile(branch, path)
 			.then(blob => {
-				let fileContent = document.getElementById("file_content");
-				fileContent.textContent = repo.git.arrayToString(blob);
-				hljs.highlightBlock(fileContent);
+				if(/[\x00-\x09\x0E-\x1F]/.test(repo.git.arrayToString(blob))) { // Binary
+					let fileContent = document.getElementById("file_content");
+					fileContent.textContent = "This file is binary";
+				} else {
+					let fileContent = document.getElementById("file_content");
+					fileContent.textContent = repo.git.arrayToString(blob);
+					hljs.highlightBlock(fileContent);
+				}
+
+				document.getElementById("download").onclick = () => {
+					repo.download(path.split("/").slice(-1)[0], blob);
+				};
 			}, () => {
 				// Blob doesn't exist
 				let fileContent = document.getElementById("file_content");

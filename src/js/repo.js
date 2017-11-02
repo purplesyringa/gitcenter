@@ -1055,6 +1055,15 @@ class Repository {
 
 		return name + " commited on " + this.translateDate(relativeDate) + " " + this.translateTime(relativeDate) + " " + offsetString;
 	}
+	download(name, data) {
+		let blob = new Blob([data], {type: "application/octet-stream"});
+		let link = document.createElement("a");
+		link.href = URL.createObjectURL(blob);
+		link.download = name;
+		document.body.appendChild(link);
+		link.click();
+		document.body.removeChild(link);
+	}
 
 	tagToColor(tag) {
 		tag = tag + tag + tag;
