@@ -645,7 +645,7 @@ class Repository {
 
 		let worker = new WorkerOut();
 
-		return this.zeroFS.readFile("cors-1iD5ZQJMNXu43w1qLB8sfdHVKppVMduGz/" + name)
+		return this.zeroFS.readFile("cors-1iD5ZQJMNXu43w1qLB8sfdHVKppVMduGz/" + name, false, true)
 			.then(users => {
 				return worker.JSON.parse(users);
 			})
