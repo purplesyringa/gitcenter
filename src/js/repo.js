@@ -235,8 +235,10 @@ class Repository {
 		return this.git.getRefList()
 			.then(refs => {
 				return refs
-					.filter(ref => ref.indexOf("refs/heads/") == 0)
-					.map(ref => ref.replace("refs/heads/", ""));
+					.filter(ref => (
+						ref.indexOf("refs/heads/") == 0 ||
+						ref.indexOf("refs/tags/") == 0
+					));
 			});
 	}
 	saveFile(path, content, base, message) {
