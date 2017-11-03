@@ -59,7 +59,7 @@ fi
 
 "$python_path" --version | grep "Python 3" >/dev/null 2>/dev/null
 if [ $? -eq 0 ]; then
-	zeronet_home=$(realpath `git config --get zeronet.home`)
+	zeronet_home=$(eval realpath `git config --get zeronet.home`)
 
 	# Windows ZeroBundle
 	if [ ! -z "$zeronet_home" ] && [ -f "$zeronet_home/../Python/python.exe" ]; then
@@ -89,7 +89,7 @@ site=`basename $(realpath "$GIT_DIR/..")`
 echo "Retrieving data directory..."
 data_dir=`eval $zeronet_py --silent getConfig | "$python_path" -c "import sys, json; config = json.load(sys.stdin); print(config['data_dir'])"`
 
-privatekey=`cat "$data_dir/users.json" | "$python_path" -c "import sys, json; users = json.load(sys.stdin); print(users[users.keys()[0]]['certs']['zeroid.bit']['auth_privatekey'])"`
+privatekey=`cat "$data_dir/users.json" | "$python_path" -c "import sys, json; users = json.load(sys.stdin); print(users[list(users.keys())[0]]['certs']['zeroid.bit']['auth_privatekey'])" 2>/dev/null`
 if [ $? -ne 0 ]; then
 	echo "Failed to get signing key, rejecting to sign."
 	exit 0
