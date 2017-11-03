@@ -305,18 +305,20 @@ class Repository {
 			.then(() => commit);
 	}
 	uploadFile(path, base, message) {
-		let input = document.createElement("input");
-		input.type = "file";
-		input.style.opacity = "0";
-		input.onchange = () => {
-			let fileReader = new FileReader();
-			fileReader.onload = () => {
-				return this.saveFile(path, fileReader.result, base, message);
+		return new Promise((resolve, reject) => {
+			let input = document.createElement("input");
+			input.type = "file";
+			input.style.opacity = "0";
+			input.onchange = () => {
+				let fileReader = new FileReader();
+				fileReader.onload = () => {
+					resolve(this.saveFile(path, fileReader.result, base, message));
+				};
+				fileReader.readAsArrayBuffer(input.files[0]);
 			};
-			fileReader.readAsArrayBuffer(input.files[0]);
-		};
-		document.body.appendChild(input);
-		input.click();
+			document.body.appendChild(input);
+			input.click();
+		});
 	}
 
 	// Issues
