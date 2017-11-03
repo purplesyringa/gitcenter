@@ -324,7 +324,7 @@ class Repository {
 
 	// Releases
 	getReleases() {
-		let tags;
+		let tags, releases;
 
 		return this.git.getRefList()
 			.then(refs => {
@@ -377,10 +377,21 @@ class Repository {
 					})
 				);
 			})
-			.then(releases => {
-				return releases.sort((a, b) => {
+			.then(r => {
+				releases = r.sort((a, b) => {
 					return a.date - b.date;
 				});
+
+				return this.getContent();
+			})
+			.then(content => {
+				if(content.not_releases) {
+					return releases.filter(release => {
+						return content.not_releases.indexOf(release.tag) == -1;
+					});
+				}
+
+				return releases;
 			});
 	}
 	removeRelease(tag) {
