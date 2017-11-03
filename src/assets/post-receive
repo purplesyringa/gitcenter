@@ -50,11 +50,20 @@ fi
 
 ################################################################################
 
-zeronet_home=`git config --get zeronet.home`
+zeronet_home=$(realpath `git config --get zeronet.home` 2>/dev/null)
 if [ -z "$zeronet_home" ]; then
 	echo "zeronet.home not set, rejecting to sign."
 	echo "Run 'git config --global zeronet.home path_to_zeronet'"
 	exit 0
+fi
+
+# Handle paths without ZeroNet/ and core/
+# ZeroBundle
+if [ ! -z "$zeronet_home" ] && [ -d "$zeronet_home/ZeroNet" ]; then
+	zeronet_home="$zeronet_home/ZeroNet"
+# Windows distributable
+elif [ ! -z "$zeronet_home" ] && [ -d "$zeronet_home/core" ]; then
+	zeronet_home="$zeronet_home/core"
 fi
 
 "$python_path" --version | grep "Python 3" >/dev/null 2>/dev/null
