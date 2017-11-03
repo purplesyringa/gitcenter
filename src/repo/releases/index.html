@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>Issues - Git Center</title>
+		<title>Settings - Git Center</title>
 		<meta charset="utf-8">
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<base href="" target="_top" id="base">
@@ -13,8 +13,7 @@
 		<link rel="stylesheet" type="text/css" href="../../css/content.css">
 		<link rel="stylesheet" type="text/css" href="../css/tabs.css">
 		<link rel="stylesheet" type="text/css" href="../css/info.css">
-		<link rel="stylesheet" type="text/css" href="../css/tags.css">
-		<link rel="stylesheet" type="text/css" href="css/issues.css">
+		<link rel="stylesheet" type="text/css" href="css/releases.css">
 	</head>
 	<body>
 		<header class="header">
@@ -50,7 +49,7 @@
 				<img src="../../img/code.svg" width="16">
 				Code
 			</a>
-			<a id="issues_link" class="tab tab-current">
+			<a id="issues_link" class="tab">
 				<img src="../../img/issue-open.svg" width="16">
 				Issues
 			</a>
@@ -62,7 +61,7 @@
 				<img src="../../img/log.svg" width="16">
 				Log
 			</a>
-			<a id="releases_link" class="tab">
+			<a id="releases_link" class="tab tab-current">
 				<img src="../../img/releases.svg" width="16">
 				Releases
 			</a>
@@ -73,16 +72,10 @@
 		</main>
 
 		<div class="info">
-			<a class="button button-blue" id="new_issue">New issue</a>
-			<a class="button info-link" id="follow"></a>
+			<div class="info-link-nomargin">Add a release by creating an annotated tag.</div>
 		</div>
 
-		<table id="issues" class="issues"></table>
-
-		<div class="navigation">
-			<a class="button button-disabled" id="navigation_back">&#8592; Back</a>
-			<a class="button button-disabled" id="navigation_next">Next &#8594;</a>
-		</div>
+		<div class="releases" id="releases"></div>
 
 		<script type="text/javascript" src="../../js/ZeroFrame.js"></script>
 		<script type="text/javascript" src="../../js/ZeroPage.js"></script>

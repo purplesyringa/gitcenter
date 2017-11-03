@@ -22,6 +22,12 @@ function showTabs(level) {
 		"?" + address
 	);
 
+	document.getElementById("releases_link").href = (
+		"../".repeat(level) +
+		"releases/" +
+		"?" + address
+	);
+
 	document.getElementById("settings_link").href = (
 		"../".repeat(level) +
 		"settings/" +

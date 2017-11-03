@@ -574,7 +574,7 @@ class Git {
 			if(opcode == "object") {
 				target = line.substr(opcode.length).trim();
 			} else if(opcode == "type") {
-				type.push(line.substr(opcode.length).trim());
+				type = line.substr(opcode.length).trim();
 			} else if(opcode == "tag") {
 				tag = line.substr(opcode.length).trim();
 			} else if(opcode == "tagger") {
@@ -768,11 +768,13 @@ class Git {
 		return this.getBranchCommit(branch)
 			.then(commit => this.readUnknownObject(commit))
 			.then(commit => {
-				if(commit.type != "commit") {
+				if(commit.type == "tag") {
+					return this.readUnknownObject(commit.content.target);
+				} else if(commit.type != "commit") {
 					return Promise.reject("Branch must reference to a commit, not a " + commit.type);
+				} else {
+					return commit;
 				}
-
-				return commit;
 			});
 	}
 
