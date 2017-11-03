@@ -1,0 +1,32 @@
+.releases {
+	width: 896px;
+	margin: 16px auto;
+}
+
+.release {
+	display: block;
+}
+
+.release-title {
+	display: inline-block;
+	margin-bottom: 8px;
+
+	font-size: 32px;
+}
+.release-tag {
+	display: inline-block;
+	margin-left: 16px;
+
+	font-size: 16px;
+	color: #888;
+}
+.release-description {
+	display: block;
+
+	padding-bottom: 16px;
+	border-bottom: 1px solid #888;
+	margin-bottom: 16px;
+
+	font-size: 16px;
+	white-space: pre;
+}
