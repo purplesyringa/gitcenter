@@ -3,6 +3,9 @@ python_path=`command -v python`
 if [ -z "$python_path" ]; then
 	python_path=`command -v python2`
 fi
+if [ -z "$python_path" ]; then
+	python_path=`command -v python3`
+fi
 
 if [ -z "$python_path" ]; then
 	echo "Python not installed. If you want to automatically sign and publish after pushing, please install it."
@@ -57,9 +60,9 @@ fi
 site=`basename $(realpath "$GIT_DIR/..")`
 
 echo "Retrieving data directory..."
-data_dir=`"$python_path" "$zeronet_home/zeronet.py" --silent getConfig | "$python_path" -c "import sys, json; config = json.load(sys.stdin); print config['data_dir']"`
+data_dir=`"$python_path" "$zeronet_home/zeronet.py" --silent getConfig | "$python_path" -c "import sys, json; config = json.load(sys.stdin); print(config['data_dir'])"`
 
-privatekey=`cat "$data_dir/users.json" | "$python_path" -c "import sys, json; users = json.load(sys.stdin); print users[users.keys()[0]]['certs']['zeroid.bit']['auth_privatekey']"`
+privatekey=`cat "$data_dir/users.json" | "$python_path" -c "import sys, json; users = json.load(sys.stdin); print(users[users.keys()[0]]['certs']['zeroid.bit']['auth_privatekey'])"`
 if [ $? -ne 0 ]; then
 	echo "Failed to get signing key, rejecting to sign."
 	exit 0

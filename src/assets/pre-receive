@@ -3,6 +3,9 @@ python_path=`command -v python`
 if [ -z "$python_path" ]; then
 	python_path=`command -v python2`
 fi
+if [ -z "$python_path" ]; then
+	python_path=`command -v python3`
+fi
 
 if [ -z "$python_path" ]; then
 	exit 0
