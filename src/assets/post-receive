@@ -1,10 +1,10 @@
 #!/bin/bash
-python_path=`command -v python2.7`
+python_path=`which python2.7 2>/dev/null`
 if [ -z "$python_path" ]; then
-	python_path=`command -v python`
+	python_path=`which python 2>/dev/null`
 fi
 if [ -z "$python_path" ]; then
-	python_path=`command -v python3`
+	python_path=`which python3 2>/dev/null`
 fi
 
 if [ -z "$python_path" ]; then
