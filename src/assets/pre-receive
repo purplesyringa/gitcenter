@@ -10,7 +10,7 @@ fi
 
 ################################################################################
 
-cat "$GIT_DIR/../content.json" | "$python_path" -c "import sys, json; content = json.load(sys.stdin); sys.exit(1 if content['hooks'] else 0)"
+cat "$GIT_DIR/../content.json" | "$python_path" -c "import sys, json; content = json.load(sys.stdin); sys.exit(1 if content.get('hooks', false) else 0)"
 if [ $? -eq 0 ]; then
 	# Hooks disabled
 	exit 0
