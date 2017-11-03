@@ -38,4 +38,17 @@ repo.addMerger()
 					location.href = "../?" + address + "/" + path.replace(/@/g, "@@") + "@" + (repo.git.isSha(branch) ? commit : branch).replace(/@/g, "@@");
 				});
 		};
+
+		let uploadButton = document.getElementById("upload");
+		uploadButton.onclick = () => {
+			if(commitMessage.value == "" || fileName.value == "") {
+				zeroPage.alert("Please fill commit message and file name in");
+				return;
+			}
+
+			repo.uploadFile((path ? path + "/" : "") + fileName.value, branch, commitMessage.value)
+				.then(commit => {
+					location.href = "../?" + address + "/" + path.replace(/@/g, "@@") + "@" + (repo.git.isSha(branch) ? commit : branch).replace(/@/g, "@@");
+				});
+		};
 	});

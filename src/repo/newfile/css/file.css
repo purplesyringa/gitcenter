@@ -9,7 +9,6 @@
 }
 
 .files td {
-	width: auto;
 	margin: 0;
 	padding: 8px;
 	font-size: 16px;
@@ -46,17 +45,23 @@
 }
 .commit-message-input {
 	display: block;
-	width: 100%;
+	width: calc(100% - 16px);
 	margin: 0;
 	border: 0;
 	border-radius: 0 0 0 4px;
 }
 
 .commit-node {
-	width: 0 !important;
 	padding: 0 !important;
 	border: 0 !important;
+	width: 250px;
+	text-align: right;
+}
+.upload-button {
+	border-radius: 0;
+	margin: 0;
 }
 .commit-button {
 	border-radius: 0 0 4px 0;
+	margin: 0;
 }
