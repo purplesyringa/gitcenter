@@ -574,7 +574,7 @@ class Git {
 			if(opcode == "object") {
 				target = line.substr(opcode.length).trim();
 			} else if(opcode == "type") {
-				type.push(line.substr(opcode.length).trim());
+				type = line.substr(opcode.length).trim();
 			} else if(opcode == "tag") {
 				tag = line.substr(opcode.length).trim();
 			} else if(opcode == "tagger") {
