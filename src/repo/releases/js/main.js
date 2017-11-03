@@ -44,6 +44,14 @@ repo.addMerger()
 				let button = document.createElement("a");
 				button.className = "button release-not-release";
 				button.innerHTML = "This is not a release";
+				button.onclick = () => {
+					button.classList.add("button-disabled");
+
+					return repo.removeRelease(release.tag)
+						.then(() => {
+							location.href = "?" + address;
+						});
+				};
 				node.appendChild(button);
 			}
 
