@@ -22,9 +22,10 @@ repo.addMerger()
 			let node = document.createElement("div");
 			node.className = "release";
 
-			let title = document.createElement("div");
+			let title = document.createElement("a");
 			title.className = "release-title";
 			title.textContent = release.title;
+			title.href = "../?" + address + "/@" + release.tag;
 			node.appendChild(title);
 
 			let tag = document.createElement("div");
