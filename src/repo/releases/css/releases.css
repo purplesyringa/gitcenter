@@ -20,6 +20,9 @@
 	font-size: 16px;
 	color: #888;
 }
+.release-not-release {
+	margin-left: 16px;
+}
 .release-description {
 	display: block;
 
