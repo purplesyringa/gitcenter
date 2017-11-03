@@ -1,7 +1,7 @@
 #!/bin/bash
-python_path=`command -v python`
+python_path=`command -v python2.7`
 if [ -z "$python_path" ]; then
-	python_path=`command -v python2`
+	python_path=`command -v python`
 fi
 if [ -z "$python_path" ]; then
 	python_path=`command -v python3`
