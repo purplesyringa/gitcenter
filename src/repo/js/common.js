@@ -58,7 +58,9 @@ function showHeader(level, gitAddress) {
 					publish.classList.add("button-disabled");
 
 					repo.signContent()
-						.catch(() => {})
+						.catch(e => {
+							zeroPage.error(e);
+						})
 						.then(() => {
 							publish.classList.remove("button-disabled");
 						});
