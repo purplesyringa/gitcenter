@@ -57,7 +57,7 @@ if [ -z "$zeronet_home" ]; then
 	exit 0
 fi
 
-"$python_path" --version | grep "Python 3"
+"$python_path" --version | grep "Python 3" >/dev/null 2>/dev/null
 if [ $? -eq 0 ]; then
 	zeronet_home=$(realpath "$zeronet_home")
 
@@ -71,6 +71,7 @@ if [ $? -eq 0 ]; then
 	elif [ ! -z "$zeronet_home" ] && [ -f "$zeronet_home/Python/python" ]; then
 		python_path="$zeronet_home/Python/python"
 	else
+		echo "Python 2 not installed. If you want to automatically sign and publish after pushing, please install it."
 		exit 0
 	fi
 fi
