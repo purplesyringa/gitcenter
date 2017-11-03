@@ -61,7 +61,9 @@ if [ $? -eq 0 ]; then
 	fi
 fi
 
+zeronet_py="$python_path '$zeronet_home/zeronet.py'"
+
 echo "Fetching ZeroNet..."
-"$python_path" "$zeronet_home/zeronet.py" siteDownload "$site" >/dev/null 2>&1
+eval $zeronet_py siteDownload "$site" >/dev/null 2>&1
 
 exit 0

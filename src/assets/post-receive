@@ -75,10 +75,12 @@ if [ $? -eq 0 ]; then
 	fi
 fi
 
+zeronet_py="$python_path \"$zeronet_home/zeronet.py\""
+
 site=`basename $(realpath "$GIT_DIR/..")`
 
 echo "Retrieving data directory..."
-data_dir=`"$python_path" "$zeronet_home/zeronet.py" --silent getConfig | "$python_path" -c "import sys, json; config = json.load(sys.stdin); print(config['data_dir'])"`
+data_dir=`eval $zeronet_py --silent getConfig | "$python_path" -c "import sys, json; config = json.load(sys.stdin); print(config['data_dir'])"`
 
 privatekey=`cat "$data_dir/users.json" | "$python_path" -c "import sys, json; users = json.load(sys.stdin); print(users[users.keys()[0]]['certs']['zeroid.bit']['auth_privatekey'])"`
 if [ $? -ne 0 ]; then
@@ -87,7 +89,7 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "Signing..."
-"$python_path" "$zeronet_home/zeronet.py" siteSign "$site" "$privatekey" 2>&1 | grep "Private key invalid" >/dev/null 2>&1
+eval $zeronet_py siteSign "$site" "$privatekey" 2>&1 | grep "Private key invalid" >/dev/null 2>&1
 if [ $? -eq 0 ]; then
 	echo "Failed to sign, invalid private key. Probably you are not a maintainer."
 	exit 0
@@ -100,6 +102,6 @@ if [ $publish -eq 0 ]; then
 fi
 
 echo "Publishing..."
-"$python_path" "$zeronet_home/zeronet.py" sitePublish "$site" >/dev/null 2>&1
+eval $zeronet_py sitePublish "$site" >/dev/null 2>&1
 
 echo "Signed & published successfully"
