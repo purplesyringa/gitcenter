@@ -59,7 +59,7 @@ fi
 
 "$python_path" --version | grep "Python 3"
 if [ $? -eq 0 ]; then
-	zeronet_home=`git config --get zeronet.home`
+	zeronet_home=$(realpath "$zeronet_home")
 
 	# Windows ZeroBundle
 	if [ ! -z "$zeronet_home" ] && [ -f "$zeronet_home/../Python/python.exe" ]; then
