@@ -247,6 +247,66 @@ class Repository {
 					));
 			});
 	}
+	getReleases() {
+		let tags;
+
+		return this.git.getRefList()
+			.then(refs => {
+				return refs
+					.filter(ref => ref.indexOf("refs/tags/") == 0)
+					.map(ref => ref.replace("refs/tags/", ""));
+			})
+			.then(tags => {
+				return Promise.all(
+					tags.map(tag => {
+						return this.git.getRef("refs/tags/" + tag)
+							.then(commit => this.git.readUnknownObject(commit))
+							.then(commit => {
+								let author = commit.content.committer || commit.content.tagger;
+								let name = author.substr(0, author.indexOf("<")).trim();
+								let email = author.substr(0, author.indexOf(">")).substr(author.indexOf("<") + 1);
+								let timestamp = author.substr(author.indexOf(">") + 1).trim().split(" ");
+								let tz = timestamp[1];
+								let offset = (new Date).getTimezoneOffset() * -1;
+
+								let utcDate = (parseInt(timestamp[0]) + (tz.substr(1, 2) * 3600 + tz.substr(3, 2) * 60) * (tz[0] == "+" ? 1 : -1)) * 1000;
+								let relativeDate = utcDate - offset * 60000;
+								let offsetString = offset == 0 ? "UTC" : "GMT " + (offset < 0 ? "-" : "+") + (Math.abs(offset) / 60) + ":" + (Math.abs(offset) % 60 >= 10 ? "" : "0") + (Math.abs(offset) % 60);
+
+								let dateString = this.translateDate(relativeDate) + " " + this.translateTime(relativeDate) + " " + offsetString;
+
+								if(commit.type == "tag") {
+									// Annotated tag
+									let title = commit.content.message.match(/^(.*?)\n/)[1].trim();
+									let description = commit.content.message.replace(title, "").trim();
+
+									return {
+										tag: tag,
+										title: title,
+										description: description,
+										dateString: dateString,
+										date: relativeDate
+									};
+								} else {
+									// Lightweight tag
+									return {
+										tag: tag,
+										title: tag,
+										description: "",
+										dateString: dateString,
+										date: relativeDate
+									};
+								}
+							});
+					})
+				);
+			})
+			.then(releases => {
+				return releases.sort((a, b) => {
+					return a.date - b.date;
+				});
+			});
+	}
 	saveFile(path, content, base, message) {
 		let auth, author, commit, parent;
 		return this.zeroAuth.requestAuth()
