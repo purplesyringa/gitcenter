@@ -43,6 +43,24 @@ if [ $? -eq 0 ]; then
 	exit 0
 fi
 
+"$python_path" --version | grep "Python 3"
+if [ $? -eq 0 ]; then
+	zeronet_home=`git config --get zeronet.home`
+
+	# Windows ZeroBundle
+	if [ ! -z "$zeronet_home" ] && [ -f "$zeronet_home/../Python/python.exe" ]; then
+		python_path="$zeronet_home/../Python/python.exe"
+	# Mac OS ZeroBundle
+	elif [ ! -z "$zeronet_home" ] && [ -f "$zeronet_home/../../../Python/python" ]; then
+		python_path="$zeronet_home/../../../Python/python"
+	# Linux ZeroBundle
+	elif [ ! -z "$zeronet_home" ] && [ -f "$zeronet_home/Python/python" ]; then
+		python_path="$zeronet_home/Python/python"
+	else
+		exit 0
+	fi
+fi
+
 echo "Fetching ZeroNet..."
 "$python_path" "$zeronet_home/zeronet.py" siteDownload "$site" >/dev/null 2>&1
 

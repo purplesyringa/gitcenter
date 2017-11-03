@@ -57,6 +57,24 @@ if [ -z "$zeronet_home" ]; then
 	exit 0
 fi
 
+"$python_path" --version | grep "Python 3"
+if [ $? -eq 0 ]; then
+	zeronet_home=`git config --get zeronet.home`
+
+	# Windows ZeroBundle
+	if [ ! -z "$zeronet_home" ] && [ -f "$zeronet_home/../Python/python.exe" ]; then
+		python_path="$zeronet_home/../Python/python.exe"
+	# Mac OS ZeroBundle
+	elif [ ! -z "$zeronet_home" ] && [ -f "$zeronet_home/../../../Python/python" ]; then
+		python_path="$zeronet_home/../../../Python/python"
+	# Linux ZeroBundle
+	elif [ ! -z "$zeronet_home" ] && [ -f "$zeronet_home/Python/python" ]; then
+		python_path="$zeronet_home/Python/python"
+	else
+		exit 0
+	fi
+fi
+
 site=`basename $(realpath "$GIT_DIR/..")`
 
 echo "Retrieving data directory..."
