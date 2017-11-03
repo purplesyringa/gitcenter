@@ -1,7 +1,10 @@
 #!/bin/bash
-python_path=`command -v python`
+python_path=`which python2.7 2>/dev/null`
 if [ -z "$python_path" ]; then
-	python_path=`command -v python2`
+	python_path=`which python 2>/dev/null`
+fi
+if [ -z "$python_path" ]; then
+	python_path=`which python3 2>/dev/null`
 fi
 
 if [ -z "$python_path" ]; then
@@ -11,7 +14,7 @@ fi
 
 ################################################################################
 
-cat "$GIT_DIR/../content.json" | "$python_path" -c "import sys, json; content = json.load(sys.stdin); sys.exit(1 if content['hooks'] else 0)"
+cat "$GIT_DIR/../content.json" | "$python_path" -c "import sys, json; content = json.load(sys.stdin); sys.exit(1 if content.get('hooks', False) else 0)"
 if [ $? -eq 0 ]; then
 	# Hooks disabled
 	exit 0
@@ -47,26 +50,62 @@ fi
 
 ################################################################################
 
-zeronet_home=`git config --get zeronet.home`
+zeronet_home=$(realpath `git config --get zeronet.home` 2>/dev/null)
 if [ -z "$zeronet_home" ]; then
 	echo "zeronet.home not set, rejecting to sign."
 	echo "Run 'git config --global zeronet.home path_to_zeronet'"
 	exit 0
 fi
 
+# Handle paths without ZeroNet/ and core/
+# ZeroBundle
+if [ ! -z "$zeronet_home" ] && [ -d "$zeronet_home/ZeroNet" ]; then
+	zeronet_home="$zeronet_home/ZeroNet"
+# Windows distributable
+elif [ ! -z "$zeronet_home" ] && [ -d "$zeronet_home/core" ]; then
+	zeronet_home="$zeronet_home/core"
+fi
+
+"$python_path" --version | grep "Python 3" >/dev/null 2>/dev/null
+if [ $? -eq 0 ]; then
+	zeronet_home=$(realpath `git config --get zeronet.home`)
+
+	# Windows ZeroBundle
+	if [ ! -z "$zeronet_home" ] && [ -f "$zeronet_home/../Python/python.exe" ]; then
+		python_path="$zeronet_home/../Python/python.exe"
+		zeronet_py="\"$python_path\" \"$zeronet_home/zeronet.py\""
+	# Mac OS ZeroBundle
+	elif [ ! -z "$zeronet_home" ] && [ -f "$zeronet_home/../../../Python/python" ]; then
+		python_path="$zeronet_home/../../../Python/python"
+		zeronet_py="\"$python_path\" \"$zeronet_home/zeronet.py\""
+	# Linux ZeroBundle
+	elif [ ! -z "$zeronet_home" ] && [ -f "$zeronet_home/Python/python" ]; then
+		python_path="$zeronet_home/Python/python"
+		zeronet_py="\"$python_path\" \"$zeronet_home/zeronet.py\""
+	# Windows dist
+	elif [ ! -z "$zeronet_home" ] && [ -f "$zeronet_home/../ZeroNet.exe" ]; then
+		zeronet_py="\"$zeronet_home/../ZeroNet.exe\""
+	else
+		echo "Python 2 not installed. If you want to automatically sign and publish after pushing, please install it."
+		exit 0
+	fi
+else
+	zeronet_py="\"$python_path\" \"$zeronet_home/zeronet.py\""
+fi
+
 site=`basename $(realpath "$GIT_DIR/..")`
 
 echo "Retrieving data directory..."
-data_dir=`"$python_path" "$zeronet_home/zeronet.py" --silent getConfig | "$python_path" -c "import sys, json; config = json.load(sys.stdin); print config['data_dir']"`
+data_dir=`eval $zeronet_py --silent getConfig | "$python_path" -c "import sys, json; config = json.load(sys.stdin); print(config['data_dir'])"`
 
-privatekey=`cat "$data_dir/users.json" | "$python_path" -c "import sys, json; users = json.load(sys.stdin); print users[users.keys()[0]]['certs']['zeroid.bit']['auth_privatekey']"`
+privatekey=`cat "$data_dir/users.json" | "$python_path" -c "import sys, json; users = json.load(sys.stdin); print(users[list(users.keys())[0]]['certs']['zeroid.bit']['auth_privatekey'])" 2>/dev/null`
 if [ $? -ne 0 ]; then
 	echo "Failed to get signing key, rejecting to sign."
 	exit 0
 fi
 
 echo "Signing..."
-"$python_path" "$zeronet_home/zeronet.py" siteSign "$site" "$privatekey" 2>&1 | grep "Private key invalid" >/dev/null 2>&1
+eval $zeronet_py siteSign "$site" "$privatekey" 2>&1 | grep "Private key invalid" >/dev/null 2>&1
 if [ $? -eq 0 ]; then
 	echo "Failed to sign, invalid private key. Probably you are not a maintainer."
 	exit 0
@@ -79,6 +118,6 @@ if [ $publish -eq 0 ]; then
 fi
 
 echo "Publishing..."
-"$python_path" "$zeronet_home/zeronet.py" sitePublish "$site" >/dev/null 2>&1
+eval $zeronet_py sitePublish "$site" >/dev/null 2>&1
 
 echo "Signed & published successfully"

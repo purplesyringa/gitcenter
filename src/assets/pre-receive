@@ -1,7 +1,10 @@
 #!/bin/bash
-python_path=`command -v python`
+python_path=`which python2.7 2>/dev/null`
 if [ -z "$python_path" ]; then
-	python_path=`command -v python2`
+	python_path=`which python 2>/dev/null`
+fi
+if [ -z "$python_path" ]; then
+	python_path=`which python3 2>/dev/null`
 fi
 
 if [ -z "$python_path" ]; then
@@ -10,7 +13,7 @@ fi
 
 ################################################################################
 
-cat "$GIT_DIR/../content.json" | "$python_path" -c "import sys, json; content = json.load(sys.stdin); sys.exit(1 if content['hooks'] else 0)"
+cat "$GIT_DIR/../content.json" | "$python_path" -c "import sys, json; content = json.load(sys.stdin); sys.exit(1 if content.get('hooks', False) else 0)"
 if [ $? -eq 0 ]; then
 	# Hooks disabled
 	exit 0
@@ -40,7 +43,44 @@ if [ $? -eq 0 ]; then
 	exit 0
 fi
 
+zeronet_home=$(realpath `git config --get zeronet.home` 2>/dev/null)
+
+# Handle paths without ZeroNet/ and core/
+# ZeroBundle
+if [ ! -z "$zeronet_home" ] && [ -d "$zeronet_home/ZeroNet" ]; then
+	zeronet_home="$zeronet_home/ZeroNet"
+# Windows distributable
+elif [ ! -z "$zeronet_home" ] && [ -d "$zeronet_home/core" ]; then
+	zeronet_home="$zeronet_home/core"
+fi
+
+"$python_path" --version | grep "Python 3" >/dev/null 2>/dev/null
+if [ $? -eq 0 ]; then
+	# Try to find Python 2 in bundles
+
+	# Windows ZeroBundle
+	if [ ! -z "$zeronet_home" ] && [ -f "$zeronet_home/../Python/python.exe" ]; then
+		python_path="$zeronet_home/../Python/python.exe"
+		zeronet_py="\"$python_path\" \"$zeronet_home/zeronet.py\""
+	# Mac OS ZeroBundle
+	elif [ ! -z "$zeronet_home" ] && [ -f "$zeronet_home/../../../Python/python" ]; then
+		python_path="$zeronet_home/../../../Python/python"
+		zeronet_py="\"$python_path\" \"$zeronet_home/zeronet.py\""
+	# Linux ZeroBundle
+	elif [ ! -z "$zeronet_home" ] && [ -f "$zeronet_home/Python/python" ]; then
+		python_path="$zeronet_home/Python/python"
+		zeronet_py="\"$python_path\" \"$zeronet_home/zeronet.py\""
+	# Windows dist
+	elif [ ! -z "$zeronet_home" ] && [ -f "$zeronet_home/../ZeroNet.exe" ]; then
+		zeronet_py="\"$zeronet_home/../ZeroNet.exe\""
+	else
+		exit 0
+	fi
+else
+	zeronet_py="\"$python_path\" \"$zeronet_home/zeronet.py\""
+fi
+
 echo "Fetching ZeroNet..."
-"$python_path" "$zeronet_home/zeronet.py" siteDownload "$site" >/dev/null 2>&1
+eval $zeronet_py siteDownload "$site" >/dev/null 2>&1
 
 exit 0
