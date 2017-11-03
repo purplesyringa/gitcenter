@@ -10,7 +10,10 @@ let loadProfile = address => {
 let saveProfile = (address, profile) => {
 	return zeroFS.writeFile("data/users/" + address + "/data.json", JSON.stringify(profile, null, "\t"))
 		.then(() => {
-			return zeroPage.cmd("sitePublish", {inner_path: "data/users/" + address + "/content.json", sign: true});
+			return zeroPage.cmd("siteSign", {inner_path: "data/users/" + address + "/content.json"});
+		})
+		.then(() => {
+			return zeroPage.cmd("sitePublish", {inner_path: "data/users/" + address + "/content.json", sign: false});
 		})
 		.then(res => {
 			if(res != "ok" && res.error != "Port not opened." && res.error != "Content publish failed.") {

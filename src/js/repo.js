@@ -61,6 +61,17 @@ class Repository {
 	}
 
 	// Content actions
+	signAndPublish(path, signStyle) {
+		return this.zeroPage.cmd("siteSign", {inner_path: path, privatekey: signStyle == "site" ? "stored" : null})
+			.then(() => {
+				return this.zeroPage.cmd("sitePublish", {inner_path: path, sign: false})
+			})
+			.then(res => {
+				if(res != "ok" && res.error != "Port not opened." && res.error != "Content publish failed.") {
+					return Promise.reject(res);
+				}
+			});
+	}
 	getContent() {
 		return this.zeroFS.readFile("merged-GitCenter/" + this.address + "/content.json")
 			.then(content => JSON.parse(content));
@@ -69,12 +80,7 @@ class Repository {
 		return this.zeroFS.writeFile("merged-GitCenter/" + this.address + "/content.json", JSON.stringify(content, null, "\t"));
 	}
 	signContent(signStyle) {
-		return this.zeroPage.cmd("sitePublish", {inner_path: "merged-GitCenter/" + this.address + "/content.json", privatekey: signStyle == "site" ? "stored" : null})
-			.then(res => {
-				if(res != "ok" && res.error != "Port not opened." && res.error != "Content publish failed.") {
-					return Promise.reject(res);
-				}
-			});
+		return this.signAndPublish("merged-GitCenter/" + this.address + "/content.json", signStyle);
 	}
 	sign() {
 		return this.zeroPage.cmd("siteSign", {inner_path: "merged-GitCenter/" + this.address + "/content.json"})
@@ -919,12 +925,7 @@ class Repository {
 				return this.zeroFS.writeFile("merged-GitCenter/1iNDExENNBsfHc6SKmy1HaeasHhm3RPcL/data/users/" + auth.address + "/data.json", data);
 			})
 			.then(() => {
-				return this.zeroPage.cmd("sitePublish", {inner_path: "merged-GitCenter/1iNDExENNBsfHc6SKmy1HaeasHhm3RPcL/data/users/" + auth.address + "/content.json"})
-					.then(res => {
-						if(res != "ok" && res.error != "Port not opened." && res.error != "Content publish failed.") {
-							return Promise.reject(res);
-						}
-					});
+				return this.signAndPublish("merged-GitCenter/1iNDExENNBsfHc6SKmy1HaeasHhm3RPcL/data/users/" + auth.address + "/content.json");
 			});
 	}
 	removeFromIndex() {
@@ -948,12 +949,7 @@ class Repository {
 				return this.zeroFS.writeFile("merged-GitCenter/1iNDExENNBsfHc6SKmy1HaeasHhm3RPcL/data/users/" + auth.address + "/data.json", data);
 			})
 			.then(() => {
-				return this.zeroPage.cmd("sitePublish", {inner_path: "merged-GitCenter/1iNDExENNBsfHc6SKmy1HaeasHhm3RPcL/data/users/" + auth.address + "/content.json"})
-					.then(res => {
-						if(res != "ok" && res.error != "Port not opened." && res.error != "Content publish failed.") {
-							return Promise.reject(res);
-						}
-					});
+				return this.signAndPublish("merged-GitCenter/1iNDExENNBsfHc6SKmy1HaeasHhm3RPcL/data/users/" + auth.address + "/content.json");
 			})
 			.then(() => {
 				return this.zeroDB.query("SELECT repo_index.*, json.cert_user_id FROM repo_index, json WHERE repo_index.json_id = json.json_id AND repo_index.address = :address", {
