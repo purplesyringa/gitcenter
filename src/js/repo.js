@@ -312,7 +312,8 @@ class Repository {
 			input.onchange = () => {
 				let fileReader = new FileReader();
 				fileReader.onload = () => {
-					resolve(this.saveFile(path, fileReader.result, base, message));
+					let content = new Uint8Array(fileReader.result);
+					resolve(this.saveFile(path, content, base, message));
 				};
 				fileReader.readAsArrayBuffer(input.files[0]);
 			};
