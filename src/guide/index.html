@@ -80,7 +80,7 @@
 			<ul>
 				<li>
 					<code>git fetch</code><br>
-					There is nothing hard in <code>fetch</code>ing Git Center repositories. You can simply run <code>git fetch</code>. You have to leave ZeroNet open to let it download changes introduced by other maintainers.
+					There is nothing hard in <code>fetch</code>ing Git Center repositories. You can simply run <code>git fetch</code>.
 				</li>
 				<li>
 					<code>git push</code><br>
@@ -97,30 +97,6 @@
 			</ul>
 			<p>
 				Note that sometimes <code>git push</code> hangs after <code>Fetching ZeroNet...</code> Cancel pushing and run <code>git push -o no-fetch</code> then.
-			</p>
-
-			<hr>
-
-			<h2>Collaborating</h2>
-			<p>
-				It's OK that you can fetch and push your own changes, but what about collaborating? First of all, you must grant users with <b>maintainer</b> permission. To do that:
-			</p>
-			<ol>
-				<li>
-					Open <b>Settings</b> tab of your repository. It may hang a bit because it loads all ZeroID.
-				</li>
-				<li>
-					You will see yourself in <b>Maintainers</b> list. Press <a class="button button-blue">Add</a>.
-				</li>
-				<li>
-					You will be asked to enter ZeroID. Enter the user you want to give <b>maintainer</b> permission (eg. <code>ivanq@zeroid.bit</code>).
-				</li>
-				<li>
-					Wait a bit. You will see a new maintainer in the list.
-				</li>
-			</ol>
-			<p>
-				Now <code>ivanq@zeroid.bit</code> can publish changes using <a class="button button-blue">Sign &amp; Publish changes</a>. Note that your data may be overwritten if you <code>git push</code> without publishing changes right after that.
 			</p>
 
 			<hr>
