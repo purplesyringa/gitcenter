@@ -63,7 +63,7 @@ function showHeader(level, gitAddress) {
 
 					publish.classList.add("button-disabled");
 
-					repo.signContent()
+					repo.signContent("site")
 						.catch(e => {
 							zeroPage.error(e);
 						})
