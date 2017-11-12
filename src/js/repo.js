@@ -1094,7 +1094,7 @@ class Repository {
 	getStars() {
 		let auth = this.zeroAuth.getAuth();
 
-		return this.zeroDB.query("SELECT count.*, json.directory AS count FROM repo_stars WHERE repo_stars.address = :address AND repo_stars.json_id = json.json_id", {
+		return this.zeroDB.query("SELECT repo_stars.*, json.directory FROM repo_stars, json WHERE repo_stars.address = :address AND repo_stars.json_id = json.json_id", {
 			address: this.address
 		})
 			.then(res => {
@@ -1120,12 +1120,12 @@ class Repository {
 					data = {};
 				}
 
-				if(!data.stars) {
-					data.stars = {};
+				if(!data.repo_stars) {
+					data.repo_stars = {};
 				}
 
-				data.stars[this.address] = !data.stars[this.address];
-				starred = data.stars[this.address];
+				data.repo_stars[this.address] = !data.repo_stars[this.address];
+				starred = data.repo_stars[this.address];
 
 				data = JSON.stringify(data);
 
