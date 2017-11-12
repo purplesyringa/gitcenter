@@ -1094,7 +1094,7 @@ class Repository {
 	getStars() {
 		let auth = this.zeroAuth.getAuth();
 
-		return this.zeroDB.query("SELECT repo_stars.*, json.directory FROM repo_stars, json WHERE repo_stars.address = :address AND repo_stars.json_id = json.json_id", {
+		return this.zeroDB.query("SELECT repo_stars.*, json.directory FROM repo_stars, json WHERE repo_stars.address = :address AND repo_stars.json_id = json.json_id AND repo_stars.star != 0", {
 			address: this.address
 		})
 			.then(res => {
@@ -1127,7 +1127,7 @@ class Repository {
 				data.repo_stars[this.address] = !data.repo_stars[this.address];
 				starred = data.repo_stars[this.address];
 
-				data = JSON.stringify(data);
+				data = JSON.stringify(data, null, "\t");
 
 				return this.zeroFS.writeFile("merged-GitCenter/1iNDExENNBsfHc6SKmy1HaeasHhm3RPcL/data/users/" + auth.address + "/data.json", data);
 			})
@@ -1135,7 +1135,7 @@ class Repository {
 				return this.signAndPublish("merged-GitCenter/1iNDExENNBsfHc6SKmy1HaeasHhm3RPcL/data/users/" + auth.address + "/content.json");
 			})
 			.then(() => {
-				return this.zeroDB.query("SELECT COUNT(*) AS count FROM repo_stars WHERE repo_stars.address = :address", {
+				return this.zeroDB.query("SELECT COUNT(*) AS count FROM repo_stars WHERE repo_stars.address = :address AND repo_stars.star != 0", {
 					address: this.address
 				});
 			})
