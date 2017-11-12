@@ -1090,6 +1090,63 @@ class Repository {
 			});
 	}
 
+	// Starring
+	getStars() {
+		let auth = this.zeroAuth.getAuth();
+
+		return this.zeroDB.query("SELECT count.*, json.directory AS count FROM repo_stars WHERE repo_stars.address = :address AND repo_stars.json_id = json.json_id", {
+			address: this.address
+		})
+			.then(res => {
+				return {
+					starred: auth && res.find(row => row.directory == "data/users/" + auth.address),
+					count: res.length
+				};
+			});
+	}
+	star() {
+		let auth, starred;
+
+		return this.zeroAuth.requestAuth()
+			.then(a => {
+				auth = a;
+				return this.zeroFS.readFile("merged-GitCenter/1iNDExENNBsfHc6SKmy1HaeasHhm3RPcL/data/users/" + auth.address + "/data.json")
+					.catch(() => "");
+			})
+			.then(data => {
+				try {
+					data = JSON.parse(data);
+				} catch(e) {
+					data = {};
+				}
+
+				if(!data.stars) {
+					data.stars = {};
+				}
+
+				data.stars[this.address] = !data.stars[this.address];
+				starred = data.stars[this.address];
+
+				data = JSON.stringify(data);
+
+				return this.zeroFS.writeFile("merged-GitCenter/1iNDExENNBsfHc6SKmy1HaeasHhm3RPcL/data/users/" + auth.address + "/data.json", data);
+			})
+			.then(() => {
+				return this.signAndPublish("merged-GitCenter/1iNDExENNBsfHc6SKmy1HaeasHhm3RPcL/data/users/" + auth.address + "/content.json");
+			})
+			.then(() => {
+				return this.zeroDB.query("SELECT COUNT(*) AS count FROM repo_stars WHERE repo_stars.address = :address", {
+					address: this.address
+				});
+			})
+			.then(res => {
+				return {
+					starred: starred,
+					count: res[0].count
+				};
+			});
+	}
+
 	translateDate(date) {
 		date = new Date(date);
 

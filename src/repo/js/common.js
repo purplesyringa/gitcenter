@@ -74,6 +74,26 @@ function showHeader(level, gitAddress) {
 			}
 		});
 
+	let starButton = document.getElementById("star");
+	repo.isInIndex()
+		.then(inIndex => {
+			if(!inIndex) {
+				return Promise.reject();
+			}
+
+			return repo.getStars();
+		})
+		.then(res => {
+			starButton.style.display = "inline-block";
+			starButton.innerHTML = (res.starred ? "Unstar" : "Star") + " (" + res.count + ")";
+			starButton.onclick = () => {
+				repo.star()
+					.then(res => {
+						starButton.innerHTML = (res.starred ? "Unstar" : "Star") + " (" + res.count + ")";
+					});
+			};
+		});
+
 	document.getElementById("git_button").onclick = () => {
 		let command = "git clone $path_to_data/" + address + "/" + gitAddress;
 		if(copy(command)) {
