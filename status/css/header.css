@@ -1,9 +1,8 @@
 .header {
 	display: block;
-	width: 1024px;
+	width: 896px;
 	height: 64px;
-	padding: 0 calc(50% - 512px);
-
+	padding: 0 calc(50% - 448px);
 	background-color: #222;
 }
 
