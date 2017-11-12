@@ -20,7 +20,7 @@
 .middle-button-margin {
 	margin-left: 16px;
 }
-.publish {
+.publish, .button-star {
 	display: none;
 }
 

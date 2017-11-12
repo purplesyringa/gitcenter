@@ -1090,6 +1090,63 @@ class Repository {
 			});
 	}
 
+	// Starring
+	getStars() {
+		let auth = this.zeroAuth.getAuth();
+
+		return this.zeroDB.query("SELECT repo_stars.*, json.directory FROM repo_stars, json WHERE repo_stars.address = :address AND repo_stars.json_id = json.json_id AND repo_stars.star != 0", {
+			address: this.address
+		})
+			.then(res => {
+				return {
+					starred: auth && res.find(row => row.directory == "data/users/" + auth.address),
+					count: res.length
+				};
+			});
+	}
+	star() {
+		let auth, starred;
+
+		return this.zeroAuth.requestAuth()
+			.then(a => {
+				auth = a;
+				return this.zeroFS.readFile("merged-GitCenter/1iNDExENNBsfHc6SKmy1HaeasHhm3RPcL/data/users/" + auth.address + "/data.json")
+					.catch(() => "");
+			})
+			.then(data => {
+				try {
+					data = JSON.parse(data);
+				} catch(e) {
+					data = {};
+				}
+
+				if(!data.repo_stars) {
+					data.repo_stars = {};
+				}
+
+				data.repo_stars[this.address] = !data.repo_stars[this.address];
+				starred = data.repo_stars[this.address];
+
+				data = JSON.stringify(data, null, "\t");
+
+				return this.zeroFS.writeFile("merged-GitCenter/1iNDExENNBsfHc6SKmy1HaeasHhm3RPcL/data/users/" + auth.address + "/data.json", data);
+			})
+			.then(() => {
+				return this.signAndPublish("merged-GitCenter/1iNDExENNBsfHc6SKmy1HaeasHhm3RPcL/data/users/" + auth.address + "/content.json");
+			})
+			.then(() => {
+				return this.zeroDB.query("SELECT COUNT(*) AS count FROM repo_stars WHERE repo_stars.address = :address AND repo_stars.star != 0", {
+					address: this.address
+				});
+			})
+			.then(res => {
+				return {
+					starred: starred,
+					count: res[0].count
+				};
+			});
+	}
+
 	translateDate(date) {
 		date = new Date(date);
 

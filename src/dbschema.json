@@ -17,7 +17,8 @@
 		},
 		"1iNDExENNBsfHc6SKmy1HaeasHhm3RPcL/data/users/.+/data.json": {
 			"to_table": [
-				{"table": "repo_index", "node": "repo_index", "key_col": "address"}
+				{"table": "repo_index", "node": "repo_index", "key_col": "address"},
+				{"table": "repo_stars", "node": "repo_stars", "key_col": "address", "val_col": "star"}
 			]
 		}
 	},
@@ -95,6 +96,15 @@
 			],
 			"indexes": ["CREATE INDEX repo_index_address ON repo_index(address)"],
 			"schema_changed": 3
+		},
+		"repo_stars": {
+			"cols": [
+				["address", "TEXT"],
+				["star", "INTEGER"],
+				["json_id", "INTEGER REFERENCES json (json_id)"]
+			],
+			"indexes": ["CREATE INDEX repo_stars_address ON repo_stars(address)"],
+			"schema_changed": 1
 		}
 	},
 	"feeds": {
