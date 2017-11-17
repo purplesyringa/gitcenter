@@ -750,6 +750,49 @@ class Repository {
 			});
 	}
 
+	// Muted
+	getMuted() {
+		return this.zeroFS.readFile("merged-GitCenter/" + this.address + "/data/users/content.json")
+			.then(content => {
+				content = JSON.parse(content);
+
+				return Object.keys(content.user_contents.permissions)
+					.filter(username => content.user_contents.permissions[username] == false);
+			});
+	}
+	mute(name) {
+		return this.zeroFS.readFile("merged-GitCenter/" + this.address + "/data/users/content.json")
+			.then(content => {
+				content = JSON.parse(content);
+
+				content.user_contents.permissions[name] = false;
+
+				content = JSON.stringify(content, null, "\t");
+
+				return this.zeroFS.writeFile("merged-GitCenter/" + this.address + "/data/users/content.json", content);
+			})
+			.then(() => {
+				return this.signAndPublish("merged-GitCenter/" + this.address + "/data/users/content.json", "site");
+			});
+	}
+	unmute(name) {
+		return this.zeroFS.readFile("merged-GitCenter/" + this.address + "/data/users/content.json")
+			.then(content => {
+				content = JSON.parse(content);
+
+				if(content.user_contents.permissions[name] == false) {
+					delete content.user_contents.permissions[name];
+				}
+
+				content = JSON.stringify(content, null, "\t");
+
+				return this.zeroFS.writeFile("merged-GitCenter/" + this.address + "/data/users/content.json", content);
+			})
+			.then(() => {
+				return this.signAndPublish("merged-GitCenter/" + this.address + "/data/users/content.json", "site");
+			});
+	}
+
 	// Maintainers
 	getZeroIdFile(name, cache, property) {
 		if(this[cache]) {

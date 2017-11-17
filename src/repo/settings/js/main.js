@@ -87,4 +87,65 @@ repo.addMerger()
 					});
 			}
 		};
+
+		// Mute
+		return repo.getMuted();
+	})
+	.then(muted => {
+		muted.forEach(muted => {
+			let option = document.createElement("option");
+			option.textContent = muted;
+			document.getElementById("mute_select").appendChild(option);
+		});
+		document.getElementById("mute_select").onfocus = () => {
+			muteRemove.classList.remove("button-disabled");
+		};
+
+		let muteRemove = document.getElementById("mute_remove");
+		muteRemove.onclick = () => {
+			if(muteRemove.classList.contains("button-disabled") || !document.getElementById("mute_select").value) {
+				return;
+			}
+
+			muteRemove.classList.add("button-disabled");
+
+			let addr = document.getElementById("mute_select").value;
+			repo.unmute(addr)
+				.then(() => {
+					muteRemove.classList.remove("button-disabled");
+					let option = Array.prototype.slice.call(document.getElementById("mute_select").options).find(option => {
+						return option.value == addr;
+					});
+					option.parentNode.removeChild(option);
+				}, e => {
+					zeroPage.error(e);
+					muteRemove.classList.remove("button-disabled");
+				});
+		};
+
+		let muteAdd = document.getElementById("mute_add");
+		muteAdd.onclick = () => {
+			if(muteAdd.classList.contains("button-disabled")) {
+				return;
+			}
+
+			muteAdd.classList.add("button-disabled");
+
+			let addr;
+			zeroPage.prompt("ZeroID:")
+				.then(a => {
+					addr = a;
+					return repo.mute(addr.replace("@zeroid.bit", "") + "@zeroid.bit");
+				})
+				.then(() => {
+					muteAdd.classList.remove("button-disabled");
+
+					let option = document.createElement("option");
+					option.textContent = addr.replace("@zeroid.bit", "") + "@zeroid.bit";
+					document.getElementById("mute_select").appendChild(option);
+				}, e => {
+					zeroPage.error(e);
+					muteAdd.classList.remove("button-disabled");
+				});
+		};
 	});
