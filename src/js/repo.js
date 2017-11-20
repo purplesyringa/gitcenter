@@ -14,8 +14,26 @@ class Repository {
 		this.zeroDB = new ZeroDB(zeroPage);
 	}
 
-	isSignable() {
-		return this.zeroPage.isSignable("merged-GitCenter/" + this.address + "/content.json");
+	isSignable(path) {
+		if(!path) {
+			path = "content.json";
+		}
+
+		return this.zeroPage.isSignable("merged-GitCenter/" + this.address + "/" + path)
+			.then(signable => {
+				if(!signable) {
+					return this.zeroPage.cmd("mergerSiteList", [true])
+						.then(list => {
+							if(!list[this.address]) {
+								return Promise.reject("Merged site not found");
+							}
+
+							return list[this.address].privatekey;
+						});
+				}
+
+				return true;
+			});
 	}
 
 	// Permission actions
