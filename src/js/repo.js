@@ -484,7 +484,7 @@ class Repository {
 				issue = i[0];
 				issue.tags = issue.tags ? issue.tags.split(",") : [];
 
-				return this.zeroPage.isSignable("merged-GitCenter/" + this.address + "/" + issue.directory + "/content.json");
+				return this.isSignable(issue.directory + "/content.json");
 			})
 			.then(signable => {
 				issue.owned = signable;
@@ -649,7 +649,7 @@ class Repository {
 				pullRequest = p[0];
 				pullRequest.tags = pullRequest.tags ? pullRequest.tags.split(",") : [];
 
-				return this.zeroPage.isSignable("merged-GitCenter/" + this.address + "/" + pullRequest.directory + "/content.json");
+				return this.isSignable(pullRequest.directory + "/content.json");
 			})
 			.then(signable => {
 				pullRequest.owned = signable;
