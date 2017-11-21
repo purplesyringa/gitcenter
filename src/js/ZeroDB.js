@@ -6,6 +6,7 @@ class ZeroDB {
 		}
 		this.page = page;
 		this.fs = new ZeroFS(page);
+		this.auth = new ZeroAuth(page);
 	}
 
 	query(query, placeholders) {
@@ -19,8 +20,26 @@ class ZeroDB {
 			});
 	}
 
+	getPrivateKey(contentFile) {
+		let auth = this.auth.getAuth();
+		return this.page.cmd("fileRules", [contentFile])
+			.then(rules => {
+				if(auth && rules.signers.indexOf(auth.address) > -1) {
+					return null;
+				}
+
+				return "stored";
+			});
+	}
+
 	insertRow(dataFile, contentFile, table, row, autoIncrement) {
-		return this.fs.readFile(dataFile)
+		let privatekey;
+		return this.getPrivateKey(contentFile)
+			.then(p => {
+				privatekey = p;
+
+				return this.fs.readFile(dataFile);
+			})
 			.then(data => {
 				return JSON.parse(data);
 			}, () => {
@@ -47,7 +66,7 @@ class ZeroDB {
 				return this.page.cmd(
 					"siteSign",
 					[
-						null, // private key
+						privatekey, // private key
 						contentFile // file to sign
 					]
 				);
@@ -56,7 +75,7 @@ class ZeroDB {
 				this.page.cmd(
 					"sitePublish",
 					[
-						null, // private key
+						privatekey, // private key
 						contentFile, // file to publish
 						false // sign before publish
 					]
@@ -66,7 +85,13 @@ class ZeroDB {
 			});
 	}
 	changeRow(dataFile, contentFile, table, f) {
-		return this.fs.readFile(dataFile)
+		let privatekey;
+		return this.getPrivateKey(contentFile)
+			.then(p => {
+				privatekey = p;
+
+				return this.fs.readFile(dataFile);
+			})
 			.then(data => {
 				return JSON.parse(data);
 			}, () => {
@@ -85,7 +110,7 @@ class ZeroDB {
 				return this.page.cmd(
 					"siteSign",
 					[
-						null, // private key
+						privatekey, // private key
 						contentFile // file to sign
 					]
 				);
@@ -94,7 +119,7 @@ class ZeroDB {
 				this.page.cmd(
 					"sitePublish",
 					[
-						null, // private key
+						privatekey, // private key
 						contentFile, // file to publish
 						false // sign before publish
 					]
@@ -103,7 +128,13 @@ class ZeroDB {
 	}
 
 	changePair(dataFile, contentFile, table, key, value) {
-		return this.fs.readFile(dataFile)
+		let privatekey;
+		return this.getPrivateKey(contentFile)
+			.then(p => {
+				privatekey = p;
+
+				return this.fs.readFile(dataFile);
+			})
 			.then(data => {
 				return JSON.parse(data);
 			}, () => {
@@ -122,7 +153,7 @@ class ZeroDB {
 				return this.page.cmd(
 					"siteSign",
 					[
-						null, // private key
+						privatekey, // private key
 						contentFile // file to sign
 					]
 				);
@@ -131,7 +162,7 @@ class ZeroDB {
 				this.page.cmd(
 					"sitePublish",
 					[
-						null, // private key
+						privatekey, // private key
 						contentFile, // file to publish
 						false // sign before publish
 					]
