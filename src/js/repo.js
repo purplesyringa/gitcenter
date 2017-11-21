@@ -1,8 +1,30 @@
 FOLLOW_QUERIES = {
 	issues: "SELECT 'issue' AS type, issues.date_added AS date_added, issues.title AS title, issues.body AS body, 'repo/issues/view/?' || json.site || '/' || issues.id || '@' || REPLACE(json.directory, 'data/users/', '') AS url FROM issues, json WHERE issues.json_id = json.json_id AND json.site IN (:params)",
 	pullRequests: "SELECT 'pull_request' AS type, pull_requests.date_added AS date_added, pull_requests.title AS title, pull_requests.body AS body, 'repo/pull-requests/view/?' || json.site || '/' || pull_requests.id || '@' || REPLACE(json.directory, 'data/users/', '') AS url FROM pull_requests, json WHERE pull_requests.json_id = json.json_id AND json.site IN (:params)",
-	issueComments: "SELECT 'comment' AS type, issue_comments.date_added AS date_added, issues.title AS title, issue_comments.body AS body, 'repo/issues/view/?' || json.site || '/' || issues.id || '@' || REPLACE(json.directory, 'data/users/', '') AS url FROM issues, issue_comments, json, json AS json2 WHERE issues.json_id = json.json_id AND issue_comments.issue_id = issues.id AND issue_comments.json_id = json2.json_id AND issue_comments.issue_json = json2.directory AND json.site = json2.site AND json.site IN (:params)",
-	pullRequestComments: "SELECT 'comment' AS type, pull_request_comments.date_added AS date_added, pull_requests.title AS title, pull_request_comments.body AS body, 'repo/pull-requests/view/?' || json.site || '/' || pull_requests.id || '@' || REPLACE(json.directory, 'data/users/', '') AS url FROM pull_requests, pull_request_comments, json, json AS json2 WHERE pull_requests.json_id = json.json_id AND pull_request_comments.pull_request_id = pull_requests.id AND pull_request_comments.json_id = json2.json_id AND pull_request_comments.pull_request_json = json2.directory AND json.site = json2.site AND json.site IN (:params)"
+	issueComments: "\
+		SELECT\
+			'comment' AS type, issue_comments.date_added AS date_added, issues_json.title AS title, issue_comments.body AS body, 'repo/issues/view/?' || issues_json.site || '/' || issues_json.id || '@' || REPLACE(issues_json.directory, 'data/users/', '') AS url\
+		FROM\
+			issue_comments\
+		LEFT JOIN\
+			(SELECT id, title, body, json_id, site, directory FROM issues LEFT JOIN json USING (json_id)) AS issues_json\
+		ON\
+			(issue_comments.issue_id = issues_json.id AND issue_comments.issue_json = issues_json.directory)\
+		WHERE\
+			issues_json.site IN (:params) AND issue_comments.json_id IN (SELECT json_id FROM json WHERE json.site = issues_json.site)\
+	",
+	pullRequestComments: "\
+		SELECT\
+			'comment' AS type, pull_request_comments.date_added AS date_added, pull_requests_json.title AS title, pull_request_comments.body AS body, 'repo/pull-requests/view/?' || pull_requests_json.site || '/' || pull_requests_json.id || '@' || REPLACE(pull_requests_json.directory, 'data/users/', '') AS url\
+		FROM\
+			pull_request_comments\
+		LEFT JOIN\
+			(SELECT id, title, body, json_id, site, directory FROM pull_requests LEFT JOIN json USING (json_id)) AS pull_requests_json\
+		ON\
+			(pull_request_comments.pull_request_id = pull_requests_json.id AND pull_request_comments.pull_request_json = pull_requests_json.directory)\
+		WHERE\
+			pull_requests_json.site IN (:params) AND pull_request_comments.json_id IN (SELECT json_id FROM json WHERE json.site = pull_requests_json.site)\
+	",
 };
 
 class Repository {
@@ -75,6 +97,8 @@ class Repository {
 				} else {
 					this.git = null;
 				}
+
+				return this.updateFollow();
 			});
 	}
 
@@ -1048,6 +1072,31 @@ class Repository {
 				});
 
 				return this.zeroPage.cmd("feedFollow", [feedList]);
+			});
+	}
+	updateFollow() {
+		return this.zeroPage.cmd("feedListFollow")
+			.then(feedList => {
+				let changed = false;
+				if(feedList["Issues"] && feedList["Issues"][0] != FOLLOW_QUERIES.issues) {
+					feedList["Issues"][0] = FOLLOW_QUERIES.issues;
+					changed = true;
+				}
+				if(feedList["Pull requests"] && feedList["Pull requests"][0] != FOLLOW_QUERIES.pullRequests) {
+					feedList["Pull requests"][0] = FOLLOW_QUERIES.pullRequests;
+					changed = true;
+				}
+				if(feedList["Issue comments"] && feedList["Issue comments"][0] != FOLLOW_QUERIES.issueComments) {
+					feedList["Issue comments"][0] = FOLLOW_QUERIES.issueComments;
+					changed = true;
+				}
+				if(feedList["Pull request comments"] && feedList["Pull request comments"][0] != FOLLOW_QUERIES.pullRequestComments) {
+					feedList["Pull request comments"][0] = FOLLOW_QUERIES.pullRequestComments;
+					changed = true;
+				}
+				if(changed) {
+					return this.zeroPage.cmd("feedFollow", [feedList]);
+				}
 			});
 	}
 	isFollowing() {
