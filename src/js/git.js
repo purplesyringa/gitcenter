@@ -976,19 +976,21 @@ class Git {
 
 		changes.forEach(change => {
 			let currentTree = tree;
-			change.path.split("/").forEach(pathPart => {
-				let item = currentTree.content.find(item => item.name == pathPart);
-				if(!item) {
-					item = {
-						name: pathPart,
-						type: "tree",
-						content: []
-					};
-					currentTree.content.push(item);
-				}
+			change.path.split("/")
+				.filter(item => item.length)
+				.forEach(pathPart => {
+					let item = currentTree.content.find(item => item.name == pathPart);
+					if(!item) {
+						item = {
+							name: pathPart,
+							type: "tree",
+							content: []
+						};
+						currentTree.content.push(item);
+					}
 
-				currentTree = item;
-			});
+					currentTree = item;
+				});
 
 			currentTree.type = change.type;
 			currentTree.content = change.content;
