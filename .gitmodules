@@ -1,0 +1,6 @@
+[submodule "src/--force"]
+	path = src/--force
+	url = C:/Users/Ivanq/Documents/ZeroNet/data/19onTt5fo8czADiefEoPhPigk281Z5dBXU/workerout.git
+[submodule "src/workerout"]
+	path = src/workerout
+	url = C:/Users/Ivanq/Documents/ZeroNet/data/19onTt5fo8czADiefEoPhPigk281Z5dBXU/workerout.git
