@@ -49,9 +49,18 @@ repo.addMerger()
 		return repo.getFiles(head, path);
 	})
 	.then(files => {
+		let types = ["submodule", "directory", "file"];
+
 		let table = document.getElementById("files");
 		files
-			.sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0)
+			.sort((a, b) => {
+				let pos = types.indexOf(a.type) - types.indexOf(b.type);
+				if(pos != 0) {
+					return pos;
+				}
+
+				return a.name.localeCompare(b.name);
+			})
 			.forEach(file => {
 				let tr = document.createElement("tr");
 				tr.onclick = () => {
