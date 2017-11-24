@@ -41,6 +41,18 @@
 
 		<div class="entry">
 			<div class="entry-title">
+				Repository type
+			</div>
+			<div class="entry-value">
+				<select id="type" class="select">
+					<option value="git">Git</option>
+					<option value="hg">Mercurial (not supported yet)</option>
+				</select>
+			</div>
+		</div>
+
+		<div class="entry">
+			<div class="entry-title">
 				Title
 			</div>
 			<div class="entry-description">
@@ -56,7 +68,7 @@
 				Folder name
 			</div>
 			<div class="entry-value">
-				<input type="text" class="input input-disabled" id="address" disabled placeholder="repo.git">
+				<input type="text" class="input input-disabled" id="address" disabled value="repo.git">
 			</div>
 		</div>
 
