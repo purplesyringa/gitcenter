@@ -5,7 +5,6 @@
 .branch {
 	display: block;
 	width: 96px;
-	height: 16px;
 	padding: 8px 16px;
 	background-color: #EEE;
 	cursor: pointer;
