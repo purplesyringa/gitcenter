@@ -325,7 +325,7 @@ class Repository {
 				profile.commitName = profile.commitName || auth.user[0].toUpperCase() + auth.user.substr(1).replace(/@.*/, "");
 				profile.commitEmail = profile.commitEmail || auth.user;
 
-				return Git.init("merged-GitCenter/" + this.address + "/" + address + (address.endsWith(".git") ? "" : ".git"), this.zeroPage, profile.commitName, profile.commitEmail);
+				return Git.init("merged-GitCenter/" + this.address + "/" + address, this.zeroPage, profile.commitName, profile.commitEmail);
 			})
 			.then(git => {
 				this.git = git;
@@ -360,7 +360,7 @@ class Repository {
 				profile.commitName = profile.commitName || auth.user[0].toUpperCase() + auth.user.substr(1).replace(/@.*/, "");
 				profile.commitEmail = profile.commitEmail || auth.user;
 
-				return Hg.init("merged-GitCenter/" + this.address + "/" + address + (address.endsWith(".git") ? "" : ".git"), this.zeroPage, profile.commitName, profile.commitEmail);
+				return Hg.init("merged-GitCenter/" + this.address + "/" + address, this.zeroPage, profile.commitName, profile.commitEmail);
 			})
 			.then(hg => {
 				this.hg = hg;
