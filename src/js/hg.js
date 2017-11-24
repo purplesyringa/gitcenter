@@ -100,49 +100,95 @@ class Hg {
 		return this.zeroFS.writeFile(this.root + "/" + path, Array.from(content).map(char => String.fromCharCode(char)).join(""), true);
 	}
 
-	// Index
 	loadIndex(name) {
-		let result = {
-			chunks: []
-		};
+		return new HgIndex(name, this);
+	}
 
-		return this.readFile(name + ".i")
+	readCommit(sha) {
+
+	}
+};
+
+class HgIndex {
+	constructor(name, hg) {
+		this.hg = hg;
+		this.name = name;
+
+		return this.load();
+	}
+
+	// Util
+	getStartPos(rev) {
+		return this.chunks[rev].offset;
+	}
+	getEndPos(rev) {
+		return this.getStartPos(rev) + this.getLength(rev);
+	}
+	getLength(rev) {
+		return this.chunks[rev].compressedLength;
+	}
+
+	load() {
+		this.chunks = [];
+
+		return this.hg.readFile(this.name + ".i")
 			.then(index => {
-				result.version = this.unpackInt32(this.subArray(index, 0, 4));
-				result.isInline = !!(result.version & (1 << 16));
+				this.version = this.hg.unpackInt32(this.hg.subArray(index, 0, 4));
+				this.isInline = !!(this.version & (1 << 16));
+				this.chunkCacheSize = 65536; // Should be 65536 on remote repo
 
 				let offset = 0;
+				let rev = 0;
 				while(offset < index.length) {
-					let chunk = this.parseIndexChunk(this.subArray(index, offset, 64));
-					result.chunks.push(chunk);
+					let chunk = this.parseChunk(this.hg.subArray(index, offset, 64), rev);
+					chunk.position = offset;
+					this.chunks.push(chunk);
 					offset += 64;
+					rev++;
 
-					if(result.isInline) {
+					if(this.isInline) {
 						offset += chunk.compressedLength;
 					}
 				}
 
-				return result;
+				return this;
 			});
 	}
-	parseIndexChunk(chunk) {
+
+	parseChunk(chunk, rev) {
 		return {
-			offset: this.unpackInt48(this.subArray(chunk, 0, 6)),
-			flags: this.unpackInt16(this.subArray(chunk, 6, 2)),
-			compressedLength: this.unpackInt32(this.subArray(chunk, 8, 4)),
-			uncompressedLength: this.unpackInt32(this.subArray(chunk, 12, 4)),
-			baseRev: this.unpackInt32(this.subArray(chunk, 16, 4)),
-			linkRev: this.unpackInt32(this.subArray(chunk, 20, 4)),
-			parent1Rev: this.unpackInt32(this.subArray(chunk, 24, 4)),
-			parent2Rev: this.unpackInt32(this.subArray(chunk, 28, 4)),
-			nodeId: this.unpackSha(this.subArray(chunk, 32, 20))
+			rev: rev,
+			offset: rev == 0 ? 0 : this.hg.unpackInt48(this.hg.subArray(chunk, 0, 6)),
+			flags: this.hg.unpackInt16(this.hg.subArray(chunk, 6, 2)),
+			compressedLength: this.hg.unpackInt32(this.hg.subArray(chunk, 8, 4)),
+			uncompressedLength: this.hg.unpackInt32(this.hg.subArray(chunk, 12, 4)),
+			baseRev: this.hg.unpackInt32(this.hg.subArray(chunk, 16, 4)),
+			linkRev: this.hg.unpackInt32(this.hg.subArray(chunk, 20, 4)),
+			parent1Rev: this.hg.unpackInt32(this.hg.subArray(chunk, 24, 4)),
+			parent2Rev: this.hg.unpackInt32(this.hg.subArray(chunk, 28, 4)),
+			nodeId: this.hg.unpackSha(this.hg.subArray(chunk, 32, 20))
 		};
 	}
 
-	// Data
+	getData(rev) {
+		return this.hg.decompress(this.getCompressedData(rev));
+	}
+	getCompressedData(rev) {
+		let start = this.getStartPos(rev);
+		let end = this.getEndPos(rev);
+		console.log(start, end);
+		if(this.isInline) {
+			start += (rev + 1) * 64;
+			end += (rev + 1) * 64;
+		}
 
-	readCommit(sha) {
-
+		return this.getChunk(start, end - start);
+	}
+	getChunk(offset, length) {
+		return this.hg.readFile(this.name + (this.isInline ? ".i" : ".d"))
+			.then(file => {
+				return this.hg.subArray(file, offset, length);
+			});
 	}
 };
 
