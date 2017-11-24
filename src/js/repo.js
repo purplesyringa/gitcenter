@@ -290,7 +290,14 @@ class Repository {
 			})
 			.then(() => this.sign());
 	}
-	install(title, description, address) {
+	install(title, description, address, type) {
+		if(type == "git") {
+			return this.installGit(title, description, address);
+		} else if(type == "hg") {
+			return this.installHg(title, description, address);
+		}
+	}
+	installGit(title, description, address) {
 		let auth, content;
 		return this.getContent()
 			.then(c => {
@@ -322,6 +329,41 @@ class Repository {
 			})
 			.then(git => {
 				this.git = git;
+				return this.signContent("site");
+			});
+	}
+	installHg(title, description, address) {
+		let auth, content;
+		return this.getContent()
+			.then(c => {
+				content = c;
+
+				return this.zeroAuth.requestAuth();
+			})
+			.then(a => {
+				auth = a;
+
+				content.title = title;
+				content.description = description;
+				content.signers = [auth.address];
+				content.installed = true;
+				content.hg = address;
+				content.hooks = false;
+				return this.setContent(content);
+			})
+			.then(() => {
+				return this.zeroFS.readFile("data/users/" + auth.address + "/data.json").catch(() => "{}");
+			})
+			.then(profile => {
+				profile = JSON.parse(profile);
+
+				profile.commitName = profile.commitName || auth.user[0].toUpperCase() + auth.user.substr(1).replace(/@.*/, "");
+				profile.commitEmail = profile.commitEmail || auth.user;
+
+				return Hg.init("merged-GitCenter/" + this.address + "/" + address + (address.endsWith(".git") ? "" : ".git"), this.zeroPage, profile.commitName, profile.commitEmail);
+			})
+			.then(hg => {
+				this.hg = hg;
 				return this.signContent("site");
 			});
 	}
