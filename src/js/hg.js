@@ -86,6 +86,22 @@ class Hg {
 		return string.split("").map(char => char.charCodeAt(0));
 	}
 
+	// Compression
+	decompress(data) {
+		if(data.length == 0) {
+			return data;
+		}
+
+		let type = String.fromCharCode(data[0]);
+		if(type == "\0") {
+			return data;
+		} else if(type == "x") {
+			return pako.inflate(data);
+		} else if(type == "u") {
+			return this.subArray(data, 1);
+		}
+	}
+
 	// FileSystem commands
 	readFile(path) {
 		return this.zeroFS.readFile(this.root + "/" + path, true)
@@ -129,13 +145,12 @@ class HgIndex {
 	}
 
 	load() {
-		this.chunks = [];
-
 		return this.hg.readFile(this.name + ".i")
 			.then(index => {
 				this.version = this.hg.unpackInt32(this.hg.subArray(index, 0, 4));
 				this.isInline = !!(this.version & (1 << 16));
 				this.chunkCacheSize = 65536; // Should be 65536 on remote repo
+				this.chunks = [];
 
 				let offset = 0;
 				let rev = 0;
@@ -171,7 +186,10 @@ class HgIndex {
 	}
 
 	getData(rev) {
-		return this.hg.decompress(this.getCompressedData(rev));
+		return this.getCompressedData(rev)
+			.then(compressed => {
+				return this.hg.decompress(compressed);
+			});
 	}
 	getCompressedData(rev) {
 		let start = this.getStartPos(rev);
