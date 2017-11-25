@@ -3,9 +3,10 @@ zeroPage = new ZeroPage(zeroFrame);
 zeroFS = new ZeroFS(zeroPage);
 zeroDB = new ZeroDB(zeroPage);
 
-zeroPage.cmd("mergerSiteList")
+zeroPage.cmd("mergerSiteList", [true])
 	.then(repos => {
-		repos = Object.keys(repos);
+		repos = Object.keys(repos)
+			.filter(repo => typeof repos[repo].privatekey != "undefined");
 
 		let index = repos.indexOf("1iNDExENNBsfHc6SKmy1HaeasHhm3RPcL");
 		if(index > -1) {
