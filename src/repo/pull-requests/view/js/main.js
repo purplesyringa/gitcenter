@@ -15,7 +15,11 @@ if(isNaN(id) || json == "data/users/") {
 
 marked.setOptions({
 	highlight: (code, lang) => {
-		return lang ? hljs.highlight(lang, code).value : hljs.highlightAuto(code).value;
+		try {
+			return lang ? hljs.highlight(lang, code).value : hljs.highlightAuto(code).value;
+		} catch(e) {
+			return hljs.highlightAuto(code).value;
+		}
 	}
 });
 
