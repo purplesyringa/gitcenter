@@ -387,7 +387,7 @@ class Repository {
 		} else if(this.hg) {
 			return this.hg.readBranchCommit(branch)
 				.then(commit => {
-					return this.getTree(commit.manifest, dir);
+					return this.getTree(commit.content.manifest, dir);
 				});
 		}
 	}

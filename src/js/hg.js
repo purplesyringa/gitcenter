@@ -249,10 +249,13 @@ class Hg {
 				let parent2 = metaData.parent2Rev == -1 ? null : index.getMetaData(metaData.parent2Rev).nodeId;
 
 				return {
-					manifest: manifest,
-					author: this.toGitAuthor(author, date),
-					message: message,
-					parents: parent2 ? [parent1, parent2] : parent1 ? [parent1] : []
+					type: "commit",
+					content: {
+						manifest: manifest,
+						author: this.toGitAuthor(author, date),
+						message: message,
+						parents: parent2 ? [parent1, parent2] : parent1 ? [parent1] : []
+					}
 				};
 			});
 	}
