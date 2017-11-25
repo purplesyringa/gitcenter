@@ -168,7 +168,7 @@ function copy(text) {
 }
 
 function showLinks() {
-	if(repo.git.isSha(branch)) {
+	if((repo.git || repo.hg).isSha(branch)) {
 		document.getElementById("permanent_link").textContent = branch;
 
 		document.getElementById("permanent_link").onclick = () => {
@@ -180,7 +180,7 @@ function showLinks() {
 			}
 		};
 	} else {
-		repo.git.getBranchCommit(branch)
+		(repo.git || repo.hg).getBranchCommit(branch)
 			.then(commit => {
 				document.getElementById("permanent_link").onclick = () => {
 					let permanent = location.href.replace(/\?.*/, "") + "?" + address + "/" + path.replace(/@/g, "@@") + "@" + commit;
