@@ -118,7 +118,7 @@ class Hg {
 
 	// Index
 	loadIndex(name) {
-		return new HgIndex(name, this);
+		return (new HgIndex(name, this)).load();
 	}
 
 	// Branches
@@ -181,15 +181,62 @@ class Hg {
 			});
 	}
 
+	// Read objects
 	readCommit(sha) {
-		return this.loadIndex("store/00changelog")
-			.then(index => {
-				if(!index.nodeIds[sha]) {
-					return Promise.reject("Unknown changeset " + sha + ": not found in 00changelog.i");
-				}
+		let index, rev, metaData;
 
-				return index.getData(index.nodeIds[sha]);
+		return this.loadIndex("store/00changelog")
+			.then(i => {
+				index = i;
+				rev = index.getRev(sha);
+				metaData = index.getMetaData(rev);
+				return index.getData(rev);
+			})
+			.then(data => {
+				data = this.arrayToString(data).split("\n");
+
+				let manifest = data[0];
+				let author = data[1];
+				let date = data[2];
+				let message = data.slice(4).join("\n");
+				let parent1 = metaData.parent1Rev == -1 ? null : index.getMetaData(metaData.parent1Rev).nodeId;
+				let parent2 = metaData.parent2Rev == -1 ? null : index.getMetaData(metaData.parent2Rev).nodeId;
+
+				return {
+					manifest: manifest,
+					author: this.toGitAuthor(author, date),
+					message: message,
+					parents: parent2 ? [parent1, parent2] : parent1 ? [parent1] : []
+				};
 			});
+	}
+
+	toGitAuthor(author, date) {
+		// Author
+		let email = "hg";
+		if(author.indexOf("<") > -1 && author.lastIndexOf(">") == author.length - 1) {
+			// Probably email
+			let open = author.indexOf("<");
+			email = author.substr(open + 1);
+			email = email.substr(0, email.length - 1);
+			author = author.substr(0, open).trim();
+		}
+
+		// Date
+		let ts = parseInt(date.split(" ")[0]);
+
+		let tz = parseInt(date.split(" ")[1]);
+		tz = -tz / 60;
+
+		let tzHours = Math.abs(Math.floor(tz / 60)).toString();
+		tzHours = "0".repeat(2 - tzHours.length) + tzHours;
+
+		let tzMinutes = Math.abs(tz % 60).toString();
+		tzMinutes = "0".repeat(2 - tzMinutes.length) + tzMinutes;
+
+		let tzString = (tz < 0 ? "-" : "+") + tzHours + tzMinutes;
+
+		return author + " <" + email + "> " + ts + " " + tzString;
 	}
 };
 
@@ -197,8 +244,6 @@ class HgIndex {
 	constructor(name, hg) {
 		this.hg = hg;
 		this.name = name;
-
-		return this.load();
 	}
 
 	// Util
@@ -253,6 +298,17 @@ class HgIndex {
 			parent2Rev: this.hg.unpackInt32(this.hg.subArray(chunk, 28, 4)),
 			nodeId: this.hg.unpackSha(this.hg.subArray(chunk, 32, 20))
 		};
+	}
+
+	getRev(sha) {
+		if(!this.nodeIds[sha]) {
+			throw new Error("Unknown changeset " + sha + ": not found in 00changelog.i");
+		}
+
+		return this.nodeIds[sha];
+	}
+	getMetaData(rev) {
+		return this.chunks[rev];
 	}
 
 	getData(rev) {
