@@ -116,12 +116,72 @@ class Hg {
 		return this.zeroFS.writeFile(this.root + "/" + path, Array.from(content).map(char => String.fromCharCode(char)).join(""), true);
 	}
 
+	// Index
 	loadIndex(name) {
 		return new HgIndex(name, this);
 	}
 
-	readCommit(sha) {
+	// Branches
+	getBranchList() {
+		let branches = [];
 
+		return this.loadBranchList("cache/branch2-visible", true)
+			.then(b => {
+				branches = branches.concat(b);
+				return this.loadBranchList("cache/branch2-served", true);
+			})
+			.then(b => {
+				branches = branches.concat(b);
+				return this.loadBranchList("cache/branch2-immutable", true);
+			})
+			.then(b => {
+				branches = branches.concat(b);
+				return this.loadBranchList("cache/branch2-base", true);
+			})
+			.then(b => {
+				branches = branches.concat(b);
+
+				return branches
+					.filter((val, i, arr) => arr.indexOf(val) == i)
+					.sort();
+			});
+	}
+	loadBranchList(file, shift) {
+		return this.readFile(file)
+			.then(branches => {
+				branches = this.arrayToString(branches);
+				branches = branches.split("\n");
+				if(shift) {
+					branches.shift();
+				}
+
+				return branches
+					.map(line => {
+						line = line.split(" ");
+						return line[2] || line[1];
+					})
+					.filter(name => name);
+			}, () => []);
+	}
+	getBookmarkList() {
+		return this.loadBranchList("bookmarks", false)
+			.then(bookmarks => bookmarks.sort());
+	}
+	getRefList() {
+		// For compatibility with Git
+		let branches, bookmarks;
+		return this.getBranchList()
+			.then(b => {
+				branches = b.map(branch => "refs/heads/" + branch);
+				return this.getBookmarkList();
+			})
+			.then(b => {
+				bookmarks = b.map(bookmark => "refs/tags/" + bookmark);
+				return branches.concat(bookmarks);
+			});
+	}
+
+	readCommit(sha) {
 	}
 };
 

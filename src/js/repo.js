@@ -432,7 +432,7 @@ class Repository {
 			});
 	}
 	getBranches() {
-		return this.git.getRefList()
+		return (this.git || this.hg).getRefList()
 			.then(refs => {
 				return refs
 					.filter(ref => (
