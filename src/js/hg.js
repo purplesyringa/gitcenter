@@ -85,6 +85,19 @@ class Hg {
 	stringToArray(string) {
 		return string.split("").map(char => char.charCodeAt(0));
 	}
+	isSha(str) {
+		return (
+			str.length == 40 &&
+			str.split("").every(char => {
+				char = char.charCodeAt(0);
+
+				return (
+					(char >= "0".charCodeAt(0) && char <= "9".charCodeAt(0)) ||
+					(char >= "a".charCodeAt(0) && char <= "z".charCodeAt(0))
+				);
+			})
+		);
+	}
 
 	// Compression
 	decompress(data) {
@@ -163,6 +176,23 @@ class Hg {
 					.filter(name => name);
 			}, () => []);
 	}
+	findInBranchList(file, name, shift) {
+		return this.readFile(file)
+			.then(branches => {
+				branches = this.arrayToString(branches);
+				branches = branches.split("\n");
+				if(shift) {
+					branches.shift();
+				}
+
+				return branches
+					.find(line => {
+						line = line.split(" ");
+						return (line[2] || line[1]) == name;
+					})
+					[0];
+			});
+	}
 	getBookmarkList() {
 		return this.loadBranchList("bookmarks", false)
 			.then(bookmarks => bookmarks.sort());
@@ -179,6 +209,21 @@ class Hg {
 				bookmarks = b.map(bookmark => "refs/heads/" + bookmark);
 				return branches.concat(bookmarks);
 			});
+	}
+	getBranchCommit(branch) {
+		if(this.isSha(branch)) {
+			return branch;
+		}
+
+		return this.findInBranchList("cache/branch2-visible", branch, true)
+			.catch(() => this.findInBranchList("cache/branch2-served", branch, true))
+			.catch(() => this.findInBranchList("cache/branch2-immutable", branch, true))
+			.catch(() => this.findInBranchList("cache/branch2-base", branch, true))
+			.catch(() => this.findInBranchList("bookmarks", branch, false));
+	}
+	readBranchCommit(branch) {
+		return this.getBranchCommit(branch)
+			.then(commit => this.readCommit(commit));
 	}
 
 	// Read objects
@@ -221,32 +266,13 @@ class Hg {
 				return index.getData(rev);
 			})
 			.then(data => {
-				let items = [
-					{
-						name: "",
-						id: ""
-					}
-				];
-				let state = "name";
-
-				data.forEach(char => {
-					if(state == "name") {
-						if(char == 0) {
-							state = "id";
-						} else {
-							items.slice(-1)[0].name += String.fromCharCode(char);
-						}
-					} else {
-						if(char == "\n".charCodeAt(0)) {
-							state = "name";
-							items.push({
-								name: "",
-								id: ""
-							});
-						} else {
-							items.slice(-1)[0].id += String.fromCharCode(char);
-						}
-					}
+				let items = this.arrayToString(data).split("\n").map(row => {
+					let name = row.split("\0")[0];
+					let id = row.split("\0")[1];
+					return {
+						name: name,
+						id: id
+					};
 				});
 
 				if(items.slice(-1)[0].name == "") {
@@ -255,6 +281,34 @@ class Hg {
 
 				return items;
 			});
+	}
+	readTree(sha, path) {
+		if(path) {
+			path += "/";
+		}
+
+		return this.readManifest(sha)
+			.then(manifest => {
+				return manifest
+					.filter(item => item.name.indexOf(path) == 0)
+					.map(item => {
+						let name = item.name.replace(path, "");
+						let type = "file";
+						if(name.indexOf("/") > -1) {
+							name = item.name.substr(0, item.name.indexOf("/"));
+							type = "directory";
+						}
+
+						return {
+							name: name,
+							id: item.id,
+							type: type
+						};
+					})
+					.filter((val, i, arr) => {
+						return arr.map(val2 => val2.name).indexOf(val.name) == i;
+					});
+			})
 	}
 
 	toGitAuthor(author, date) {

@@ -379,44 +379,55 @@ class Repository {
 
 	// Git actions
 	getFiles(branch, dir) {
-		return this.git.readBranchCommit(branch)
-			.then(commit => {
-				return this.getTree(commit.content.tree, dir);
-			});
+		if(this.git) {
+			return this.git.readBranchCommit(branch)
+				.then(commit => {
+					return this.getTree(commit.content.tree, dir);
+				});
+		} else if(this.hg) {
+			return this.hg.readBranchCommit(branch)
+				.then(commit => {
+					return this.getTree(commit.manifest, dir);
+				});
+		}
 	}
 	getTree(tree, dir) {
-		let submodules;
+		if(this.git) {
+			let submodules;
 
-		return this.git.getSubmodules(tree)
-			.then(s => {
-				submodules = s;
+			return this.git.getSubmodules(tree)
+				.then(s => {
+					submodules = s;
 
-				return this.git.readTreeItem(tree, dir);
-			})
-			.then(tree => {
-				if(tree.type != "tree") {
-					return Promise.reject("Commit tree must be a tree");
-				}
-
-				tree.content.forEach(file => {
-					file.type = {
-						blob: "file",
-						tree: "directory",
-						submodule: "submodule"
-					}[file.type] || "unknown";
-
-					if(file.type == "submodule") {
-						let submodule = submodules.find(submodule => submodule.path == (dir ? dir + "/" + file.name : file.name));
-						if(submodule) {
-							file.submodule = submodule;
-						} else {
-							file.type = "error";
-						}
+					return this.git.readTreeItem(tree, dir);
+				})
+				.then(tree => {
+					if(tree.type != "tree") {
+						return Promise.reject("Commit tree must be a tree");
 					}
-				});
 
-				return tree.content;
-			});
+					tree.content.forEach(file => {
+						file.type = {
+							blob: "file",
+							tree: "directory",
+							submodule: "submodule"
+						}[file.type] || "unknown";
+
+						if(file.type == "submodule") {
+							let submodule = submodules.find(submodule => submodule.path == (dir ? dir + "/" + file.name : file.name));
+							if(submodule) {
+								file.submodule = submodule;
+							} else {
+								file.type = "error";
+							}
+						}
+					});
+
+					return tree.content;
+				});
+		} else if(this.hg) {
+			return this.hg.readTree(tree, dir);
+		}
 	}
 	getFile(branch, path) {
 		return this.git.readBranchCommit(branch)
