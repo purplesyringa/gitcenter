@@ -3,11 +3,11 @@ FOLLOW_QUERIES = {
 	pullRequests: "SELECT 'pull_request' AS type, pull_requests.date_added AS date_added, pull_requests.title AS title, pull_requests.body AS body, 'repo/pull-requests/view/?' || json.site || '/' || pull_requests.id || '@' || REPLACE(json.directory, 'data/users/', '') AS url FROM pull_requests, json WHERE pull_requests.json_id = json.json_id AND json.site IN (:params)",
 	issueComments: "\
 		SELECT\
-			'comment' AS type, issue_comments.date_added AS date_added, issues_json.title AS title, issue_comments.body AS body, 'repo/issues/view/?' || issues_json.site || '/' || issues_json.id || '@' || REPLACE(issues_json.directory, 'data/users/', '') AS url\
+			'comment' AS type, issue_comments.date_added AS date_added, issues_json.title AS title, '@' || RTRIM(cert_user_id, '@zeroid.bit') || ': ' || issue_comments.body AS body, 'repo/issues/view/?' || issues_json.site || '/' || issues_json.id || '@' || REPLACE(issues_json.directory, 'data/users/', '') AS url\
 		FROM\
 			issue_comments\
 		LEFT JOIN\
-			(SELECT id, title, body, json_id, site, directory FROM issues LEFT JOIN json USING (json_id)) AS issues_json\
+			(SELECT id, title, body, json_id, site, directory, cert_user_id FROM issues LEFT JOIN json USING (json_id)) AS issues_json\
 		ON\
 			(issue_comments.issue_id = issues_json.id AND issue_comments.issue_json = issues_json.directory)\
 		WHERE\
@@ -15,11 +15,11 @@ FOLLOW_QUERIES = {
 	",
 	pullRequestComments: "\
 		SELECT\
-			'comment' AS type, pull_request_comments.date_added AS date_added, pull_requests_json.title AS title, pull_request_comments.body AS body, 'repo/pull-requests/view/?' || pull_requests_json.site || '/' || pull_requests_json.id || '@' || REPLACE(pull_requests_json.directory, 'data/users/', '') AS url\
+			'comment' AS type, pull_request_comments.date_added AS date_added, pull_requests_json.title AS title, '@' || RTRIM(cert_user_id, '@zeroid.bit') || ': ' || pull_request_comments.body AS body, 'repo/pull-requests/view/?' || pull_requests_json.site || '/' || pull_requests_json.id || '@' || REPLACE(pull_requests_json.directory, 'data/users/', '') AS url\
 		FROM\
 			pull_request_comments\
 		LEFT JOIN\
-			(SELECT id, title, body, json_id, site, directory FROM pull_requests LEFT JOIN json USING (json_id)) AS pull_requests_json\
+			(SELECT id, title, body, json_id, site, directory, cert_user_id FROM pull_requests LEFT JOIN json USING (json_id)) AS pull_requests_json\
 		ON\
 			(pull_request_comments.pull_request_id = pull_requests_json.id AND pull_request_comments.pull_request_json = pull_requests_json.directory)\
 		WHERE\
