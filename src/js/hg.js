@@ -176,7 +176,7 @@ class Hg {
 				return this.getBookmarkList();
 			})
 			.then(b => {
-				bookmarks = b.map(bookmark => "refs/tags/" + bookmark);
+				bookmarks = b.map(bookmark => "refs/heads/" + bookmark);
 				return branches.concat(bookmarks);
 			});
 	}
