@@ -198,7 +198,7 @@ class Hg {
 				let manifest = data[0];
 				let author = data[1];
 				let date = data[2];
-				let message = data.slice(4).join("\n");
+				let message = data.slice(4).join("\n").trim();
 				let parent1 = metaData.parent1Rev == -1 ? null : index.getMetaData(metaData.parent1Rev).nodeId;
 				let parent2 = metaData.parent2Rev == -1 ? null : index.getMetaData(metaData.parent2Rev).nodeId;
 
@@ -208,6 +208,52 @@ class Hg {
 					message: message,
 					parents: parent2 ? [parent1, parent2] : parent1 ? [parent1] : []
 				};
+			});
+	}
+	readManifest(sha) {
+		let index, rev, metaData;
+
+		return this.loadIndex("store/00manifest")
+			.then(i => {
+				index = i;
+				rev = index.getRev(sha);
+				metaData = index.getMetaData(rev);
+				return index.getData(rev);
+			})
+			.then(data => {
+				let items = [
+					{
+						name: "",
+						id: ""
+					}
+				];
+				let state = "name";
+
+				data.forEach(char => {
+					if(state == "name") {
+						if(char == 0) {
+							state = "id";
+						} else {
+							items.slice(-1)[0].name += String.fromCharCode(char);
+						}
+					} else {
+						if(char == "\n".charCodeAt(0)) {
+							state = "name";
+							items.push({
+								name: "",
+								id: ""
+							});
+						} else {
+							items.slice(-1)[0].id += String.fromCharCode(char);
+						}
+					}
+				});
+
+				if(items.slice(-1)[0].name == "") {
+					items.pop();
+				}
+
+				return items;
 			});
 	}
 
@@ -260,8 +306,11 @@ class HgIndex {
 	load() {
 		return this.hg.readFile(this.name + ".i")
 			.then(index => {
+				this.cachedIndex = index;
+
 				this.version = this.hg.unpackInt32(this.hg.subArray(index, 0, 4));
 				this.isInline = !!(this.version & (1 << 16));
+				this.generalDelta = !!(this.version & (1 << 17));
 				this.chunkCacheSize = 65536; // Should be 65536 on remote repo
 				this.chunks = [];
 				this.nodeIds = {};
@@ -281,8 +330,16 @@ class HgIndex {
 					}
 				}
 
-				return this;
-			});
+				if(this.isInline) {
+					this.cachedData = this.cachedIndex;
+				} else {
+					return this.hg.readFile(this.name + ".d")
+						.then(data => {
+							this.cachedData = data;
+						});
+				}
+			})
+			.then(() => this);
 	}
 
 	parseChunk(chunk, rev) {
@@ -301,8 +358,8 @@ class HgIndex {
 	}
 
 	getRev(sha) {
-		if(!this.nodeIds[sha]) {
-			throw new Error("Unknown changeset " + sha + ": not found in 00changelog.i");
+		if(this.nodeIds[sha] === undefined) {
+			throw new Error("Unknown changeset " + sha + ": not found in " + this.name);
 		}
 
 		return this.nodeIds[sha];
@@ -312,10 +369,7 @@ class HgIndex {
 	}
 
 	getData(rev) {
-		return this.getCompressedData(rev)
-			.then(compressed => {
-				return this.hg.decompress(compressed);
-			});
+		return this.delta(rev);
 	}
 	getCompressedData(rev) {
 		let start = this.getStartPos(rev);
@@ -328,10 +382,54 @@ class HgIndex {
 		return this.getChunk(start, end - start);
 	}
 	getChunk(offset, length) {
-		return this.hg.readFile(this.name + (this.isInline ? ".i" : ".d"))
-			.then(file => {
-				return this.hg.subArray(file, offset, length);
-			});
+		return this.hg.subArray(this.cachedData, offset, length);
+	}
+
+	delta(rev) {
+		// Build chain
+		let chain = [];
+		let baseRev = rev;
+		while(baseRev != -1 && baseRev != this.getMetaData(baseRev).baseRev) {
+			chain.push(baseRev);
+			if(this.generalDelta) {
+				baseRev = this.getMetaData(baseRev).baseRev;
+			} else {
+				baseRev--;
+			}
+		}
+
+		let data;
+		if(baseRev == -1) {
+			data = [];
+		} else {
+			data = this.hg.decompress(this.getCompressedData(baseRev));
+		}
+
+		data = chain.reverse().reduce((source, deltaRev) => this.mpatch(deltaRev, source), data);
+		return data;
+	}
+	mpatch(deltaRev, source) {
+		let delta = this.hg.decompress(this.getCompressedData(deltaRev));
+
+		let dst = source;
+		let dstOffset = 0;
+
+		let pos = 0;
+		while(pos < delta.length) {
+			let start = this.hg.unpackInt32(this.hg.subArray(delta, pos, 4));
+			let end = this.hg.unpackInt32(this.hg.subArray(delta, pos + 4, 4));
+			let length = this.hg.unpackInt32(this.hg.subArray(delta, pos + 8, 4));
+			let data = this.hg.subArray(delta, pos + 12, length);
+
+			dst = this.hg.concat(this.hg.subArray(dst, 0, start + dstOffset), data, this.hg.subArray(dst, end + dstOffset));
+
+			dstOffset -= end - start;
+			dstOffset += length;
+
+			pos += 12 + length;
+		}
+
+		return dst;
 	}
 };
 
