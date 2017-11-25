@@ -182,6 +182,14 @@ class Hg {
 	}
 
 	readCommit(sha) {
+		return this.loadIndex("store/00changelog")
+			.then(index => {
+				if(!index.nodeIds[sha]) {
+					return Promise.reject("Unknown changeset " + sha + ": not found in 00changelog.i");
+				}
+
+				return index.getData(index.nodeIds[sha]);
+			});
 	}
 };
 
@@ -211,12 +219,14 @@ class HgIndex {
 				this.isInline = !!(this.version & (1 << 16));
 				this.chunkCacheSize = 65536; // Should be 65536 on remote repo
 				this.chunks = [];
+				this.nodeIds = {};
 
 				let offset = 0;
 				let rev = 0;
 				while(offset < index.length) {
 					let chunk = this.parseChunk(this.hg.subArray(index, offset, 64), rev);
 					chunk.position = offset;
+					this.nodeIds[chunk.nodeId] = rev;
 					this.chunks.push(chunk);
 					offset += 64;
 					rev++;
@@ -254,7 +264,6 @@ class HgIndex {
 	getCompressedData(rev) {
 		let start = this.getStartPos(rev);
 		let end = this.getEndPos(rev);
-		console.log(start, end);
 		if(this.isInline) {
 			start += (rev + 1) * 64;
 			end += (rev + 1) * 64;
