@@ -253,6 +253,7 @@ class Hg {
 					content: {
 						manifest: manifest,
 						author: this.toGitAuthor(author, date),
+						committer: this.toGitAuthor(author, date),
 						message: message,
 						parents: parent2 ? [parent1, parent2] : parent1 ? [parent1] : []
 					}
