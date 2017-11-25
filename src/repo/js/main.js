@@ -36,7 +36,7 @@ repo.addMerger()
 				}
 			});
 
-		return branch || repo.git.getHead();
+		return branch || (repo.git || repo.hg).getHead();
 	})
 	.then(h => {
 		head = h;

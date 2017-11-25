@@ -190,6 +190,7 @@ class Hg {
 						line = line.split(" ");
 						return (line[2] || line[1]) == name;
 					})
+					.split(" ")
 					[0];
 			});
 	}
@@ -337,6 +338,10 @@ class Hg {
 		let tzString = (tz < 0 ? "-" : "+") + tzHours + tzMinutes;
 
 		return author + " <" + email + "> " + ts + " " + tzString;
+	}
+
+	getHead() {
+		return Promise.resolve("default");
 	}
 };
 
