@@ -3,9 +3,10 @@ class Git {
 		this.root = root;
 		this.zeroPage = zeroPage;
 		this.zeroFS = new ZeroFS(zeroPage);
-
+	}
+	init() {
 		this.packedIndex = [];
-		this.findPackedObjects()
+		return this.findPackedObjects()
 			.then(objects => {
 				objects.forEach(object => {
 					this.loadPackedIndex(object.index);
