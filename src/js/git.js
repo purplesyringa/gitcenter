@@ -3,9 +3,10 @@ class Git {
 		this.root = root;
 		this.zeroPage = zeroPage;
 		this.zeroFS = new ZeroFS(zeroPage);
-
+	}
+	init() {
 		this.packedIndex = [];
-		this.findPackedObjects()
+		return this.findPackedObjects()
 			.then(objects => {
 				objects.forEach(object => {
 					this.loadPackedIndex(object.index);
@@ -1058,6 +1059,9 @@ Git.init = (root, zeroPage, name, email) => {
 		.then(() => {
 			git = new Git(root, zeroPage);
 
+			return git.init();
+		})
+		.then(() => {
 			let date = new Date;
 			let tz = date.getTimezoneOffset() * -1;
 			let hours = Math.floor(Math.abs(tz / 60));

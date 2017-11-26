@@ -94,10 +94,12 @@ class Repository {
 			.then(content => {
 				if(content.git) {
 					this.git = new Git("merged-GitCenter/" + this.address + "/" + content.git, zeroPage);
+					return this.git.init();
 				} else {
 					this.git = null;
 				}
-
+			})
+			.then(() => {
 				return this.updateFollow();
 			});
 	}
