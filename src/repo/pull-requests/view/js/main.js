@@ -132,7 +132,7 @@ repo.addMerger()
 
 				promise
 					.then(() => {
-						return repo.changePullRequestStatus(id, json, !pullRequest.open);
+						return repo.changePullRequestStatus(id, json, !pullRequest.merged);
 					})
 					.then(() => {
 						pullRequest.merged = !pullRequest.merged;
