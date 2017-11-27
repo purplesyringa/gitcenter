@@ -17,7 +17,7 @@ repo.addMerger()
 		}
 
 		if(!branch) {
-			return repo.git.getHead()
+			return (repo.git || repo.hg).getHead()
 				.then(head => branch = head);
 		}
 	})
