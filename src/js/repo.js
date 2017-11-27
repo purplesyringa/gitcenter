@@ -426,7 +426,7 @@ class Repository {
 					return tree.content;
 				});
 		} else if(this.hg) {
-			return this.hg.readTree(tree, dir);
+			return this.hg.readTreeItem(tree, dir);
 		}
 	}
 	getFile(branch, path) {

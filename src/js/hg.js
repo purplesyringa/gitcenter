@@ -298,7 +298,7 @@ class Hg {
 				return items;
 			});
 	}
-	readTree(sha, path) {
+	readTreeItem(sha, path) {
 		if(path) {
 			path += "/";
 		}
