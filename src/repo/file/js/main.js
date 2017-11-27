@@ -42,7 +42,7 @@ repo.addMerger()
 	})
 	.then(() => {
 		// Tree exists
-		return repo.getFile(branch, path)
+		return repo.getFile(head, path)
 			.then(blob => {
 				let fileContent = document.getElementById("file_content");
 				fileContent.textContent = repo.git.arrayToString(blob);
@@ -54,10 +54,10 @@ repo.addMerger()
 			}, () => {
 				// Blob doesn't exist
 				let fileContent = document.getElementById("file_content");
-				fileContent.textContent = "File " + path + " does not exist on branch " + branch;
+				fileContent.textContent = "File " + path + " does not exist on branch " + head;
 			});
 	}, () => {
 		// Tree doesn't exist
 		let fileContent = document.getElementById("file_content");
-		fileContent.textContent = "Unknown branch " + branch;
+		fileContent.textContent = "Unknown branch " + head;
 	});
