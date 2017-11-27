@@ -3,6 +3,7 @@ class Hg {
 		this.root = root;
 		this.zeroPage = zeroPage;
 		this.zeroFS = new ZeroFS(zeroPage);
+		this.indexCache = {};
 	}
 	init() {
 		return Promise.resolve();
@@ -132,7 +133,15 @@ class Hg {
 
 	// Index
 	loadIndex(name) {
-		return (new HgIndex(name, this)).load();
+		if(this.indexCache[name]) {
+			return Promise.resolve(this.indexCache[name]);
+		} else {
+			return (new HgIndex(name, this)).load()
+				.then(index => {
+					this.indexCache[name] = index;
+					return index;
+				});
+		}
 	}
 
 	// Branches
@@ -197,7 +206,8 @@ class Hg {
 	}
 	getBookmarkList() {
 		return this.loadBranchList("bookmarks", false)
-			.then(bookmarks => bookmarks.sort());
+			.then(bookmarks => bookmarks.sort())
+			.catch(() => []);
 	}
 	getRefList() {
 		// For compatibility with Git
