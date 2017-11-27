@@ -67,10 +67,11 @@ class Hg {
 		return result;
 	}
 	subArray(array, begin, length) {
+		// subarray() is in-place and therefore faster, but it is not implemented in some browsers and is only for TypedArray's
 		if(length === undefined) {
-			return array.slice(begin);
+			return (array.subarray || array.slice).call(array, begin);
 		} else {
-			return array.slice(begin, begin + length);
+			return (array.subarray || array.slice).call(array, begin, begin + length);
 		}
 	}
 	appendArray(source, destination) {
