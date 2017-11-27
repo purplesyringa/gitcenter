@@ -32,7 +32,7 @@ repo.addMerger()
 	})
 	.then(h => {
 		head = h;
-		return repo.git.readBranchCommit(head);
+		return (repo.git || repo.hg).readBranchCommit(head);
 	})
 	.then(commit => {
 		document.getElementById("commit_title").textContent = commit.content.message;
