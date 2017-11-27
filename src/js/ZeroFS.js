@@ -112,6 +112,38 @@ class ZeroFS {
 		return btoa(bytes ? str : unescape(encodeURIComponent(str)));
 	}
 	fromBase64(str, bytes) {
-		return bytes ? atob(str) : decodeURIComponent(escape(atob(str)));
+		if(bytes == "arraybuffer") {
+			let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+
+			let resultingSize = str.length / 4 * 3;
+			str = str.replace(/=+$/g, "");
+
+			let result = new Uint8Array(resultingSize);
+			let strPos = 0;
+
+			for(let i = 0; i < resultingSize;) {
+				let part1 = chars.indexOf(str.charAt(strPos++));
+				let part2 = chars.indexOf(str.charAt(strPos++));
+				let part3 = chars.indexOf(str.charAt(strPos++));
+				let part4 = chars.indexOf(str.charAt(strPos++));
+
+				let res1 = (part1 << 2) | (part2 >> 4);
+				let res2 = ((part2 & 15) << 4) | (part3 >> 2);
+				let res3 = ((part3 & 3) << 6) | part4;
+
+				result[i++] = res1;
+				if(part3 != -1) {
+					result[i++] = res2;
+				}
+				if(part4 != -1) {
+					result[i++] = res3;
+				}
+			}
+
+			return result;
+		} else {
+			let text = bytes ? atob(str) : decodeURIComponent(escape(atob(str)));
+			return text;
+		}
 	}
 }

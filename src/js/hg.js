@@ -121,10 +121,7 @@ class Hg {
 
 	// FileSystem commands
 	readFile(path) {
-		return this.zeroFS.readFile(this.root + "/" + path, true)
-			.then(file => {
-				return new Uint8Array(file.split("").map(char => char.charCodeAt(0)));
-			});
+		return this.zeroFS.readFile(this.root + "/" + path, "arraybuffer");
 	}
 	readDirectory(path, recursive) {
 		return this.zeroFS.readDirectory(this.root + "/" + path, recursive);
