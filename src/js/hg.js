@@ -262,7 +262,7 @@ class Hg {
 				return {
 					type: "commit",
 					content: {
-						manifest: manifest,
+						tree: manifest,
 						author: this.toGitAuthor(author, date),
 						committer: this.toGitAuthor(author, date),
 						message: message,

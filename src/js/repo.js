@@ -379,17 +379,10 @@ class Repository {
 
 	// Git actions
 	getFiles(branch, dir) {
-		if(this.git) {
-			return this.git.readBranchCommit(branch)
-				.then(commit => {
-					return this.getTree(commit.content.tree, dir);
-				});
-		} else if(this.hg) {
-			return this.hg.readBranchCommit(branch)
-				.then(commit => {
-					return this.getTree(commit.content.manifest, dir);
-				});
-		}
+		return (this.git || this.hg).readBranchCommit(branch)
+			.then(commit => {
+				return this.getTree(commit.content.tree, dir);
+			});
 	}
 	getTree(tree, dir) {
 		if(this.git) {
