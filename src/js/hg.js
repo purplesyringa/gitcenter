@@ -4,6 +4,9 @@ class Hg {
 		this.zeroPage = zeroPage;
 		this.zeroFS = new ZeroFS(zeroPage);
 	}
+	init() {
+		return Promise.resolve();
+	}
 
 	// Helper functions
 	unpackInt16(str) {
