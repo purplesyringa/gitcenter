@@ -121,14 +121,17 @@ class Repository {
 				if(content.git) {
 					this.git = new Git("merged-GitCenter/" + this.address + "/" + content.git, zeroPage);
 					this.hg = null;
+					this.vcs = this.git;
 					return this.git.init();
 				} else if(content.hg) {
 					this.git = null;
 					this.hg = new Hg("merged-GitCenter/" + this.address + "/" + content.hg, zeroPage);
+					this.vcs = this.hg;
 					return this.hg.init();
 				} else {
 					this.git = null;
 					this.hg = null;
+					this.vcs = null;
 				}
 			})
 			.then(() => {
@@ -379,7 +382,7 @@ class Repository {
 
 	// Git actions
 	getFiles(branch, dir) {
-		return (this.git || this.hg).readBranchCommit(branch)
+		return this.vcs.readBranchCommit(branch)
 			.then(commit => {
 				return this.getTree(commit.content.tree, dir);
 			});
@@ -436,7 +439,7 @@ class Repository {
 			});
 	}
 	getBranches() {
-		return (this.git || this.hg).getRefList()
+		return this.vcs.getRefList()
 			.then(refs => {
 				return refs
 					.filter(ref => (

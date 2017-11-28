@@ -28,11 +28,11 @@ repo.addMerger()
 				}
 			});
 
-		return branch || (repo.git || repo.hg).getHead();
+		return branch || repo.vcs.getHead();
 	})
 	.then(h => {
 		head = h;
-		return (repo.git || repo.hg).readBranchCommit(head);
+		return repo.vcs.readBranchCommit(head);
 	})
 	.then(commit => {
 		document.getElementById("commit_title").textContent = commit.content.message;
