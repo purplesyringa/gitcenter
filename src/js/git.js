@@ -760,6 +760,11 @@ class Git {
 			return Promise.resolve(branch);
 		}
 
+		if(branch == "") {
+			return this.getHead()
+				.then(head => this.getBranchCommit(head));
+		}
+
 		return this.getRef("refs/heads/" + branch)
 			.catch(() => {
 				return this.getRef("refs/tags/" + branch);
