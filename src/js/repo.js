@@ -65,6 +65,32 @@ class Repository {
 				return true;
 			});
 	}
+	getLocalCache() {
+		return this.zeroPage.cmd("wrapperGetLocalStorage")
+			.then(storage => {
+				if(!storage || !storage.repoCache || !storage.repoCache[this.address]) {
+					return {};
+				}
+
+				return storage.repoCache[this.address];
+			})
+	}
+	setLocalCache(cache) {
+		return this.zeroPage.cmd("wrapperGetLocalStorage")
+			.then(storage => {
+				if(!storage) {
+					storage = {
+						repoCache: {}
+					};
+				} else if(!storage.repoCache) {
+					storage.repoCache = {};
+				}
+
+				storage.repoCache[this.address] = cache;
+
+				return this.zeroPage.cmd("wrapperSetLocalStorage", storage);
+			});
+	}
 
 	// Permission actions
 	addMerger() {
@@ -169,6 +195,56 @@ class Repository {
 			})
 			.then(address => {
 				return signers.indexOf(address) > -1;
+			});
+	}
+	getOwner() {
+		let address;
+
+		return this.getLocalCache()
+			.then(cache => {
+				if(cache.owner) {
+					return cache.owner;
+				}
+
+				return this.getSigners()
+					.then(signers => {
+						if(signers.length == 1 && signers[0] != this.address) {
+							// One signer, easy to detect
+							return signers[0];
+						} else if(signers.length == 2 && signers.indexOf(this.address) > -1) {
+							// Two signers, one is repository itself
+							return signers[0] == this.address ? signers[1] : signers[0];
+						}
+
+						return Promise.reject("Failed to get owner");
+					})
+					.then(address => {
+						cache.owner = address;
+						return this.setLocalCache(cache);
+					})
+					.then(() => {
+						return cache.owner;
+					});
+			})
+			.then(a => {
+				address = a;
+				return this.zeroFS.readFile("data/users/" + address + "/data.json");
+			})
+			.then(profile => {
+				profile = JSON.parse(profile);
+				return profile.commitName;
+			}, e => {
+				if(!address) {
+					return Promise.reject(e);
+				}
+
+				return this.findUserById(address)
+					.then(user => {
+						return user.name;
+					});
+			})
+			.catch(() => {
+				return "Anonymous";
 			});
 	}
 

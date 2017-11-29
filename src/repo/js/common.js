@@ -43,8 +43,14 @@ function showTabs(level) {
 }
 
 function showTitle(title) {
+	let arrow = String.fromCharCode(8250);
+
 	let name = document.getElementById("repo_name");
 	name.textContent = title;
+	repo.getOwner()
+		.then(owner => {
+			name.textContent = owner + " " + arrow + " " + title;
+		});
 }
 function showHeader(level, gitAddress) {
 	document.getElementById("fork").onclick = () => {
