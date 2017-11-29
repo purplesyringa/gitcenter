@@ -171,6 +171,23 @@ class Repository {
 				return signers.indexOf(address) > -1;
 			});
 	}
+	getOwner() {
+		return this.getSigners()
+			.then(signers => {
+				if(signers.length == 1 && signers[0] != this.address) {
+					// One signer, easy to detect
+					return this.findUserById(signers[0]);
+				} else if(signers.length == 2 && signers.indexOf(this.address) > -1) {
+					// Two signers, one is repository itself
+					return this.findUserById(signers[0] == this.address ? signers[1] : signers[0]);
+				}
+
+				return {
+					name: "Anonymous"
+				};
+			})
+			.then(user => user.name);
+	}
 
 	rename(newName) {
 		return this.getContent()
