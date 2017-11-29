@@ -65,6 +65,32 @@ class Repository {
 				return true;
 			});
 	}
+	getLocalCache() {
+		return this.zeroPage.cmd("wrapperGetLocalStorage")
+			.then(storage => {
+				if(!storage || !storage.repoCache || !storage.repoCache[this.address]) {
+					return {};
+				}
+
+				return storage.repoCache[this.address];
+			})
+	}
+	setLocalCache(cache) {
+		return this.zeroPage.cmd("wrapperGetLocalStorage")
+			.then(storage => {
+				if(!storage) {
+					storage = {
+						repoCache: {}
+					};
+				} else if(!storage.repoCache) {
+					storage.repoCache = {};
+				}
+
+				storage.repoCache[this.address] = cache;
+
+				return this.zeroPage.cmd("wrapperSetLocalStorage", storage);
+			});
+	}
 
 	// Permission actions
 	addMerger() {
@@ -172,21 +198,34 @@ class Repository {
 			});
 	}
 	getOwner() {
-		return this.getSigners()
-			.then(signers => {
-				if(signers.length == 1 && signers[0] != this.address) {
-					// One signer, easy to detect
-					return this.findUserById(signers[0]);
-				} else if(signers.length == 2 && signers.indexOf(this.address) > -1) {
-					// Two signers, one is repository itself
-					return this.findUserById(signers[0] == this.address ? signers[1] : signers[0]);
+		return this.getLocalCache()
+			.then(cache => {
+				if(cache.owner) {
+					return cache.owner;
 				}
 
-				return {
-					name: "Anonymous"
-				};
-			})
-			.then(user => user.name);
+				return this.getSigners()
+					.then(signers => {
+						if(signers.length == 1 && signers[0] != this.address) {
+							// One signer, easy to detect
+							return this.findUserById(signers[0]);
+						} else if(signers.length == 2 && signers.indexOf(this.address) > -1) {
+							// Two signers, one is repository itself
+							return this.findUserById(signers[0] == this.address ? signers[1] : signers[0]);
+						}
+
+						return {
+							name: "Anonymous"
+						};
+					})
+					.then(user => {
+						cache.owner = user.name;
+						return this.setLocalCache(cache);
+					})
+					.then(() => {
+						return cache.owner;
+					});
+			});
 	}
 
 	rename(newName) {
