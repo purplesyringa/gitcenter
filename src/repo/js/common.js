@@ -92,7 +92,8 @@ function showHeader(level, gitAddress) {
 						starButton.innerHTML = (res.starred ? "Unstar" : "Star") + " (" + res.count + ")";
 					});
 			};
-		});
+		})
+		.catch(() => {}); // Who cares?
 
 	document.getElementById("git_button").onclick = () => {
 		let command = "git clone $path_to_data/" + address + "/" + gitAddress;
