@@ -198,6 +198,8 @@ class Repository {
 			});
 	}
 	getOwner() {
+		let address;
+
 		return this.getLocalCache()
 			.then(cache => {
 				if(cache.owner) {
@@ -208,23 +210,41 @@ class Repository {
 					.then(signers => {
 						if(signers.length == 1 && signers[0] != this.address) {
 							// One signer, easy to detect
-							return this.findUserById(signers[0]);
+							return signers[0];
 						} else if(signers.length == 2 && signers.indexOf(this.address) > -1) {
 							// Two signers, one is repository itself
-							return this.findUserById(signers[0] == this.address ? signers[1] : signers[0]);
+							return signers[0] == this.address ? signers[1] : signers[0];
 						}
 
-						return {
-							name: "Anonymous"
-						};
+						return Promise.reject("Failed to get owner");
 					})
-					.then(user => {
-						cache.owner = user.name;
+					.then(address => {
+						cache.owner = address;
 						return this.setLocalCache(cache);
 					})
 					.then(() => {
 						return cache.owner;
 					});
+			})
+			.then(a => {
+				address = a;
+				return this.zeroFS.readFile("data/users/" + address + "/data.json");
+			})
+			.then(profile => {
+				profile = JSON.parse(profile);
+				return profile.commitName;
+			}, e => {
+				if(!address) {
+					return Promise.reject(e);
+				}
+
+				return this.findUserById(address)
+					.then(user => {
+						return user.name;
+					});
+			})
+			.catch(() => {
+				return "Anonymous";
 			});
 	}
 
