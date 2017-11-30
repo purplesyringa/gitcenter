@@ -139,7 +139,6 @@ class Repository {
 				return new Promise((resolve, reject) => {
 					// Wait for some file to download
 					let handler = siteInfo => {
-						console.log(siteInfo.params.event);
 						if(siteInfo.params.address != address) {
 							return;
 						}
