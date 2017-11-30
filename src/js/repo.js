@@ -484,6 +484,21 @@ class Repository {
 			})
 			.then(base => {
 				return this.diffTree(commit.content.tree, base.content.tree, "");
+			})
+			.then(diff => {
+				return Promise.all(
+					diff.map(item => {
+						if(item.action == "modified" && item.type == "blob") {
+							return this.diffBlob(item.id, item.baseId)
+								.then(diffBlob => {
+									item.content = diffBlob;
+									return item;
+								});
+						} else {
+							return item;
+						}
+					})
+				);
 			});
 	}
 	diffTree(tree, base, root) {
@@ -675,6 +690,30 @@ class Repository {
 						item.name = root ? root + "/" + item.name : item.name;
 						return item;
 					}));
+			});
+	}
+	diffBlob(blob, base) {
+		let blobContent;
+		return this.git.readUnknownObject(blob)
+			.then(b => {
+				blobContent = this.git.arrayToString(b.content);
+				return this.git.readUnknownObject(base);
+			})
+			.then(baseContent => {
+				baseContent = this.git.arrayToString(baseContent.content);
+
+				let sequenceMatcher = new difflib.SequenceMatcher(baseContent, blobContent);
+				let opcodes = sequenceMatcher.get_opcodes();
+				return diffview.buildView({
+					baseTextLines: baseContent,
+					newTextLines: blobContent,
+					opcodes: opcodes,
+					// set the display titles for each resource
+					baseTextName: "Base Text",
+					newTextName: "New Text",
+					contextSize: null,
+					viewType: 1
+				});
 			});
 	}
 
