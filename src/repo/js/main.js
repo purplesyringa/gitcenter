@@ -44,6 +44,15 @@ repo.addMerger()
 	})
 	.then(commit => {
 		document.getElementById("commit_title").textContent = commit.content.message;
+
+		repo.git.getBranchCommit(head)
+			.then(c => {
+				let diff = document.createElement("a");
+				diff.textContent = "[diff]";
+				diff.href = "commit/?" + address + "/" + c;
+				document.getElementById("commit_title").appendChild(diff);
+			});
+
 		document.getElementById("commit_description").appendChild(document.createTextNode(repo.parseAuthor(commit.content.committer)));
 
 		return repo.getFiles(head, path);
