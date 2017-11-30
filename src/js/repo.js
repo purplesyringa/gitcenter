@@ -715,12 +715,20 @@ class Repository {
 		let blobContent;
 		return (blob ? this.git.readUnknownObject(blob) : Promise.resolve({content: []}))
 			.then(b => {
-				blobContent = difflib.stringAsLines(this.git.arrayToString(b.content));
+				if(b.content.length == 0) {
+					blobContent = [];
+				} else {
+					blobContent = difflib.stringAsLines(this.git.arrayToString(b.content));
+				}
 
 				return base ? this.git.readUnknownObject(base) : {content: []};
 			})
 			.then(baseContent => {
-				baseContent = difflib.stringAsLines(this.git.arrayToString(baseContent.content));
+				if(baseContent.content.length == 0) {
+					baseContent = [];
+				} else {
+					baseContent = difflib.stringAsLines(this.git.arrayToString(baseContent.content));
+				}
 
 				let blobHasNewLine = blobContent.slice(-1)[0] == "";
 				if(blobHasNewLine) {
