@@ -28,8 +28,18 @@ repo.addMerger()
 	})
 	.then(diff => {
 		diff.forEach(item => {
+			let diff = document.createElement("div");
+			diff.className = "diff-file";
+
+			let header = document.createElement("div");
+			header.className = "diff-header";
+			header.textContent = item.name;
+			diff.appendChild(header);
+
 			if(item.type == "blob") {
-				document.getElementById("diffs").appendChild(item.content);
+				diff.appendChild(item.content);
 			}
-		})
+
+			document.getElementById("diffs").appendChild(diff);
+		});
 	});
