@@ -492,7 +492,7 @@ class Repository {
 							let promise;
 							if(item.action == "modified") {
 								promise = this.diffBlob(item.id, item.baseId);
-							} else if(item.action == "added") {
+							} else if(item.action == "add") {
 								promise = this.diffBlob(item.id, null);
 							} else if(item.action == "remove") {
 								promise = this.diffBlob(null, item.id);
@@ -503,6 +503,16 @@ class Repository {
 									item.content = diffBlob;
 									return item;
 								});
+						} else if(item.type == "submodule") {
+							if(item.action == "modified") {
+								item.content = this.diffSubmodule(item.id, item.baseId);
+							} else if(item.action == "add") {
+								item.content = this.diffSubmodule(item.id, null);
+							} else if(item.action == "remove") {
+								item.content = this.diffSubmodule(null, item.id);
+							}
+
+							return Promise.resolve(item);
 						} else {
 							return item;
 						}
@@ -706,14 +716,25 @@ class Repository {
 		return (blob ? this.git.readUnknownObject(blob) : Promise.resolve({content: []}))
 			.then(b => {
 				blobContent = difflib.stringAsLines(this.git.arrayToString(b.content));
+
 				return base ? this.git.readUnknownObject(base) : {content: []};
 			})
 			.then(baseContent => {
 				baseContent = difflib.stringAsLines(this.git.arrayToString(baseContent.content));
 
+				let blobHasNewLine = blobContent.slice(-1)[0] == "";
+				if(blobHasNewLine) {
+					blobContent.pop();
+				}
+
+				let baseHasNewLine = baseContent.slice(-1)[0] == "";
+				if(baseHasNewLine) {
+					baseContent.pop();
+				}
+
 				let sequenceMatcher = new difflib.SequenceMatcher(baseContent, blobContent);
 				let opcodes = sequenceMatcher.get_opcodes();
-				return diffview.buildView({
+				let view = diffview.buildView({
 					baseTextLines: baseContent,
 					newTextLines: blobContent,
 					opcodes: opcodes,
@@ -723,7 +744,40 @@ class Repository {
 					contextSize: 3,
 					viewType: 1
 				});
+
+				if(blobHasNewLine && !baseHasNewLine) {
+					// Add newline
+					let tr = document.createElement("tr");
+					tr.innerHTML += "<th></th><th></th><td class='insert'>Newline at the end of file</td>";
+					view.lastChild.appendChild(tr);
+				} else if(!blobHasNewLine && baseHasNewLine) {
+					// Remove newline
+					let tr = document.createElement("tr");
+					tr.innerHTML += "<th></th><th></th><td class='delete'>Newline at the end of file</td>";
+					view.lastChild.appendChild(tr);
+				}
+
+				return view;
 			});
+	}
+	diffSubmodule(submodule, base) {
+		let baseContent = base ? difflib.stringAsLines("Subproject commit " + base) : [];
+		let submoduleContent = submodule ? difflib.stringAsLines("Subproject commit " + submodule) : [];
+
+		let sequenceMatcher = new difflib.SequenceMatcher(baseContent, submoduleContent);
+		let opcodes = sequenceMatcher.get_opcodes();
+		let view = diffview.buildView({
+			baseTextLines: baseContent,
+			newTextLines: submoduleContent,
+			opcodes: opcodes,
+			// set the display titles for each resource
+			baseTextName: "Base Text",
+			newTextName: "New Text",
+			contextSize: null,
+			viewType: 1
+		});
+
+		return view;
 	}
 
 	// Releases

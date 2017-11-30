@@ -38,6 +38,8 @@ repo.addMerger()
 
 			if(item.type == "blob") {
 				diff.appendChild(item.content);
+			} else if(item.type == "submodule") {
+				diff.appendChild(item.content);
 			}
 
 			document.getElementById("diffs").appendChild(diff);
