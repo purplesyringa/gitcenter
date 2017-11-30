@@ -179,6 +179,8 @@ function showLinks() {
 				prompt("Permanent link", permanent);
 			}
 		};
+
+		document.getElementById("commit_title").href = location.href.replace(/\?.*/, "") + "commit/?" + address + "/" + path.replace(/@/g, "@@") + "@" + branch;
 	} else {
 		repo.git.getBranchCommit(branch)
 			.then(commit => {
@@ -190,6 +192,8 @@ function showLinks() {
 						prompt("Permanent link", permanent);
 					}
 				};
+
+				document.getElementById("commit_title").href = location.href.replace(/\?.*/, "") + "commit/?" + address + "/" + path.replace(/@/g, "@@") + "@" + commit;
 			});
 	}
 }
