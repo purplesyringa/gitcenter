@@ -109,18 +109,10 @@ class Repository {
 				}
 			})
 			.then(() => {
-				return this.zeroPage.cmd("mergerSiteList");
-			})
-			.then(l => {
-				list = l;
-				if(!list[this.address]) {
-					return this.zeroPage.cmd("mergerSiteAdd", [this.address]);
-				}
+				return this.addMergedSite(this.address);
 			})
 			.then(() => {
-				if(!list["1iNDExENNBsfHc6SKmy1HaeasHhm3RPcL"]) {
-					return this.zeroPage.cmd("mergerSiteAdd", ["1iNDExENNBsfHc6SKmy1HaeasHhm3RPcL"]);
-				}
+				return this.addMergedSite("1iNDExENNBsfHc6SKmy1HaeasHhm3RPcL");
 			})
 			.then(() => {
 				return this.getContent();
@@ -137,6 +129,33 @@ class Repository {
 				return this.updateFollow();
 			});
 	}
+	addMergedSite(address) {
+		return this.zeroPage.cmd("mergerSiteList")
+			.then(list => {
+				if(list[address]) {
+					return;
+				}
+
+				return new Promise((resolve, reject) => {
+					// Wait for some file to download
+					let handler = siteInfo => {
+						console.log(siteInfo.params.event);
+						if(siteInfo.params.address != address) {
+							return;
+						}
+
+						let event = siteInfo.params.event;
+						if(event[0] == "file_done") {
+							this.zeroPage.off("setSiteInfo", handler);
+							resolve(true);
+						}
+					};
+					this.zeroPage.on("setSiteInfo", handler);
+
+					this.zeroPage.cmd("mergerSiteAdd", [address]);
+				});
+			});
+	}
 
 	// Content actions
 	signAndPublish(path, signStyle) {
@@ -151,7 +170,7 @@ class Repository {
 			});
 	}
 	getContent() {
-		return this.zeroFS.readFile("merged-GitCenter/" + this.address + "/content.json")
+		return this.zeroFS.readFile("merged-GitCenter/" + this.address + "/content.json", true)
 			.then(content => JSON.parse(content));
 	}
 	setContent(content) {
