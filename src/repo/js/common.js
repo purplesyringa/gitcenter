@@ -180,7 +180,7 @@ function showLinks() {
 			}
 		};
 
-		document.getElementById("commit_title").href = location.href.replace(/\?.*/, "") + "commit/?" + address + "/" + path.replace(/@/g, "@@") + "@" + branch;
+		document.getElementById("commit_title").href = location.href.replace(/\?.*/, "") + "commit/?" + address + "/" + branch;
 	} else {
 		repo.git.getBranchCommit(branch)
 			.then(commit => {
@@ -193,7 +193,7 @@ function showLinks() {
 					}
 				};
 
-				document.getElementById("commit_title").href = location.href.replace(/\?.*/, "") + "commit/?" + address + "/" + path.replace(/@/g, "@@") + "@" + commit;
+				document.getElementById("commit_title").href = location.href.replace(/\?.*/, "") + "commit/?" + address + "/" + commit;
 			});
 	}
 }
