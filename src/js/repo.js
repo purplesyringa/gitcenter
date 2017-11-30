@@ -488,8 +488,17 @@ class Repository {
 			.then(diff => {
 				return Promise.all(
 					diff.map(item => {
-						if(item.action == "modified" && item.type == "blob") {
-							return this.diffBlob(item.id, item.baseId)
+						if(item.type == "blob") {
+							let promise;
+							if(item.action == "modified") {
+								promise = this.diffBlob(item.id, item.baseId);
+							} else if(item.action == "added") {
+								promise = this.diffBlob(item.id, null);
+							} else if(item.action == "remove") {
+								promise = this.diffBlob(null, item.id);
+							}
+
+							return promise
 								.then(diffBlob => {
 									item.content = diffBlob;
 									return item;
@@ -694,10 +703,10 @@ class Repository {
 	}
 	diffBlob(blob, base) {
 		let blobContent;
-		return this.git.readUnknownObject(blob)
+		return (blob ? this.git.readUnknownObject(blob) : Promise.resolve({content: []}))
 			.then(b => {
 				blobContent = this.git.arrayToString(b.content);
-				return this.git.readUnknownObject(base);
+				return base ? this.git.readUnknownObject(base) : {content: []};
 			})
 			.then(baseContent => {
 				baseContent = this.git.arrayToString(baseContent.content);
