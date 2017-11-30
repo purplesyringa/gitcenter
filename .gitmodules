@@ -1,3 +1,6 @@
 [submodule "src/workerout"]
 	path = src/workerout
 	url = C:/Users/Ivanq/Documents/ZeroNet/data/19onTt5fo8czADiefEoPhPigk281Z5dBXU/workerout.git
+[submodule "src/jsdifflib"]
+	path = jsdifflib
+	url = https://github.com/cemerick/jsdifflib.git
