@@ -705,11 +705,11 @@ class Repository {
 		let blobContent;
 		return (blob ? this.git.readUnknownObject(blob) : Promise.resolve({content: []}))
 			.then(b => {
-				blobContent = this.git.arrayToString(b.content);
+				blobContent = difflib.stringAsLines(this.git.arrayToString(b.content));
 				return base ? this.git.readUnknownObject(base) : {content: []};
 			})
 			.then(baseContent => {
-				baseContent = this.git.arrayToString(baseContent.content);
+				baseContent = difflib.stringAsLines(this.git.arrayToString(baseContent.content));
 
 				let sequenceMatcher = new difflib.SequenceMatcher(baseContent, blobContent);
 				let opcodes = sequenceMatcher.get_opcodes();
@@ -720,7 +720,7 @@ class Repository {
 					// set the display titles for each resource
 					baseTextName: "Base Text",
 					newTextName: "New Text",
-					contextSize: 10,
+					contextSize: 3,
 					viewType: 1
 				});
 			});
