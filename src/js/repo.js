@@ -761,7 +761,7 @@ class Repository {
 				} else if(!blobHasNewLine && baseHasNewLine) {
 					// Remove newline
 					let tr = document.createElement("tr");
-					tr.innerHTML += "<th></th><th></th><td class='delete'>Newline at the end of file</td>";
+					tr.innerHTML += "<th></th><th></th><td class='delete'>No newline at the end of file</td>";
 					view.lastChild.appendChild(tr);
 				}
 
