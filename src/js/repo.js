@@ -467,6 +467,216 @@ class Repository {
 			input.click();
 		});
 	}
+	diff(branch) {
+		let commit;
+		return this.git.readBranchCommit(branch)
+			.then(c => {
+				commit = c;
+
+				if(commit.content.parents.length == 0) {
+					return {
+						content: {
+							tree: "4b825dc642cb6eb9a060e54bf8d69288fbee4904" // Empty tree
+						}
+					};
+				}
+				return this.git.readBranchCommit(commit.content.parents[0]);
+			})
+			.then(base => {
+				return this.diffTree(commit.content.tree, base.content.tree, "");
+			});
+	}
+	diffTree(tree, base, root) {
+		return Promise.all(
+			[
+				this.git.readUnknownObject(tree),
+				this.git.readUnknownObject(base)
+			]
+		)
+			.then(([tree, base]) => {
+				let result = [];
+
+				let promises = tree.content.map(item => {
+					let baseItem = base.content.find(baseItem => baseItem.name == item.name);
+					if(!baseItem) {
+						if(item.type == "blob") {
+							// File was added
+							result.push({
+								action: "add",
+								id: item.id,
+								name: item.name,
+								type: "blob"
+							});
+							return Promise.resolve();
+						} else if(item.type == "tree") {
+							// Tree was added
+							return this.diffTree(item.id, "4b825dc642cb6eb9a060e54bf8d69288fbee4904", root ? root + "/" + item.name : item.name)
+								.then(diff => {
+									result = result.concat(diff);
+								});
+						} else if(item.type == "submodule") {
+							// Submodule was added
+							result.push({
+								action: "add",
+								id: item.id,
+								name: item.name,
+								type: "submodule"
+							});
+							return Promise.resolve();
+						}
+					} else if(item.type == baseItem.type && item.id != baseItem.id) {
+						if(item.type == "blob") {
+							// Blob was modified
+							result.push({
+								action: "modified",
+								id: item.id,
+								baseId: baseItem.id,
+								name: item.name,
+								type: "blob"
+							});
+							return Promise.resolve();
+						} else if(item.type == "tree") {
+							// Tree was modified
+							return this.diffTree(item.id, baseItem.id, root ? root + "/" + item.name : item.name)
+								.then(diff => {
+									result = result.concat(diff);
+								});
+						} else if(item.type == "submodule") {
+							// Module was modified
+							result.push({
+								action: "modified",
+								id: item.id,
+								baseId: baseItem.id,
+								name: item.name,
+								type: "submodule"
+							});
+							return Promise.resolve();
+						}
+					} else if(item.type != baseItem.type) {
+						if(item.type == "blob") {
+							if(baseItem.type == "tree") {
+								// Tree -> Blob
+								return this.diffTree("4b825dc642cb6eb9a060e54bf8d69288fbee4904", baseItem.id, root ? root + "/" + item.name : item.name)
+									.then(diff => {
+										result = result.concat(diff);
+
+										result.push({
+											action: "add",
+											id: item.id,
+											name: item.name,
+											type: "blob"
+										});
+									});
+							} else if(baseItem.type == "submodule") {
+								// Submodule -> Blob
+								result.push({
+									action: "remove",
+									id: baseItem.id,
+									name: item.name,
+									type: "submodule"
+								});
+								result.push({
+									action: "add",
+									id: item.id,
+									name: item.name,
+									type: "blob"
+								});
+							}
+						} else if(item.type == "tree") {
+							return this.diffTree(item.id, "4b825dc642cb6eb9a060e54bf8d69288fbee4904", root ? root + "/" + item.name : item.name)
+								.then(diff => {
+									if(baseItem.type == "blob") {
+										// Blob -> Tree
+										result.push({
+											action: "remove",
+											id: baseItem.id,
+											name: item.name,
+											type: "blob"
+										});
+									} else if(baseItem.type == "submodule") {
+										// Submodule -> Tree
+										result.push({
+											action: "remove",
+											id: baseItem.id,
+											name: item.name,
+											type: "submodule"
+										});
+									}
+
+									result = result.concat(diff);
+								});
+						} else if(item.type == "submodule") {
+							if(baseItem.type == "tree") {
+								// Tree -> Submodule
+								return this.diffTree("4b825dc642cb6eb9a060e54bf8d69288fbee4904", baseItem.id, root ? root + "/" + item.name : item.name)
+									.then(diff => {
+										result = result.concat(diff);
+
+										result.push({
+											action: "add",
+											id: item.id,
+											name: item.name,
+											type: "submodule"
+										});
+									});
+							} else if(baseItem.type == "blob") {
+								// Blob -> Submodule
+								result.push({
+									action: "remove",
+									id: baseItem.id,
+									name: item.name,
+									type: "blob"
+								});
+								result.push({
+									action: "add",
+									id: item.id,
+									name: item.name,
+									type: "submodule"
+								});
+							}
+						}
+					}
+				});
+				let promises2 = base.content.map(baseItem => {
+					let item = tree.content.find(item => item.name == baseItem.name);
+					if(item) {
+						return Promise.resolve();
+					}
+
+					if(baseItem.type == "blob") {
+						// Removed blob
+						result.push({
+							action: "remove",
+							id: baseItem.id,
+							name: baseItem.name,
+							type: "blob"
+						});
+						return Promise.resolve();
+					} else if(baseItem.type == "tree") {
+						// Removed tree
+						return this.diffTree("4b825dc642cb6eb9a060e54bf8d69288fbee4904", baseItem.id, root ? root + "/" + baseItem.name : baseItem.name)
+							.then(diff => {
+								result = result.concat(diff);
+							});
+					} else if(item.type == "submodule") {
+						// Removed submodule
+						result.push({
+							action: "remove",
+							id: baseItem.id,
+							name: baseItem.name,
+							type: "submodule"
+						});
+						return Promise.resolve();
+					}
+				});
+
+				return Promise.all(promises.concat(promises2))
+					.then(() => result.map(item => {
+						item.name = root ? root + "/" + item.name : item.name;
+						return item;
+					}));
+			});
+	}
 
 	// Releases
 	getReleases() {
