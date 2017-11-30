@@ -720,7 +720,7 @@ class Repository {
 					// set the display titles for each resource
 					baseTextName: "Base Text",
 					newTextName: "New Text",
-					contextSize: null,
+					contextSize: 10,
 					viewType: 1
 				});
 			});
