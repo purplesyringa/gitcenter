@@ -1,0 +1,29 @@
+.diffs {
+	width: 896px;
+	margin: 0 auto;
+}
+
+.diff-file {
+	display: block;
+	width: calc(100% - 2px);
+	margin-bottom: 16px;
+	overflow: hidden;
+
+	border: 1px solid #DDD;
+	border-radius: 2px;
+}
+
+.diff-header {
+	display: block;
+	padding: 8px 16px;
+	background-color: #DDF;
+
+	font-size: 16px;
+}
+
+.credits {
+	width: 896px;
+	margin: 0 auto;
+
+	font-size: 16px;
+}
