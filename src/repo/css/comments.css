@@ -71,3 +71,14 @@
 	float: right;
 	margin-right: 16px;
 }
+
+.comment pre {
+	display: block;
+	background-color: #EEE;
+	border: 16px solid #EEE;
+	border-top-width: 8px;
+	border-bottom-width: 8px;
+	border-radius: 4px;
+
+	overflow: auto;
+}
