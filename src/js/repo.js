@@ -94,7 +94,7 @@ class Repository {
 
 	// Permission actions
 	addMerger() {
-		let siteInfo, list;
+		let siteInfo, list, content, repoBase;
 		return this.zeroPage.getSiteInfo()
 			.then(s => {
 				siteInfo = s;
@@ -117,7 +117,8 @@ class Repository {
 			.then(() => {
 				return this.getContent();
 			})
-			.then(content => {
+			.then(c => {
+				content = c;
 				if(content.git) {
 					this.git = new Git("merged-GitCenter/" + this.address + "/" + content.git, zeroPage);
 					return this.git.init();
@@ -127,6 +128,27 @@ class Repository {
 			})
 			.then(() => {
 				return this.updateFollow();
+			})
+			.then(() => {
+				repoBase = new Repository(content.cloned_from, zeroPage);
+				return repoBase.getLocalCache();
+			})
+			.then(cache => {
+				cache = cache || {};
+				if(cache.justForked) {
+					delete cache.justForked;
+
+					let progress = this.zeroPage.progress("Setting up fork...");
+
+					return this.installFork()
+						.then(() => {
+							progress.done();
+							return repoBase.setLocalCache(cache);
+						}, e => {
+							progress.setMessage((e && e.error) || e);
+							progress.setPercent(-1);
+						});
+				}
 			});
 	}
 	addMergedSite(address) {
@@ -325,8 +347,34 @@ class Repository {
 				return this.signContent("site");
 			});
 	}
+
+	// Fork
 	fork() {
-		return this.zeroPage.cmd("siteClone", [this.address])
+		return this.getLocalCache()
+			.then(cache => {
+				cache = cache || {};
+				cache.justForked = true;
+				return this.setLocalCache(cache);
+			})
+			.then(() => {
+				return this.zeroPage.cmd("siteClone", [this.address]);
+			});
+	}
+	installFork() {
+		let auth;
+		return this.zeroAuth.requestAuth()
+			.then(a => {
+				auth = a;
+				return this.getContent();
+			})
+			.then(content => {
+				content.title = content.title.replace(/^my/, "");
+				content.signers = [auth.address];
+				return this.setContent(content);
+			})
+			.then(() => {
+				return this.signContent("site");
+			});
 	}
 
 	// Git actions
