@@ -54,7 +54,7 @@ repo.addMerger()
 		return repo.getFile(head, path)
 			.then(blob => {
 				let fileContent = document.getElementById("file_content");
-				fileContent.textContent = repo.git.arrayToString(blob);
+				fileContent.textContent = repo.git.decodeUTF8(blob);
 				hljs.highlightBlock(fileContent);
 
 				document.getElementById("download").onclick = () => {

@@ -26,7 +26,7 @@ repo.addMerger()
 		return repo.getFile(branch, path)
 			.then(blob => {
 				let fileContent = document.getElementById("file_content");
-				fileContent.value = repo.git.arrayToString(blob);
+				fileContent.value = repo.git.decodeUTF8(blob);
 
 				let saveButton = document.getElementById("save");
 				let commitMessage = document.getElementById("commit_message");
@@ -40,7 +40,7 @@ repo.addMerger()
 
 					saveButton.classList.add("button-disabled");
 
-					repo.saveFile(path, repo.git.stringToArray(fileContent.value), branch, commitMessage.value)
+					repo.saveFile(path, repo.git.encodeUTF8(fileContent.value), branch, commitMessage.value)
 						.then(commit => {
 							saveButton.classList.remove("button-disabled");
 							commitMessage.value = "";
