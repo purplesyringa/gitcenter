@@ -766,7 +766,7 @@ class Repository {
 				if(b.content.length == 0) {
 					blobContent = [];
 				} else {
-					blobContent = difflib.stringAsLines(this.git.arrayToString(b.content));
+					blobContent = difflib.stringAsLines(this.git.decodeUTF8(b.content));
 				}
 
 				return base ? this.git.readUnknownObject(base) : {content: []};
@@ -775,7 +775,7 @@ class Repository {
 				if(baseContent.content.length == 0) {
 					baseContent = [];
 				} else {
-					baseContent = difflib.stringAsLines(this.git.arrayToString(baseContent.content));
+					baseContent = difflib.stringAsLines(this.git.decodeUTF8(baseContent.content));
 				}
 
 				let blobHasNewLine = blobContent.slice(-1)[0] == "";
