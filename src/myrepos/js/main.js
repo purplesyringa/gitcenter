@@ -3,6 +3,10 @@ zeroPage = new ZeroPage(zeroFrame);
 zeroFS = new ZeroFS(zeroPage);
 zeroDB = new ZeroDB(zeroPage);
 
+document.getElementById("create_repository").onclick = () => {
+	Repository.createRepo(zeroPage);
+};
+
 zeroPage.cmd("mergerSiteList", [true])
 	.then(repos => {
 		repos = Object.keys(repos)
