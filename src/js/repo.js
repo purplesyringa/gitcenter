@@ -955,7 +955,7 @@ class Repository {
 			});
 	}
 	getIssues(page) {
-		return this.zeroDB.query("SELECT issues.*, json.directory as json, json.cert_user_id FROM issues, json WHERE issues.json_id = json.json_id AND json.site = :address LIMIT " + (page * 10) + ", 11", {
+		return this.zeroDB.query("SELECT issues.*, json.directory as json, json.cert_user_id FROM issues, json WHERE issues.json_id = json.json_id AND json.site = :address ORDER BY issues.date_added DESC LIMIT " + (page * 10) + ", 11", {
 			address: this.address
 		})
 			.then(issues => {
@@ -1120,7 +1120,7 @@ class Repository {
 			});
 	}
 	getPullRequests(page) {
-		return this.zeroDB.query("SELECT pull_requests.*, json.directory as json, json.cert_user_id FROM pull_requests, json WHERE pull_requests.json_id = json.json_id AND json.site = :address LIMIT " + (page * 10) + ", 11", {
+		return this.zeroDB.query("SELECT pull_requests.*, json.directory as json, json.cert_user_id FROM pull_requests, json WHERE pull_requests.json_id = json.json_id AND json.site = :address ORDER BY pull_requests.date_added DESC LIMIT " + (page * 10) + ", 11", {
 			address: this.address
 		})
 			.then(pullRequests => {
