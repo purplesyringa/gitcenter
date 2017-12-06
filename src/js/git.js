@@ -73,10 +73,10 @@ class Git {
 		return destination;
 	}
 	arrayToString(array) {
-		return decodeURIComponent(escape(Array.from(array).map(char => String.fromCharCode(char)).join("")));
+		return Array.from(array).map(char => String.fromCharCode(char)).join("");
 	}
 	stringToArray(string) {
-		return unescape(encodeURIComponent(string)).split("").map(char => char.charCodeAt(0));
+		return string.split("").map(char => char.charCodeAt(0));
 	}
 	isSha(str) {
 		return (
