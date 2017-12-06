@@ -117,6 +117,12 @@ class Git {
 
 		return result;
 	}
+	decodeUTF8(bytes) {
+		return decodeURIComponent(escape(bytes));
+	}
+	encodeUTF8(bytes) {
+		return unescape(encodeURIComponent(bytes));
+	}
 
 	// FileSystem commands
 	readFile(path) {
