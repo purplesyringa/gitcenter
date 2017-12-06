@@ -73,6 +73,9 @@ class Git {
 		return destination;
 	}
 	arrayToString(array) {
+		if(typeof array == "string") {
+			return array;
+		}
 		return Array.from(array).map(char => String.fromCharCode(char)).join("");
 	}
 	stringToArray(string) {
@@ -118,10 +121,10 @@ class Git {
 		return result;
 	}
 	decodeUTF8(bytes) {
-		return decodeURIComponent(escape(bytes));
+		return decodeURIComponent(escape(this.arrayToString(bytes)));
 	}
-	encodeUTF8(bytes) {
-		return unescape(encodeURIComponent(bytes));
+	encodeUTF8(str) {
+		return this.stringToArray(unescape(encodeURIComponent(str)));
 	}
 
 	// FileSystem commands
@@ -506,7 +509,7 @@ class Git {
 			currentPos = spacePos + 1;
 
 			let nulPos = object.content.indexOf(0, currentPos);
-			let name = this.arrayToString(this.subArray(object.content, currentPos, nulPos - currentPos));
+			let name = this.decodeUTF8(this.subArray(object.content, currentPos, nulPos - currentPos));
 			currentPos = nulPos + 1;
 
 			let objectId = this.unpackSha(this.subArray(object.content, currentPos, 20));
@@ -543,22 +546,22 @@ class Git {
 			} else if(opcode == "parent") {
 				parents.push(line.substr(opcode.length).trim());
 			} else if(opcode == "author") {
-				author = line.substr(opcode.length).trim();
+				author = this.decodeUTF8(line.substr(opcode.length).trim());
 			} else if(opcode == "committer") {
-				committer = line.substr(opcode.length).trim();
+				committer = this.decodeUTF8(line.substr(opcode.length).trim());
 			} else if(line == "") {
 				break;
 			}
 		}
 
-		let message = this.subArray(object.content, currentPos);
+		let message = this.decodeUTF8(this.subArray(object.content, currentPos));
 
 		return {
 			tree: tree,
 			parents: parents,
 			author: author,
 			committer: committer,
-			message: this.arrayToString(message)
+			message: message
 		};
 	}
 	parseTag(object) {
@@ -585,20 +588,20 @@ class Git {
 			} else if(opcode == "tag") {
 				tag = line.substr(opcode.length).trim();
 			} else if(opcode == "tagger") {
-				tagger = line.substr(opcode.length).trim();
+				tagger = this.decodeUTF8(line.substr(opcode.length).trim());
 			} else if(line == "") {
 				break;
 			}
 		}
 
-		let message = this.subArray(object.content, currentPos);
+		let message = this.decodeUTF8(this.subArray(object.content, currentPos));
 
 		return {
 			target: target,
 			type: type,
 			tag: tag,
 			tagger: tagger,
-			message: this.arrayToString(message)
+			message: message
 		};
 	}
 
@@ -648,7 +651,7 @@ class Git {
 
 		let content = [];
 		items.forEach(item => {
-			this.appendArray(this.concat(this.stringToArray((item.type == "tree" ? "040000" : "100644") + " " + item.name), [0], this.packSha(item.id)), content);
+			this.appendArray(this.concat(this.encodeUTF8((item.type == "tree" ? "040000" : "100644") + " " + item.name), [0], this.packSha(item.id)), content);
 		});
 		return this.writeObject("tree", content);
 	}
@@ -706,7 +709,7 @@ class Git {
 		content += "\n";
 		content += commit.message;
 
-		return this.writeObject("commit", this.stringToArray(content));
+		return this.writeObject("commit", this.encodeUTF8(content));
 	}
 	writeCommit(commit) {
 		return this.writeTreeRecursive(commit.tree)
@@ -1024,7 +1027,7 @@ class Git {
 				return this.readUnknownObject(blob.id);
 			})
 			.then(gitmodules => {
-				return this.parseConfig(this.arrayToString(gitmodules.content));
+				return this.parseConfig(this.decodeUTF8(gitmodules.content));
 			})
 			.then(moduleList => {
 				let submodules = [];
