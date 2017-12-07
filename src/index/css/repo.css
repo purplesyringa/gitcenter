@@ -44,3 +44,14 @@
 	background-repeat: no-repeat;
 	background-position: 8px 4px;
 }
+
+
+.search {
+	display: block;
+	width: calc(100% - 16px);
+	padding: 4px 8px;
+	border-radius: 4px;
+	border: 1px solid black;
+
+	font-size: 16px;
+}
