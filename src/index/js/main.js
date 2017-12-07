@@ -17,15 +17,15 @@ zeroDB.query("\
 			node.className = "repo";
 			node.href = "/" + repo.address;
 
-			let title = document.createElement("div");
-			title.className = "repo-title";
-			title.textContent = repo.title;
-			node.appendChild(title);
-
 			let stars = document.createElement("div");
 			stars.className = "repo-stars";
 			stars.textContent = repo.stars;
 			node.appendChild(stars);
+
+			let title = document.createElement("div");
+			title.className = "repo-title";
+			title.textContent = repo.title;
+			node.appendChild(title);
 
 			let address = document.createElement("div");
 			address.className = "repo-address";
