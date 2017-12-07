@@ -55,7 +55,7 @@ repo.addMerger()
 			title.appendChild(tags);
 
 			let info = document.createElement("td");
-			info.textContent = "Opened on " + repo.translateDate(issue.date_added) + " by " + issue.cert_user_id;
+			info.textContent = "Opened " + repo.translateDate(issue.date_added) + " by " + issue.cert_user_id;
 			info.className = "issues-right";
 			tr.appendChild(info);
 

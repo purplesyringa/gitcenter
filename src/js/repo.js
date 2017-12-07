@@ -863,7 +863,7 @@ class Repository {
 								let relativeDate = utcDate - offset * 60000;
 								let offsetString = offset == 0 ? "UTC" : "GMT " + (offset < 0 ? "-" : "+") + (Math.abs(offset) / 60) + ":" + (Math.abs(offset) % 60 >= 10 ? "" : "0") + (Math.abs(offset) % 60);
 
-								let dateString = this.translateDate(relativeDate) + " " + this.translateTime(relativeDate) + " " + offsetString;
+								let dateString = this.translateDate(relativeDate);
 
 								if(commit.type == "tag") {
 									// Annotated tag
@@ -1743,11 +1743,33 @@ class Repository {
 	translateDate(date) {
 		date = new Date(date);
 
-		return (
-			date.getFullYear() + "-" +
-			(date.getMonth() >= 9 ? "" : "0") + (date.getMonth() + 1) + "-" +
-			(date.getDate() >= 10 ? "" : "0") + date.getDate()
-		);
+		let delta = (+new Date - date) / 1000;
+
+		if(delta < 30) {
+			return "just now";
+		} else if(delta < 60) {
+			return delta + " seconds ago";
+		} else if(delta < 60 * 2) {
+			return "a minute ago";
+		} else if(delta < 60 * 60) {
+			return Math.floor(delta / 60) + " minutes ago";
+		} else if(Math.floor(delta / 60 / 60) == 1) {
+			return "1 hour ago";
+		} else if(delta < 60* 60 * 24) {
+			return Math.floor(delta / 60 / 60) + " hours ago";
+		} else if(delta < day * 2) {
+			return "yesterday";
+		} else {
+			let day = a.getDate();
+			let month = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][a.getMonth()];
+
+			return (
+				"on " +
+				month + " " +
+				date.getDate() + " " +
+				date.getFullYear()
+			);
+		}
 	}
 	translateTime(date) {
 		date = new Date(date);
@@ -1806,7 +1828,7 @@ class Repository {
 		let relativeDate = utcDate - offset * 60000;
 		let offsetString = offset == 0 ? "UTC" : "GMT " + (offset < 0 ? "-" : "+") + (Math.abs(offset) / 60) + ":" + (Math.abs(offset) % 60 >= 10 ? "" : "0") + (Math.abs(offset) % 60);
 
-		return name + " commited on " + this.translateDate(relativeDate) + " " + this.translateTime(relativeDate) + " " + offsetString;
+		return name + " commited " + this.translateDate(relativeDate) + " " + this.translateTime(relativeDate) + " " + offsetString;
 	}
 	download(name, data) {
 		let blob = new Blob([data], {type: "application/octet-stream"});

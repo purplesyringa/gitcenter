@@ -57,7 +57,7 @@ repo.addMerger()
 
 			let description = document.createElement("div");
 			description.className = "release-description";
-			description.textContent = "Tagged at " + release.dateString + "\n" + release.description;
+			description.textContent = "Tagged " + release.dateString + "\n" + release.description;
 			node.appendChild(description);
 
 			document.getElementById("releases").appendChild(node);

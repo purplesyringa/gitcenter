@@ -29,7 +29,7 @@ function showComment(comment) {
 
 	let header = document.createElement("div");
 	header.className = "comment-header";
-	header.textContent = comment.cert_user_id + " " + (comment.id == -1 ? "posted issue" : "commented") + " on " + repo.translateDate(comment.date_added);
+	header.textContent = comment.cert_user_id + " " + (comment.id == -1 ? "posted issue" : "commented") + " " + repo.translateDate(comment.date_added);
 	node.appendChild(header);
 
 	let content = document.createElement("div");
