@@ -1026,7 +1026,10 @@ class Repository {
 			json: json,
 			id: id,
 			address: this.address
-		});
+		})
+			.then(comments => {
+				return comments.map(comment => this.highlightComment(comment));
+			});
 	}
 	addIssueComment(issueId, issueJson, content) {
 		let auth, row;
@@ -1191,7 +1194,10 @@ class Repository {
 			json: json,
 			id: id,
 			address: this.address
-		});
+		})
+			.then(comments => {
+				return comments.map(comment => this.highlightComment(comment));
+			});
 	}
 	addPullRequestComment(pullRequestId, pullRequestJson, content) {
 		let auth, row;
@@ -1273,6 +1279,9 @@ class Repository {
 			.then(() => {
 				return this.git.setRef("refs/heads/pr-" + pullRequest.id + "-" + pullRequest.cert_user_id.replace(/@.*/, ""), ref);
 			});
+	}
+	highlightComment(comment) {
+		return comment;
 	}
 
 	// Muted
