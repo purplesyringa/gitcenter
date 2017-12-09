@@ -47,3 +47,7 @@
 	margin-right: 4px;
 	vertical-align: middle;
 }
+
+.tags .tag:first-child {
+	margin-left: 0;
+}

@@ -58,7 +58,7 @@ repo.addMerger()
 			content.appendChild(tags);
 
 			let info = document.createElement("div");
-			info.textContent = "Opened " + repo.translateDate(pullRequest.date_added) + " by " + pullRequest.cert_user_id;
+			info.textContent = "#P" + pullRequest.id + "@" + pullRequest.json.replace("data/users/", "") + " opened " + repo.translateDate(pullRequest.date_added) + " by " + pullRequest.cert_user_id;
 			info.className = "pull-requests-bottom";
 			content.appendChild(info);
 
