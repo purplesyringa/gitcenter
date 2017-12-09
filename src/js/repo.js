@@ -1265,13 +1265,13 @@ class Repository {
 						pull_request_actions.date_added AS date_added,\
 						json.directory AS json,\
 						json.cert_user_id AS cert_user_id,\
-						pull_request_actions.issue_id AS issue_id,\
-						pull_request_actions.issue_json AS issue_json\
+						pull_request_actions.pull_request_id AS pull_request_id,\
+						pull_request_actions.pull_request_json AS pull_request_json\
 					FROM pull_request_actions, json\
 					WHERE\
 						pull_request_actions.json_id = json.json_id AND\
-						pull_request_actions.issue_json = :json AND\
-						pull_request_actions.issue_id = :id AND\
+						pull_request_actions.pull_request_json = :json AND\
+						pull_request_actions.pull_request_id = :id AND\
 						json.site = :address\
 					\
 					ORDER BY date_added ASC\
