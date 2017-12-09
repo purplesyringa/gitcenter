@@ -1281,6 +1281,21 @@ class Repository {
 			});
 	}
 	highlightComment(comment) {
+		if(!this.setMarkedOptions) {
+			marked.setOptions({
+				highlight: (code, lang) => {
+					try {
+						return lang ? hljs.highlight(lang, code).value : hljs.highlightAuto(code).value;
+					} catch(e) {
+						return hljs.highlightAuto(code).value;
+					}
+				}
+			});
+			this.setMarkedOptions = true;
+		}
+
+		comment.body = marked(comment.body);
+
 		return comment;
 	}
 
