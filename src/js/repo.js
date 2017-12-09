@@ -1088,7 +1088,25 @@ class Repository {
 
 				return issue;
 			}
-		);
+		)
+			.then(() => {
+				return this.zeroDB.insertRow(
+					"merged-GitCenter/" + this.address + "/" + json + "/data.json",
+					"merged-GitCenter/" + this.address + "/" + json + "/content.json",
+					"issue_actions",
+					{
+						issue_id: id,
+						issue_json: json,
+						action: "changeStatus",
+						param: open ? "reopen" : "close",
+						date_added: Date.now()
+					},
+					{
+						source: "next_issue_action_id",
+						column: "id"
+					}
+				);
+			});
 	}
 
 	// Pull requests
@@ -1251,7 +1269,25 @@ class Repository {
 
 				return pullRequest;
 			}
-		);
+		)
+			.then(() => {
+				return this.zeroDB.insertRow(
+					"merged-GitCenter/" + this.address + "/" + json + "/data.json",
+					"merged-GitCenter/" + this.address + "/" + json + "/content.json",
+					"pull_request_actions",
+					{
+						pull_request_id: id,
+						pull_request_json: json,
+						action: "changeStatus",
+						param: open ? "reopen" : "close",
+						date_added: Date.now()
+					},
+					{
+						source: "next_pull_request_action_id",
+						column: "id"
+					}
+				);
+			});
 	}
 	importPullRequest(pullRequest) {
 		let forkAddress = pullRequest.fork_address;
