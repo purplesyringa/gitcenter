@@ -1281,20 +1281,34 @@ class Repository {
 			});
 	}
 	highlightComment(comment) {
-		if(!this.setMarkedOptions) {
-			marked.setOptions({
+		if(!this.markedOptions) {
+			let renderer = new marked.Renderer();
+			renderer.text = function(text) {
+				return text.replace(/#(\d+)/g, "[ISSUEID]$1[/ISSUEID]");
+				//return text.replace(/#(\d+)@(1[A-Za-z0-9]{25,34})/g, "<b>Issue #1 by #2</b>");
+			};
+			renderer.link = function(link, title, text) {
+				let res = this.__proto__.link.call(this, link, title, text); // super() analog
+				return res.replace(/\[ISSUEID\](.+?)\[\/ISSUEID\]/g, "$1");
+			};
+			renderer.all = function(text) {
+				return text.replace(/\[ISSUEID\](.+?)\[\/ISSUEID\]/g, "<a>Issue $1</a>");
+			};
+
+			this.markedOptions = {
 				highlight: (code, lang) => {
 					try {
 						return lang ? hljs.highlight(lang, code).value : hljs.highlightAuto(code).value;
 					} catch(e) {
 						return hljs.highlightAuto(code).value;
 					}
-				}
-			});
-			this.setMarkedOptions = true;
+				},
+				renderer: renderer
+			};
 		}
 
-		comment.body = marked(comment.body);
+		comment.body = marked(comment.body, this.markedOptions);
+		comment.body = this.markedOptions.renderer.all(comment.body);
 
 		return comment;
 	}
