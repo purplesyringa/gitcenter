@@ -57,13 +57,12 @@ repo.addMerger()
 			});
 			content.appendChild(tags);
 
-			tr.appendChild(content);
-
-			let info = document.createElement("td");
+			let info = document.createElement("div");
 			info.textContent = "Opened " + repo.translateDate(pullRequest.date_added) + " by " + pullRequest.cert_user_id;
-			info.className = "pull-requests-right";
-			tr.appendChild(info);
+			info.className = "pull-requests-bottom";
+			content.appendChild(info);
 
+			tr.appendChild(content);
 			document.getElementById("pull_requests").appendChild(tr);
 		});
 

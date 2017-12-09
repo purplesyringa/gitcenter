@@ -29,6 +29,12 @@
 	border-top: none;
 }
 
+.issues-bottom {
+	display: block;
+	color: #888;
+	font-size: 14px;
+}
+
 .issues-right {
 	width: 256px !important;
 	max-width: 256px;

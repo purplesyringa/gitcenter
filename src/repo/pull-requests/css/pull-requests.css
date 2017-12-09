@@ -29,10 +29,10 @@
 	border-top: none;
 }
 
-.pull-requests-right {
-	width: 256px !important;
-	max-width: 256px;
-	word-wrap: break-word;
+.pull-requests-bottom {
+	display: block;
+	color: #888;
+	font-size: 14px;
 }
 
 .pull-request-icon {
