@@ -82,3 +82,17 @@
 
 	overflow: auto;
 }
+
+
+.action {
+	display: block;
+	margin-left: 16px;
+	margin-top: -14px;
+	margin-bottom: 2px;
+	padding: 14px 0;
+	padding-left: 16px;
+	border-left: 1px solid #888;
+
+	font-size: 16px;
+	color: #444;
+}
