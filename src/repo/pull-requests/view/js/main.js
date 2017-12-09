@@ -94,7 +94,7 @@ repo.addMerger()
 
 			repo.addPullRequestComment(id, json, contentNode.value)
 				.then(comment => {
-					showComment(comment);
+					showComment(repo.highlightComment(comment));
 
 					contentNode.value = "";
 					contentNode.disabled = false;
