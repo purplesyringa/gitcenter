@@ -1760,8 +1760,7 @@ class Repository {
 		} else if(delta < 60 * 60 * 24 * 2) {
 			return "yesterday";
 		} else {
-			let day = a.getDate();
-			let month = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][a.getMonth()];
+			let month = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][date.getMonth()];
 
 			return (
 				"on " +
