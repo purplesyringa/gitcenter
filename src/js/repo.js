@@ -1347,7 +1347,7 @@ class Repository {
 						pull_request_id: id,
 						pull_request_json: json,
 						action: "changeStatus",
-						param: open ? "reopen" : "close",
+						param: merged ? "close" : "reopen",
 						date_added: Date.now()
 					},
 					{
