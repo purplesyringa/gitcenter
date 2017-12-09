@@ -32,13 +32,16 @@ repo.addMerger()
 				location.href = "view/?" + address + "/" + issue.id + "@" + issue.json.replace("data/users/", "");
 			};
 
-			let title = document.createElement("td");
-			title.textContent = issue.title;
-			tr.appendChild(title);
+			let content = document.createElement("td");
 
 			let icon = document.createElement("div");
 			icon.className = "issue-icon issue-status-" + (issue.open ? (issue.reopened ? "reopened" : "open") : "closed");
-			title.insertBefore(icon, title.firstChild);
+			content.appendChild(icon);
+
+			let title = document.createElement("div");
+			title.className = "issue-title";
+			title.textContent = issue.title;
+			content.appendChild(title);
 
 			let tags = document.createElement("div");
 			tags.className = "tags";
@@ -52,13 +55,14 @@ repo.addMerger()
 				node.style.color = color.foreground;
 				tags.appendChild(node);
 			});
-			title.appendChild(tags);
+			content.appendChild(tags);
 
-			let info = document.createElement("td");
+			let info = document.createElement("div");
 			info.textContent = "Opened " + repo.translateDate(issue.date_added) + " by " + issue.cert_user_id;
-			info.className = "issues-right";
-			tr.appendChild(info);
+			info.className = "issues-bottom";
+			content.appendChild(info);
 
+			tr.appendChild(content);
 			document.getElementById("issues").appendChild(tr);
 		});
 
