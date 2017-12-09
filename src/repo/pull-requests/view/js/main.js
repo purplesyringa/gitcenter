@@ -117,7 +117,7 @@ repo.addMerger()
 				} else {
 					promise = repo.addPullRequestComment(id, json, contentNode.value)
 						.then(comment => {
-							showComment(comment);
+							showComment(repo.highlightComment(comment));
 						});
 				}
 
