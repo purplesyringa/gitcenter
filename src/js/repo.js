@@ -1282,16 +1282,25 @@ class Repository {
 	}
 	highlightComment(comment) {
 		if(!this.markedOptions) {
+			let issueParser = "<a href=\"/1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t/repo/issues/view/?" + this.address + "/$1@$2\">#$1@$2</a>";
+			let pullRequestParser = "<a href=\"/1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t/repo/pull-requests/view/?" + this.address + "/$1@$2\">#P$1@$2</a>";
+
 			let renderer = new marked.Renderer();
 			renderer.text = function(text) {
-				return text.replace(/#(\d+)@(1[A-Za-z0-9]{25,34})/g, "[ISSUEID]$1|$2[/ISSUEID]");
+				return text
+					.replace(/#(\d+)@(1[A-Za-z0-9]{25,34})/g, "[ISSUEID]$1|$2[/ISSUEID]")
+					.replace(/#[Pp](\d+)@(1[A-Za-z0-9]{25,34})/g, "[PULLREQUESTID]$1|$2[/PULLREQUESTID]");
 			};
 			renderer.link = function(link, title, text) {
 				let res = this.__proto__.link.call(this, link, title, text); // super() analog
-				return res.replace(/\[ISSUEID\](.+?)\|(.+?)\[\/ISSUEID\]/g, "#$1@$2");
+				return res
+					.replace(/\[ISSUEID\](.+?)\|(.+?)\[\/ISSUEID\]/g, "#$1@$2")
+					.replace(/\[PULLREQUESTID\](.+?)\|(.+?)\[\/PULLREQUESTID\]/g, "#P$1@$2");
 			};
 			renderer.all = function(text) {
-				return text.replace(/\[ISSUEID\](.+?)\|(.+?)\[\/ISSUEID\]/g, "<a>Issue $1 by $2</a>");
+				return text
+					.replace(/\[ISSUEID\](.+?)\|(.+?)\[\/ISSUEID\]/g, issueParser)
+					.replace(/\[PULLREQUESTID\](.+?)\|(.+?)\[\/PULLREQUESTID\]/g, pullRequestParser);
 			};
 
 			this.markedOptions = {
