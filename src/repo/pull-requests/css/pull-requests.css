@@ -41,6 +41,7 @@
 	height: 16px;
 	margin-right: 8px;
 	vertical-align: middle;
+	margin-top: -2px;
 	border-radius: 50%;
 }
 .pull-request-status-opened {
@@ -48,6 +49,10 @@
 }
 .pull-request-status-merged {
 	background-color: #B2E;
+}
+
+.pull-request-title {
+	display: inline;
 }
 
 

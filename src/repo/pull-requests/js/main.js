@@ -32,13 +32,16 @@ repo.addMerger()
 				location.href = "view/?" + address + "/" + pullRequest.id + "@" + pullRequest.json.replace("data/users/", "");
 			};
 
-			let title = document.createElement("td");
-			title.textContent = pullRequest.title;
-			tr.appendChild(title);
+			let content = document.createElement("td");
 
 			let icon = document.createElement("div");
 			icon.className = "pull-request-icon pull-request-status-" + (pullRequest.merged ? "merged" : "opened");
-			title.insertBefore(icon, title.firstChild);
+			content.appendChild(icon);
+
+			let title = document.createElement("div");
+			title.className = "pull-request-title";
+			title.textContent = pullRequest.title;
+			content.appendChild(title);
 
 			let tags = document.createElement("div");
 			tags.className = "tags";
@@ -52,7 +55,9 @@ repo.addMerger()
 				node.style.color = color.foreground;
 				tags.appendChild(node);
 			});
-			title.appendChild(tags);
+			content.appendChild(tags);
+
+			tr.appendChild(content);
 
 			let info = document.createElement("td");
 			info.textContent = "Opened " + repo.translateDate(pullRequest.date_added) + " by " + pullRequest.cert_user_id;
