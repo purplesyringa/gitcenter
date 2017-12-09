@@ -1031,6 +1031,40 @@ class Repository {
 				return comments.map(comment => this.highlightComment(comment));
 			});
 	}
+	getIssueActions(id, json) {
+		let comments;
+		return this.getIssueComments(id, json)
+			.then(c => {
+				comments = c;
+
+				return this.zeroDB.query("\
+					SELECT\
+						issue_actions.id AS id,\
+						issue_actions.action AS action,\
+						issue_actions.param AS param,\
+						issue_actions.date_added AS date_added,\
+						json.directory AS json,\
+						json.cert_user_id AS cert_user_id,\
+						issue_actions.issue_id AS issue_id,\
+						issue_actions.issue_json AS issue_json\
+					FROM issue_actions, json\
+					WHERE\
+						issue_actions.json_id = json.json_id AND\
+						issue_actions.issue_json = :json AND\
+						issue_actions.issue_id = :id AND\
+						json.site = :address\
+					\
+					ORDER BY date_added ASC\
+				", {
+					json: json,
+					id: id,
+					address: this.address
+				});
+			})
+			.then(actions => {
+				return comments.concat(actions).sort((a, b) => a.date_added - b.date_added);
+			});
+	}
 	addIssueComment(issueId, issueJson, content) {
 		let auth, row;
 		return this.zeroAuth.requestAuth()
@@ -1215,6 +1249,40 @@ class Repository {
 		})
 			.then(comments => {
 				return comments.map(comment => this.highlightComment(comment));
+			});
+	}
+	getPullRequestActions(id, json) {
+		let comments;
+		return this.getPullRequestComments(id, json)
+			.then(c => {
+				comments = c;
+
+				return this.zeroDB.query("\
+					SELECT\
+						pull_request_actions.id AS id,\
+						pull_request_actions.action AS action,\
+						pull_request_actions.param AS param,\
+						pull_request_actions.date_added AS date_added,\
+						json.directory AS json,\
+						json.cert_user_id AS cert_user_id,\
+						pull_request_actions.issue_id AS issue_id,\
+						pull_request_actions.issue_json AS issue_json\
+					FROM pull_request_actions, json\
+					WHERE\
+						pull_request_actions.json_id = json.json_id AND\
+						pull_request_actions.issue_json = :json AND\
+						pull_request_actions.issue_id = :id AND\
+						json.site = :address\
+					\
+					ORDER BY date_added ASC\
+				", {
+					json: json,
+					id: id,
+					address: this.address
+				});
+			})
+			.then(actions => {
+				return comments.concat(actions).sort((a, b) => a.date_added - b.date_added);
 			});
 	}
 	addPullRequestComment(pullRequestId, pullRequestJson, content) {
