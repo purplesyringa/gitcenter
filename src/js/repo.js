@@ -1452,6 +1452,11 @@ class Repository {
 		this.setUpMarked();
 		return this.markedOptions.renderer.all(marked(text));
 	}
+	parseAction(action, context) {
+		if(action.action == "changeStatus") {
+			return action.cert_user_id + " " + (action.param == "close" ? "closed" : "reopened") + " " + context + " " + this.translateDate(action.date_added);
+		}
+	}
 
 	// Muted
 	getMuted() {
