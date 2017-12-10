@@ -130,7 +130,7 @@ class Repository {
 				return this.updateFollow();
 			})
 			.then(() => {
-				repoBase = new Repository(content.cloned_from, zeroPage);
+				repoBase = new Repository(content.cloned_from, this.zeroPage);
 				return repoBase.getLocalCache();
 			})
 			.then(cache => {
