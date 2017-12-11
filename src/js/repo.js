@@ -1301,6 +1301,30 @@ class Repository {
 					.replace(/\[ISSUEID\](.+?)\|(.+?)\[\/ISSUEID\]/g, "#$1@$2")
 					.replace(/\[PULLREQUESTID\](.+?)\|(.+?)\[\/PULLREQUESTID\]/g, "#P$1@$2");
 			};
+			renderer.listitem = function(text) {
+				let checkbox = false;
+				let value = false;
+				if(text.indexOf("[ ]") == 0) {
+					checkbox = true;
+					value = false;
+				} else if(text.indexOf("[x]") == 0 || text.indexOf("[v]") == 0) {
+					checkbox = true;
+					value = true;
+				}
+
+				if(checkbox) {
+					let label = text.substr(3).trim();
+					let id = "checkbox_" + Math.random().toString(36).substr(2) + "_" + label.replace(/[^A-Za-z0-9\-_]/g);
+					return "\
+						<li>\
+							<input type='checkbox' id='" + id + "'" + (value ? " checked" : "") + ">\
+							<label for='" + id + "'>" + label + "</label>\
+						</li>\
+					\n";
+				}
+
+				return "<li>" + text + "</li>\n";
+			};
 			renderer.all = function(text) {
 				return text
 					.replace(/\[ISSUEID\](.+?)\|(.+?)\[\/ISSUEID\]/g, issueParser)
