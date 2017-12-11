@@ -4,8 +4,6 @@ if(address == "1RepoXU8bQE9m7ssNwL4nnxBnZVejHCc6") {
 
 let content, head;
 
-repo.setUpMarked();
-
 repo.addMerger()
 	.then(() => {
 		return repo.getContent();
@@ -119,9 +117,9 @@ repo.addMerger()
 			return repo.getFile(head, (path ? path + "/" : "") + readme.name)
 				.then(readme => {
 					readme = repo.git.arrayToString(readme);
-					document.getElementById("readme").innerHTML = marked(readme);
+					document.getElementById("readme").innerHTML = repo.renderMarked(readme);
 				});
 		} else {
-			document.getElementById("readme").innerHTML = marked("# " + content.title + "\n" + content.description);
+			document.getElementById("readme").innerHTML = repo.renderMarked("# " + content.title + "\n" + content.description);
 		}
 	});

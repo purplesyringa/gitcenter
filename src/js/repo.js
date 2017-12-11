@@ -1281,11 +1281,7 @@ class Repository {
 			});
 	}
 	highlightComment(comment) {
-		this.setUpMarked();
-
-		comment.body = marked(comment.body);
-		comment.body = this.markedOptions.renderer.all(comment.body);
-
+		comment.body = this.renderMarked(comment.body);
 		return comment;
 	}
 	setUpMarked() {
@@ -1323,6 +1319,10 @@ class Repository {
 			};
 			marked.setOptions(this.markedOptions);
 		}
+	}
+	renderMarked(text) {
+		this.setUpMarked();
+		return this.markedOptions.renderer.all(marked(text));
 	}
 
 	// Muted
