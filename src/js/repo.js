@@ -1281,6 +1281,14 @@ class Repository {
 			});
 	}
 	highlightComment(comment) {
+		this.setUpMarked();
+
+		comment.body = marked(comment.body);
+		comment.body = this.markedOptions.renderer.all(comment.body);
+
+		return comment;
+	}
+	setUpMarked() {
 		if(!this.markedOptions) {
 			let issueParser = "<a href=\"/1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t/repo/issues/view/?" + this.address + "/$1@$2\">#$1@$2</a>";
 			let pullRequestParser = "<a href=\"/1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t/repo/pull-requests/view/?" + this.address + "/$1@$2\">#P$1@$2</a>";
@@ -1313,12 +1321,8 @@ class Repository {
 				},
 				renderer: renderer
 			};
+			marked.setOptions(this.markedOptions);
 		}
-
-		comment.body = marked(comment.body, this.markedOptions);
-		comment.body = this.markedOptions.renderer.all(comment.body);
-
-		return comment;
 	}
 
 	// Muted

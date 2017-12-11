@@ -4,11 +4,7 @@ if(address == "1RepoXU8bQE9m7ssNwL4nnxBnZVejHCc6") {
 
 let content, head;
 
-marked.setOptions({
-	highlight: (code, lang) => {
-		return lang ? hljs.highlight(lang, code).value : hljs.highlightAuto(code).value;
-	}
-});
+repo.setUpMarked();
 
 repo.addMerger()
 	.then(() => {
