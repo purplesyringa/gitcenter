@@ -1317,7 +1317,7 @@ class Repository {
 					let id = "checkbox_" + Math.random().toString(36).substr(2) + "_" + label.replace(/[^A-Za-z0-9\-_]/g);
 					return "\
 						<li>\
-							<input type='checkbox' id='" + id + "'" + (value ? " checked" : "") + ">\
+							<input type='checkbox' id='" + id + "'" + (value ? " checked" : "") + " disabled>\
 							<label for='" + id + "'>" + label + "</label>\
 						</li>\
 					\n";
