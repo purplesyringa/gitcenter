@@ -1756,6 +1756,9 @@ class Repository {
 				if(!feedList["Pull request comments"]) {
 					feedList["Pull request comments"] = [FOLLOW_QUERIES.pullRequestComments, []];
 				}
+				if(!feedList["Actions"]) {
+					feedList["Actions"] = [FOLLOW_QUERIES.actions, []];
+				}
 
 				Object.values(feedList).forEach(feed => feed[1].push(this.address));
 
@@ -1779,26 +1782,58 @@ class Repository {
 		return this.zeroPage.cmd("feedListFollow")
 			.then(feedList => {
 				let changed = false;
+
 				if(feedList["Issues"] && feedList["Issues"][0] != FOLLOW_QUERIES.issues) {
 					feedList["Issues"][0] = FOLLOW_QUERIES.issues;
 					changed = true;
+				} else if(!feedList["Issues"]) {
+					feedList["Issues"] = [FOLLOW_QUERIES.issues, this.getFollowListFor(feedList)];
+					changed = true;
 				}
+
 				if(feedList["Pull requests"] && feedList["Pull requests"][0] != FOLLOW_QUERIES.pullRequests) {
 					feedList["Pull requests"][0] = FOLLOW_QUERIES.pullRequests;
 					changed = true;
+				} else if(!feedList["Pull requests"]) {
+					feedList["Pull requests"] = [FOLLOW_QUERIES.pullRequests, this.getFollowListFor(feedList)];
+					changed = true;
 				}
+
 				if(feedList["Issue comments"] && feedList["Issue comments"][0] != FOLLOW_QUERIES.issueComments) {
 					feedList["Issue comments"][0] = FOLLOW_QUERIES.issueComments;
 					changed = true;
+				} else if(!feedList["Issue comments"]) {
+					feedList["Issue comments"] = [FOLLOW_QUERIES.issueComments, this.getFollowListFor(feedList)];
+					changed = true;
 				}
+
 				if(feedList["Pull request comments"] && feedList["Pull request comments"][0] != FOLLOW_QUERIES.pullRequestComments) {
 					feedList["Pull request comments"][0] = FOLLOW_QUERIES.pullRequestComments;
 					changed = true;
+				} else if(!feedList["Pull request comments"]) {
+					feedList["Pull request comments"] = [FOLLOW_QUERIES.pullRequestComments, this.getFollowListFor(feedList)];
+					changed = true;
 				}
+
+				if(feedList["Actions"] && feedList["Actions"][0] != FOLLOW_QUERIES.actions) {
+					feedList["Actions"][0] = FOLLOW_QUERIES.actions;
+					changed = true;
+				} else if(!feedList["Actions"]) {
+					feedList["Actions"] = [FOLLOW_QUERIES.actions, this.getFollowListFor(feedList)];
+					changed = true;
+				}
+
 				if(changed) {
 					return this.zeroPage.cmd("feedFollow", [feedList]);
 				}
 			});
+	}
+	getFollowListFor(feedList) {
+		// Merge and unique
+		return Object.values(feedList)
+			.map(data => data[1])
+			.reduce((arr, val) => arr.concat(val), [])
+			.filter((val, i, arr) => arr.indexOf(val) == i);
 	}
 	isFollowing() {
 		return this.zeroPage.cmd("feedListFollow")
