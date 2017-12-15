@@ -1494,6 +1494,7 @@ class Repository {
 			});
 	}
 	highlightComment(comment) {
+		comment.originalBody = comment.body;
 		comment.body = this.renderMarked(comment.body);
 		return comment;
 	}
