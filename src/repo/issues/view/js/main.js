@@ -41,7 +41,7 @@ function addTag(tag) {
 			node.parentNode.removeChild(node);
 			issue.tags.splice(issue.tags.indexOf(tag), 1);
 
-			repo.changePullRequestTags(id, json, issue.tags);
+			repo.changeIssueTags(id, json, issue.tags);
 		};
 		node.appendChild(remove);
 	}
