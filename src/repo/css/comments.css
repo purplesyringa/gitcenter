@@ -111,11 +111,12 @@
 }
 
 
-.comment-edit, .comment-save {
+.comment-edit, .comment-save, .comment-remove {
 	display: inline-block;
 	width: 16px;
 	height: 16px;
 	float: right;
+	margin-left: 16px;
 
 	background-repeat: no-repeat;
 	background-size: contain;
@@ -126,4 +127,7 @@
 }
 .comment-save {
 	background-image: url(../../img/tick.svg);
+}
+.comment-remove {
+	background-image: url(../../img/remove.svg);
 }
