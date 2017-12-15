@@ -35,7 +35,13 @@ FOLLOW_QUERIES = {
 	",
 	actions: "\
 		SELECT\
-			'comment' AS type, issue_actions.date_added AS date_added, issues_json.title AS title, issue_actions.action AS body, issue_actions.param AS param, 'repo/issues/view/?' || issues_json.site || '/' || issues_json.id || '@' || REPLACE(issues_json.directory, 'data/users/', '') AS url\
+			'comment' AS type, issue_actions.date_added AS date_added, issues_json.title AS title, issue_actions.param AS param, 'repo/issues/view/?' || issues_json.site || '/' || issues_json.id || '@' || REPLACE(issues_json.directory, 'data/users/', '') AS url,\
+			'@' || REPLACE(cert_user_id, '@zeroid.bit', '') || ': ' || (\
+				CASE WHEN issue_actions.action = 'changeStatus'\
+					THEN (CASE WHEN issue_actions.param = 'reopen' THEN 'Reopened issue' ELSE 'Closed issue' END)\
+					ELSE 'Action ' || issue_actions.action\
+				END\
+			) AS body\
 		FROM\
 			issue_actions\
 		LEFT JOIN\
@@ -52,7 +58,13 @@ FOLLOW_QUERIES = {
 		UNION\
 		\
 		SELECT\
-			'comment' AS type, pull_request_actions.date_added AS date_added, pull_requests_json.title AS title, pull_request_actions.action AS body, pull_request_actions.param AS param, 'repo/pull-requests/view/?' || pull_requests_json.site || '/' || pull_requests_json.id || '@' || REPLACE(pull_requests_json.directory, 'data/users/', '') AS url\
+			'comment' AS type, pull_request_actions.date_added AS date_added, pull_requests_json.title AS title, pull_request_actions.param AS param, 'repo/pull-requests/view/?' || pull_requests_json.site || '/' || pull_requests_json.id || '@' || REPLACE(pull_requests_json.directory, 'data/users/', '') AS url,\
+			'@' || REPLACE(cert_user_id, '@zeroid.bit', '') || ': ' || (\
+				CASE WHEN pull_request_actions.action = 'changeStatus'\
+					THEN (CASE WHEN pull_request_actions.param = 'reopen' THEN 'Reopened pull request' ELSE 'Closed pull request' END)\
+					ELSE 'Action ' || pull_request_actions.action\
+				END\
+			) AS body\
 		FROM\
 			pull_request_actions\
 		LEFT JOIN\
