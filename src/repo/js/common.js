@@ -223,6 +223,7 @@ function showAction(action, context) {
 			edit.onclick = () => {
 				content.style.display = "none";
 				edit.style.display = "none";
+				remove.style.display = "none";
 
 				textarea.style.display = "";
 				save.style.display = "";
@@ -231,6 +232,35 @@ function showAction(action, context) {
 				textarea.focus();
 			};
 			header.appendChild(edit);
+
+			let remove = document.createElement("div");
+			remove.className = "comment-remove";
+			remove.onclick = () => {
+				zeroPage.confirm("Remove " + context + (comment.id == -1 ? "" : " comment") + "?")
+					.then(() => {
+						node.disabled = true;
+
+						let funcName = {
+							"issue": "removeIssue",
+							"pull request": "removePullRequest"
+						}[context];
+
+						let parentId = {
+							"issue": comment.issue_id,
+							"pull request": comment.pull_request_id
+						}[context];
+
+						return repo[funcName + (comment.id == -1 ? "" : "Comment")](comment.id == -1 ? parentId : comment.id, comment.json);
+					})
+					.then(() => {
+						if(comment.id == -1) {
+							location.href = "../?" + address;
+						} else {
+							node.style.display = "none";
+						}
+					});
+			};
+			header.appendChild(remove);
 
 			let save = document.createElement("div");
 			save.className = "comment-save";
@@ -255,6 +285,7 @@ function showAction(action, context) {
 
 						content.style.display = "";
 						edit.style.display = "";
+						remove.style.display = "";
 
 						textarea.style.display = "none";
 						save.style.display = "none";

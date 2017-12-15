@@ -1016,6 +1016,16 @@ class Repository {
 			}
 		);
 	}
+	removeIssue(id, json) {
+		return this.zeroDB.removeRow(
+			"merged-GitCenter/" + this.address + "/" + json + "/data.json",
+			"merged-GitCenter/" + this.address + "/" + json + "/content.json",
+			"issues",
+			issue => {
+				return issue.id == id;
+			}
+		);
+	}
 	getIssues(page) {
 		return this.zeroDB.query("SELECT issues.*, json.directory as json, json.cert_user_id FROM issues, json WHERE issues.json_id = json.json_id AND json.site = :address ORDER BY issues.date_added DESC LIMIT " + (page * 10) + ", 11", {
 			address: this.address
@@ -1209,6 +1219,16 @@ class Repository {
 			}
 		);
 	}
+	removeIssueComment(id, json) {
+		return this.zeroDB.removeRow(
+			"merged-GitCenter/" + this.address + "/" + json + "/data.json",
+			"merged-GitCenter/" + this.address + "/" + json + "/content.json",
+			"issue_comments",
+			comment => {
+				return comment.id == id;
+			}
+		);
+	}
 	changeIssueStatus(id, json, open) {
 		return this.zeroDB.changeRow(
 			"merged-GitCenter/" + this.address + "/" + json + "/data.json",
@@ -1299,6 +1319,16 @@ class Repository {
 				pullRequest.body = content;
 
 				return pullRequest;
+			}
+		);
+	}
+	removePullRequest(id, json) {
+		return this.zeroDB.removeRow(
+			"merged-GitCenter/" + this.address + "/" + json + "/data.json",
+			"merged-GitCenter/" + this.address + "/" + json + "/content.json",
+			"pull_requests",
+			pullRequest => {
+				return pullRequest.id == id;
 			}
 		);
 	}
@@ -1492,6 +1522,16 @@ class Repository {
 				comment.body = content;
 
 				return comment;
+			}
+		);
+	}
+	removePullRequestComment(id, json) {
+		return this.zeroDB.removeRow(
+			"merged-GitCenter/" + this.address + "/" + json + "/data.json",
+			"merged-GitCenter/" + this.address + "/" + json + "/content.json",
+			"pull_request_comments",
+			comment => {
+				return comment.id == id;
 			}
 		);
 	}
