@@ -1090,17 +1090,14 @@ class Repository {
 
 				let auth = this.zeroAuth.getAuth();
 				if(auth) {
-					return this.zeroDB.getJsonID(auth, 3)
-						.then(jsonId => {
-							return comments.map(comment => {
-								if(comment.json_id == jsonId) {
-									comment.owned = true;
-								} else {
-									comment.owned = false;
-								}
-								return comment;
-							});
-						});
+					return comments.map(comment => {
+						if(comment.json == "data/users/" + auth.address) {
+							comment.owned = true;
+						} else {
+							comment.owned = false;
+						}
+						return comment;
+					});
 				} else {
 					return comments;
 				}
@@ -1345,17 +1342,14 @@ class Repository {
 
 				let auth = this.zeroAuth.getAuth();
 				if(auth) {
-					return this.zeroDB.getJsonID(auth, 3)
-						.then(jsonId => {
-							return comments.map(comment => {
-								if(comment.json_id == jsonId) {
-									comment.owned = true;
-								} else {
-									comment.owned = false;
-								}
-								return comment;
-							});
-						});
+					return comments.map(comment => {
+						if(comment.json == "data/users/" + auth.address) {
+							comment.owned = true;
+						} else {
+							comment.owned = false;
+						}
+						return comment;
+					});
 				} else {
 					return comments;
 				}
