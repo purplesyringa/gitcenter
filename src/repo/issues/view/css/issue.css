@@ -48,6 +48,9 @@
 	vertical-align: middle;
 }
 
+.tags {
+	display: block;
+}
 .tags .tag:first-child {
 	margin-left: 0;
 }
