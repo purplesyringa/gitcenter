@@ -193,3 +193,36 @@ function showLinks() {
 			});
 	}
 }
+
+function showAction(action, context) {
+	if(action.action) {
+		let node = document.createElement("div");
+		node.className = "action";
+		node.innerHTML = repo.parseAction(action, context);
+
+		document.getElementById("comments").appendChild(node);
+	} else {
+		let comment = action;
+
+		let node = document.createElement("div");
+		node.className = "comment" + (json == comment.json ? " comment-owned" : "");
+
+		let header = document.createElement("div");
+		header.className = "comment-header";
+		header.textContent = comment.cert_user_id + " " + (comment.id == -1 ? "posted " + context : "commented") + " " + repo.translateDate(comment.date_added);
+		node.appendChild(header);
+
+		if(comment.owned) {
+			let edit = document.createElement("div");
+			edit.className = "comment-edit";
+			header.appendChild(edit);
+		}
+
+		let content = document.createElement("div");
+		content.className = "comment-content";
+		content.innerHTML = comment.body;
+		node.appendChild(content);
+
+		document.getElementById("comments").appendChild(node);
+	}
+}
