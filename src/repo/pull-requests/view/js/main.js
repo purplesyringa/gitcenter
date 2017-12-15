@@ -135,7 +135,9 @@ repo.addMerger()
 					.then(() => {
 						return repo.changePullRequestStatus(id, json, !pullRequest.merged);
 					})
-					.then(() => {
+					.then(action => {
+						showAction(action);
+
 						pullRequest.merged = !pullRequest.merged;
 						drawPullRequestStatus();
 

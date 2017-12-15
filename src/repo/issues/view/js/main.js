@@ -133,7 +133,9 @@ repo.addMerger()
 					.then(() => {
 						return repo.changeIssueStatus(id, json, !issue.open);
 					})
-					.then(() => {
+					.then(action => {
+						showAction(action);
+
 						if(issue.open) {
 							issue.open = false;
 						} else {

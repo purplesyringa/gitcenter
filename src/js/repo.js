@@ -1185,6 +1185,11 @@ class Repository {
 						column: "id"
 					}
 				);
+			})
+			.then(row => {
+				let auth = this.zeroAuth.getAuth();
+				row.cert_user_id = auth ? auth.user : "You";
+				return row;
 			});
 	}
 
@@ -1400,6 +1405,11 @@ class Repository {
 						column: "id"
 					}
 				);
+			})
+			.then(row => {
+				let auth = this.zeroAuth.getAuth();
+				row.cert_user_id = auth ? auth.user : "You";
+				return row;
 			});
 	}
 	importPullRequest(pullRequest) {
