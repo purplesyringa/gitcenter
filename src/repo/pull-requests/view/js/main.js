@@ -58,6 +58,19 @@ repo.addMerger()
 			node.style.color = color.foreground;
 			node.textContent = tag;
 			document.getElementById("tags").appendChild(node);
+
+			if(pullRequest.owned) {
+				let remove = document.createElement("div");
+				remove.className = "tag-remove";
+				remove.innerHTML = "&times;";
+				remove.onclick = () => {
+					node.parentNode.removeChild(node);
+					pullRequest.tags.splice(pullRequest.tags.indexOf(tag), 1);
+
+					repo.changePullRequestTags(id, json, pullRequest.tags);
+				};
+				node.appendChild(remove);
+			}
 		});
 
 		drawPullRequestStatus();

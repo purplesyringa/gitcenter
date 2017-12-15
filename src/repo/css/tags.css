@@ -11,3 +11,11 @@
 	vertical-align: middle;
 	font-size: 16px;
 }
+
+.tag-remove {
+	display: inline-block;
+	vertical-align: middle;
+	margin-left: 8px;
+
+	font-size: 24px;
+}

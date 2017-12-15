@@ -56,6 +56,19 @@ repo.addMerger()
 			node.style.backgroundColor = color.background;
 			node.style.color = color.foreground;
 			document.getElementById("tags").appendChild(node);
+
+			if(issue.owned) {
+				let remove = document.createElement("div");
+				remove.className = "tag-remove";
+				remove.innerHTML = "&times;";
+				remove.onclick = () => {
+					node.parentNode.removeChild(node);
+					issue.tags.splice(issue.tags.indexOf(tag), 1);
+
+					repo.changeIssueTags(id, json, issue.tags);
+				};
+				node.appendChild(remove);
+			}
 		});
 
 		drawIssueStatus();
