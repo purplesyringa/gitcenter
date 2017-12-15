@@ -243,7 +243,12 @@ function showAction(action, context) {
 					"pull request": "changePullRequest"
 				}[context];
 
-				repo[funcName + (comment.id == -1 ? "" : "Comment")](comment.id == -1 ? comment.issue_id : comment.id, comment.json, textarea.value)
+				let parentId = {
+					"issue": comment.issue_id,
+					"pull request": comment.pull_request_id
+				}[context];
+
+				repo[funcName + (comment.id == -1 ? "" : "Comment")](comment.id == -1 ? parentId : comment.id, comment.json, textarea.value)
 					.then(() => {
 						textarea.disabled = false;
 						content.innerHTML = repo.renderMarked(textarea.value);
