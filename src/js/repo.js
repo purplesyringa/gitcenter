@@ -1175,6 +1175,22 @@ class Repository {
 				return row;
 			});
 	}
+	changeIssueComment(id, json, content) {
+		return this.zeroDB.changeRow(
+			"merged-GitCenter/" + this.address + "/" + json + "/data.json",
+			"merged-GitCenter/" + this.address + "/" + json + "/content.json",
+			"issue_comments",
+			comment => {
+				if(comment.id != id) {
+					return comment;
+				}
+
+				comment.body = content;
+
+				return comment;
+			}
+		);
+	}
 	changeIssueStatus(id, json, open) {
 		return this.zeroDB.changeRow(
 			"merged-GitCenter/" + this.address + "/" + json + "/data.json",
@@ -1426,6 +1442,22 @@ class Repository {
 
 				return row;
 			});
+	}
+	changePullRequestComment(id, json, content) {
+		return this.zeroDB.changeRow(
+			"merged-GitCenter/" + this.address + "/" + json + "/data.json",
+			"merged-GitCenter/" + this.address + "/" + json + "/content.json",
+			"pull_request_comments",
+			comment => {
+				if(comment.id != id) {
+					return comment;
+				}
+
+				comment.body = content;
+
+				return comment;
+			}
+		);
 	}
 	changePullRequestStatus(id, json, merged) {
 		return this.zeroDB.changeRow(
