@@ -239,11 +239,11 @@ function showAction(action, context) {
 				textarea.disabled = true;
 
 				let funcName = {
-					"issue": "changeIssueComment",
-					"pull request": "changePullRequestComment"
+					"issue": "changeIssue",
+					"pull request": "changePullRequest"
 				}[context];
 
-				repo[funcName](comment.id, comment.json, textarea.value)
+				repo[funcName + (comment.id == -1 ? "" : "Comment")](comment.id == -1 ? comment.issue_id : comment.id, comment.json, textarea.value)
 					.then(() => {
 						textarea.disabled = false;
 						content.innerHTML = repo.renderMarked(textarea.value);
