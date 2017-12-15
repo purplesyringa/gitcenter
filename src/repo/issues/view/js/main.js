@@ -13,21 +13,31 @@ if(isNaN(id) || json == "data/users/") {
 	location.href = "../?" + address;
 }
 
-function showComment(comment) {
-	let node = document.createElement("div");
-	node.className = "comment" + (json == comment.json ? " comment-owned" : "");
+function showAction(action) {
+	if(action.action) {
+		let node = document.createElement("div");
+		node.className = "action";
+		node.innerHTML = repo.parseAction(action, "issue");
 
-	let header = document.createElement("div");
-	header.className = "comment-header";
-	header.textContent = comment.cert_user_id + " " + (comment.id == -1 ? "posted issue" : "commented") + " " + repo.translateDate(comment.date_added);
-	node.appendChild(header);
+		document.getElementById("comments").appendChild(node);
+	} else {
+		let comment = action;
 
-	let content = document.createElement("div");
-	content.className = "comment-content";
-	content.innerHTML = comment.body;
-	node.appendChild(content);
+		let node = document.createElement("div");
+		node.className = "comment" + (json == comment.json ? " comment-owned" : "");
 
-	document.getElementById("comments").appendChild(node);
+		let header = document.createElement("div");
+		header.className = "comment-header";
+		header.textContent = comment.cert_user_id + " " + (comment.id == -1 ? "posted issue" : "commented") + " " + repo.translateDate(comment.date_added);
+		node.appendChild(header);
+
+		let content = document.createElement("div");
+		content.className = "comment-content";
+		content.innerHTML = comment.body;
+		node.appendChild(content);
+
+		document.getElementById("comments").appendChild(node);
+	}
 }
 
 function drawIssueStatus() {
@@ -77,10 +87,10 @@ repo.addMerger()
 
 		drawIssueStatus();
 
-		return repo.getIssueComments(id, json);
+		return repo.getIssueActions(id, json);
 	})
-	.then(comments => {
-		comments.forEach(showComment);
+	.then(actions => {
+		actions.forEach(showAction);
 
 		document.getElementById("comment_submit").onclick = () => {
 			let contentNode = document.getElementById("comment_content");
@@ -92,7 +102,7 @@ repo.addMerger()
 
 			repo.addIssueComment(id, json, contentNode.value)
 				.then(comment => {
-					showComment(repo.highlightComment(comment));
+					showAction(repo.highlightComment(comment));
 
 					contentNode.value = "";
 					contentNode.disabled = false;
@@ -115,7 +125,7 @@ repo.addMerger()
 				} else {
 					promise = repo.addIssueComment(id, json, contentNode.value)
 						.then(comment => {
-							showComment(repo.highlightComment(comment));
+							showAction(repo.highlightComment(comment));
 						});
 				}
 
@@ -123,7 +133,9 @@ repo.addMerger()
 					.then(() => {
 						return repo.changeIssueStatus(id, json, !issue.open);
 					})
-					.then(() => {
+					.then(action => {
+						showAction(action);
+
 						if(issue.open) {
 							issue.open = false;
 						} else {

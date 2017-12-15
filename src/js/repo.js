@@ -33,6 +33,51 @@ FOLLOW_QUERIES = {
 		WHERE\
 			pull_requests_json.site IN (:params) AND pull_request_comments.json_id IN (SELECT json_id FROM json WHERE json.site = pull_requests_json.site)\
 	",
+	actions: "\
+		SELECT\
+			'comment' AS type, issue_actions.date_added AS date_added, issues_json.title AS title, issue_actions.param AS param, 'repo/issues/view/?' || issues_json.site || '/' || issues_json.id || '@' || REPLACE(issues_json.directory, 'data/users/', '') AS url,\
+			'@' || REPLACE(cert_user_id, '@zeroid.bit', '') || ': ' || (\
+				CASE WHEN issue_actions.action = 'changeStatus'\
+					THEN (CASE WHEN issue_actions.param = 'reopen' THEN 'Reopened issue' ELSE 'Closed issue' END)\
+					ELSE 'Action ' || issue_actions.action\
+				END\
+			) AS body\
+		FROM\
+			issue_actions\
+		LEFT JOIN\
+			(SELECT id, title, body, json_id, site, directory FROM issues LEFT JOIN json USING (json_id)) AS issues_json\
+		ON\
+			(issue_actions.issue_id = issues_json.id AND issue_actions.issue_json = issues_json.directory)\
+		LEFT JOIN\
+			(SELECT cert_user_id, json_id AS action_json_id FROM json) AS action_json\
+		ON\
+			(action_json.action_json_id = issue_actions.json_id)\
+		WHERE\
+			issues_json.site IN (:params) AND issue_actions.json_id IN (SELECT json_id FROM json WHERE json.site = issues_json.site)\
+		\
+		UNION\
+		\
+		SELECT\
+			'comment' AS type, pull_request_actions.date_added AS date_added, pull_requests_json.title AS title, pull_request_actions.param AS param, 'repo/pull-requests/view/?' || pull_requests_json.site || '/' || pull_requests_json.id || '@' || REPLACE(pull_requests_json.directory, 'data/users/', '') AS url,\
+			'@' || REPLACE(cert_user_id, '@zeroid.bit', '') || ': ' || (\
+				CASE WHEN pull_request_actions.action = 'changeStatus'\
+					THEN (CASE WHEN pull_request_actions.param = 'reopen' THEN 'Reopened pull request' ELSE 'Closed pull request' END)\
+					ELSE 'Action ' || pull_request_actions.action\
+				END\
+			) AS body\
+		FROM\
+			pull_request_actions\
+		LEFT JOIN\
+			(SELECT id, title, body, json_id, site, directory FROM pull_requests LEFT JOIN json USING (json_id)) AS pull_requests_json\
+		ON\
+			(pull_request_actions.pull_request_id = pull_requests_json.id AND pull_request_actions.pull_request_json = pull_requests_json.directory)\
+		LEFT JOIN\
+			(SELECT cert_user_id, json_id AS action_json_id FROM json) AS action_json\
+		ON\
+			(action_json.action_json_id = pull_request_actions.json_id)\
+		WHERE\
+			pull_requests_json.site IN (:params) AND pull_request_actions.json_id IN (SELECT json_id FROM json WHERE json.site = pull_requests_json.site)\
+	"
 };
 
 class Repository {
@@ -1031,6 +1076,40 @@ class Repository {
 				return comments.map(comment => this.highlightComment(comment));
 			});
 	}
+	getIssueActions(id, json) {
+		let comments;
+		return this.getIssueComments(id, json)
+			.then(c => {
+				comments = c;
+
+				return this.zeroDB.query("\
+					SELECT\
+						issue_actions.id AS id,\
+						issue_actions.action AS action,\
+						issue_actions.param AS param,\
+						issue_actions.date_added AS date_added,\
+						json.directory AS json,\
+						json.cert_user_id AS cert_user_id,\
+						issue_actions.issue_id AS issue_id,\
+						issue_actions.issue_json AS issue_json\
+					FROM issue_actions, json\
+					WHERE\
+						issue_actions.json_id = json.json_id AND\
+						issue_actions.issue_json = :json AND\
+						issue_actions.issue_id = :id AND\
+						json.site = :address\
+					\
+					ORDER BY date_added ASC\
+				", {
+					json: json,
+					id: id,
+					address: this.address
+				});
+			})
+			.then(actions => {
+				return comments.concat(actions).sort((a, b) => a.date_added - b.date_added);
+			});
+	}
 	addIssueComment(issueId, issueJson, content) {
 		let auth, row;
 		return this.zeroAuth.requestAuth()
@@ -1088,7 +1167,30 @@ class Repository {
 
 				return issue;
 			}
-		);
+		)
+			.then(() => {
+				return this.zeroDB.insertRow(
+					"merged-GitCenter/" + this.address + "/" + json + "/data.json",
+					"merged-GitCenter/" + this.address + "/" + json + "/content.json",
+					"issue_actions",
+					{
+						issue_id: id,
+						issue_json: json,
+						action: "changeStatus",
+						param: open ? "reopen" : "close",
+						date_added: Date.now()
+					},
+					{
+						source: "next_issue_action_id",
+						column: "id"
+					}
+				);
+			})
+			.then(row => {
+				let auth = this.zeroAuth.getAuth();
+				row.cert_user_id = auth ? auth.user : "You";
+				return row;
+			});
 	}
 
 	// Pull requests
@@ -1199,6 +1301,40 @@ class Repository {
 				return comments.map(comment => this.highlightComment(comment));
 			});
 	}
+	getPullRequestActions(id, json) {
+		let comments;
+		return this.getPullRequestComments(id, json)
+			.then(c => {
+				comments = c;
+
+				return this.zeroDB.query("\
+					SELECT\
+						pull_request_actions.id AS id,\
+						pull_request_actions.action AS action,\
+						pull_request_actions.param AS param,\
+						pull_request_actions.date_added AS date_added,\
+						json.directory AS json,\
+						json.cert_user_id AS cert_user_id,\
+						pull_request_actions.pull_request_id AS pull_request_id,\
+						pull_request_actions.pull_request_json AS pull_request_json\
+					FROM pull_request_actions, json\
+					WHERE\
+						pull_request_actions.json_id = json.json_id AND\
+						pull_request_actions.pull_request_json = :json AND\
+						pull_request_actions.pull_request_id = :id AND\
+						json.site = :address\
+					\
+					ORDER BY date_added ASC\
+				", {
+					json: json,
+					id: id,
+					address: this.address
+				});
+			})
+			.then(actions => {
+				return comments.concat(actions).sort((a, b) => a.date_added - b.date_added);
+			});
+	}
 	addPullRequestComment(pullRequestId, pullRequestJson, content) {
 		let auth, row;
 		return this.zeroAuth.requestAuth()
@@ -1251,7 +1387,30 @@ class Repository {
 
 				return pullRequest;
 			}
-		);
+		)
+			.then(() => {
+				return this.zeroDB.insertRow(
+					"merged-GitCenter/" + this.address + "/" + json + "/data.json",
+					"merged-GitCenter/" + this.address + "/" + json + "/content.json",
+					"pull_request_actions",
+					{
+						pull_request_id: id,
+						pull_request_json: json,
+						action: "changeStatus",
+						param: merged ? "close" : "reopen",
+						date_added: Date.now()
+					},
+					{
+						source: "next_pull_request_action_id",
+						column: "id"
+					}
+				);
+			})
+			.then(row => {
+				let auth = this.zeroAuth.getAuth();
+				row.cert_user_id = auth ? auth.user : "You";
+				return row;
+			});
 	}
 	importPullRequest(pullRequest) {
 		let forkAddress = pullRequest.fork_address;
@@ -1347,6 +1506,11 @@ class Repository {
 	renderMarked(text) {
 		this.setUpMarked();
 		return this.markedOptions.renderer.all(marked(text));
+	}
+	parseAction(action, context) {
+		if(action.action == "changeStatus") {
+			return action.cert_user_id + " " + (action.param == "close" ? "closed" : "reopened") + " " + context + " " + this.translateDate(action.date_added);
+		}
 	}
 
 	// Muted
@@ -1612,6 +1776,9 @@ class Repository {
 				if(!feedList["Pull request comments"]) {
 					feedList["Pull request comments"] = [FOLLOW_QUERIES.pullRequestComments, []];
 				}
+				if(!feedList["Actions"]) {
+					feedList["Actions"] = [FOLLOW_QUERIES.actions, []];
+				}
 
 				Object.values(feedList).forEach(feed => feed[1].push(this.address));
 
@@ -1635,26 +1802,58 @@ class Repository {
 		return this.zeroPage.cmd("feedListFollow")
 			.then(feedList => {
 				let changed = false;
+
 				if(feedList["Issues"] && feedList["Issues"][0] != FOLLOW_QUERIES.issues) {
 					feedList["Issues"][0] = FOLLOW_QUERIES.issues;
 					changed = true;
+				} else if(!feedList["Issues"]) {
+					feedList["Issues"] = [FOLLOW_QUERIES.issues, this.getFollowListFor(feedList)];
+					changed = true;
 				}
+
 				if(feedList["Pull requests"] && feedList["Pull requests"][0] != FOLLOW_QUERIES.pullRequests) {
 					feedList["Pull requests"][0] = FOLLOW_QUERIES.pullRequests;
 					changed = true;
+				} else if(!feedList["Pull requests"]) {
+					feedList["Pull requests"] = [FOLLOW_QUERIES.pullRequests, this.getFollowListFor(feedList)];
+					changed = true;
 				}
+
 				if(feedList["Issue comments"] && feedList["Issue comments"][0] != FOLLOW_QUERIES.issueComments) {
 					feedList["Issue comments"][0] = FOLLOW_QUERIES.issueComments;
 					changed = true;
+				} else if(!feedList["Issue comments"]) {
+					feedList["Issue comments"] = [FOLLOW_QUERIES.issueComments, this.getFollowListFor(feedList)];
+					changed = true;
 				}
+
 				if(feedList["Pull request comments"] && feedList["Pull request comments"][0] != FOLLOW_QUERIES.pullRequestComments) {
 					feedList["Pull request comments"][0] = FOLLOW_QUERIES.pullRequestComments;
 					changed = true;
+				} else if(!feedList["Pull request comments"]) {
+					feedList["Pull request comments"] = [FOLLOW_QUERIES.pullRequestComments, this.getFollowListFor(feedList)];
+					changed = true;
 				}
+
+				if(feedList["Actions"] && feedList["Actions"][0] != FOLLOW_QUERIES.actions) {
+					feedList["Actions"][0] = FOLLOW_QUERIES.actions;
+					changed = true;
+				} else if(!feedList["Actions"]) {
+					feedList["Actions"] = [FOLLOW_QUERIES.actions, this.getFollowListFor(feedList)];
+					changed = true;
+				}
+
 				if(changed) {
 					return this.zeroPage.cmd("feedFollow", [feedList]);
 				}
 			});
+	}
+	getFollowListFor(feedList) {
+		// Merge and unique
+		return Object.values(feedList)
+			.map(data => data[1])
+			.reduce((arr, val) => arr.concat(val), [])
+			.filter((val, i, arr) => arr.indexOf(val) == i);
 	}
 	isFollowing() {
 		return this.zeroPage.cmd("feedListFollow")
