@@ -23,6 +23,30 @@ function drawPullRequestStatus() {
 	document.getElementById("comment_submit_close").innerHTML = "Comment and " + (pullRequest.merged ? "reopen" : "mark") + " pull request" + (pullRequest.merged ? "" : " as merged");
 }
 
+function addTag(tag) {
+	let color = repo.tagToColor(tag);
+
+	let node = document.createElement("div");
+	node.className = "tag";
+	node.style.backgroundColor = color.background;
+	node.style.color = color.foreground;
+	node.textContent = tag;
+	document.getElementById("tags").appendChild(node);
+
+	if(pullRequest.owned) {
+		let remove = document.createElement("div");
+		remove.className = "tag-remove";
+		remove.innerHTML = "&times;";
+		remove.onclick = () => {
+			node.parentNode.removeChild(node);
+			pullRequest.tags.splice(pullRequest.tags.indexOf(tag), 1);
+
+			repo.changePullRequestTags(id, json, pullRequest.tags);
+		};
+		node.appendChild(remove);
+	}
+}
+
 
 let pullRequest;
 repo.addMerger()
@@ -49,29 +73,7 @@ repo.addMerger()
 		document.getElementById("pull_request_fork_address").textContent = pullRequest.fork_address;
 		document.getElementById("pull_request_fork_branch").textContent = pullRequest.fork_branch;
 
-		pullRequest.tags.forEach(tag => {
-			let color = repo.tagToColor(tag);
-
-			let node = document.createElement("div");
-			node.className = "tag";
-			node.style.backgroundColor = color.background;
-			node.style.color = color.foreground;
-			node.textContent = tag;
-			document.getElementById("tags").appendChild(node);
-
-			if(pullRequest.owned) {
-				let remove = document.createElement("div");
-				remove.className = "tag-remove";
-				remove.innerHTML = "&times;";
-				remove.onclick = () => {
-					node.parentNode.removeChild(node);
-					pullRequest.tags.splice(pullRequest.tags.indexOf(tag), 1);
-
-					repo.changePullRequestTags(id, json, pullRequest.tags);
-				};
-				node.appendChild(remove);
-			}
-		});
+		pullRequest.tags.forEach(addTag);
 
 		drawPullRequestStatus();
 

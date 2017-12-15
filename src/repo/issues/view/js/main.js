@@ -23,6 +23,30 @@ function drawIssueStatus() {
 	document.getElementById("comment_submit_close").innerHTML = "Comment and " + (issue.open ? "close" : "reopen") + " issue";
 }
 
+function addTag(tag) {
+	let color = repo.tagToColor(tag);
+
+	let node = document.createElement("div");
+	node.className = "tag";
+	node.style.backgroundColor = color.background;
+	node.style.color = color.foreground;
+	node.textContent = tag;
+	document.getElementById("tags").appendChild(node);
+
+	if(issue.owned) {
+		let remove = document.createElement("div");
+		remove.className = "tag-remove";
+		remove.innerHTML = "&times;";
+		remove.onclick = () => {
+			node.parentNode.removeChild(node);
+			issue.tags.splice(issue.tags.indexOf(tag), 1);
+
+			repo.changePullRequestTags(id, json, issue.tags);
+		};
+		node.appendChild(remove);
+	}
+}
+
 
 let issue;
 repo.addMerger()
@@ -47,29 +71,7 @@ repo.addMerger()
 		document.getElementById("issue_id").textContent = id;
 		document.getElementById("issue_json_id").textContent = json.replace("data/users/", "");
 
-		issue.tags.forEach(tag => {
-			let color = repo.tagToColor(tag);
-
-			let node = document.createElement("div");
-			node.className = "tag";
-			node.textContent = tag;
-			node.style.backgroundColor = color.background;
-			node.style.color = color.foreground;
-			document.getElementById("tags").appendChild(node);
-
-			if(issue.owned) {
-				let remove = document.createElement("div");
-				remove.className = "tag-remove";
-				remove.innerHTML = "&times;";
-				remove.onclick = () => {
-					node.parentNode.removeChild(node);
-					issue.tags.splice(issue.tags.indexOf(tag), 1);
-
-					repo.changeIssueTags(id, json, issue.tags);
-				};
-				node.appendChild(remove);
-			}
-		});
+		issue.tags.forEach(addTag);
 
 		drawIssueStatus();
 
