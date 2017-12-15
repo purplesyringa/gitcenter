@@ -96,3 +96,16 @@
 	font-size: 16px;
 	color: #444;
 }
+
+
+.comment-edit {
+	display: inline-block;
+	width: 16px;
+	height: 16px;
+	float: right;
+
+	background-image: url(../../img/edit.svg);
+	background-repeat: no-repeat;
+	background-size: contain;
+	background-position: center;
+}

@@ -31,6 +31,12 @@ function showAction(action) {
 		header.textContent = comment.cert_user_id + " " + (comment.id == -1 ? "posted issue" : "commented") + " " + repo.translateDate(comment.date_added);
 		node.appendChild(header);
 
+		if(comment.owned) {
+			let edit = document.createElement("div");
+			edit.className = "comment-edit";
+			header.appendChild(edit);
+		}
+
 		let content = document.createElement("div");
 		content.className = "comment-content";
 		content.innerHTML = comment.body;
