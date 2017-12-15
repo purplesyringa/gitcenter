@@ -1033,6 +1033,8 @@ class Repository {
 			});
 	}
 	getIssueComments(id, json) {
+		let comments;
+
 		return this.zeroDB.query("\
 			SELECT\
 				-1 AS id,\
@@ -1072,8 +1074,36 @@ class Repository {
 			id: id,
 			address: this.address
 		})
-			.then(comments => {
-				return comments.map(comment => this.highlightComment(comment));
+			.then(c => {
+				comments = c;
+				comments = comments.map(comment => this.highlightComment(comment));
+
+				return this.isSignable();
+			})
+			.then(signable => {
+				if(signable) {
+					return comments.map(comment => {
+						comment.owned = true;
+						return comment;
+					});
+				}
+
+				let auth = this.zeroAuth.getAuth();
+				if(auth) {
+					return this.zeroDB.getJsonID(auth, 3)
+						.then(jsonId => {
+							return comments.map(comment => {
+								if(comment.json_id == jsonId) {
+									comment.owned = true;
+								} else {
+									comment.owned = false;
+								}
+								return comment;
+							});
+						});
+				} else {
+					return comments;
+				}
 			});
 	}
 	getIssueActions(id, json) {
@@ -1258,6 +1288,8 @@ class Repository {
 			});
 	}
 	getPullRequestComments(id, json) {
+		let comments;
+
 		return this.zeroDB.query("\
 			SELECT\
 				-1 AS id,\
@@ -1297,8 +1329,36 @@ class Repository {
 			id: id,
 			address: this.address
 		})
-			.then(comments => {
-				return comments.map(comment => this.highlightComment(comment));
+			.then(c => {
+				comments = c;
+				comments = comments.map(comment => this.highlightComment(comment));
+
+				return this.isSignable();
+			})
+			.then(signable => {
+				if(signable) {
+					return comments.map(comment => {
+						comment.owned = true;
+						return comment;
+					});
+				}
+
+				let auth = this.zeroAuth.getAuth();
+				if(auth) {
+					return this.zeroDB.getJsonID(auth, 3)
+						.then(jsonId => {
+							return comments.map(comment => {
+								if(comment.json_id == jsonId) {
+									comment.owned = true;
+								} else {
+									comment.owned = false;
+								}
+								return comment;
+							});
+						});
+				} else {
+					return comments;
+				}
 			});
 	}
 	getPullRequestActions(id, json) {
