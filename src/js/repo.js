@@ -999,6 +999,22 @@ class Repository {
 				return row;
 			});
 	}
+	changeIssue(id, json, content) {
+		return this.zeroDB.changeRow(
+			"merged-GitCenter/" + this.address + "/" + json + "/data.json",
+			"merged-GitCenter/" + this.address + "/" + json + "/content.json",
+			"issues",
+			issue => {
+				if(issue.id != id) {
+					return issue;
+				}
+
+				issue.body = content;
+
+				return issue;
+			}
+		);
+	}
 	getIssues(page) {
 		return this.zeroDB.query("SELECT issues.*, json.directory as json, json.cert_user_id FROM issues, json WHERE issues.json_id = json.json_id AND json.site = :address ORDER BY issues.date_added DESC LIMIT " + (page * 10) + ", 11", {
 			address: this.address
@@ -1266,6 +1282,22 @@ class Repository {
 				row.json = "data/users/" + auth.address;
 				return row;
 			});
+	}
+	changePullRequest(id, json, content) {
+		return this.zeroDB.changeRow(
+			"merged-GitCenter/" + this.address + "/" + json + "/data.json",
+			"merged-GitCenter/" + this.address + "/" + json + "/content.json",
+			"pull_requests",
+			pullRequest => {
+				if(pullRequest.id != id) {
+					return pullRequest;
+				}
+
+				pullRequest.body = content;
+
+				return pullRequest;
+			}
+		);
 	}
 	getPullRequests(page) {
 		return this.zeroDB.query("SELECT pull_requests.*, json.directory as json, json.cert_user_id FROM pull_requests, json WHERE pull_requests.json_id = json.json_id AND json.site = :address ORDER BY pull_requests.date_added DESC LIMIT " + (page * 10) + ", 11", {
