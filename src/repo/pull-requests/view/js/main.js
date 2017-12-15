@@ -74,6 +74,27 @@ repo.addMerger()
 		document.getElementById("pull_request_fork_branch").textContent = pullRequest.fork_branch;
 
 		pullRequest.tags.forEach(addTag);
+		if(pullRequest.owned) {
+			let add = document.createElement("div");
+			add.className = "tag-add";
+			add.innerHTML = "+";
+			add.onclick = () => {
+				zeroPage.prompt("New tags (comma-separated):")
+					.then(tags => {
+						tags = tags
+							.split(",")
+							.map(tag => tag.trim())
+							.filter(tag => tag);
+
+						tags.forEach(addTag);
+						add.parentNode.appendChild(add); // Move to end of container
+
+						pullRequest.tags = pullRequest.tags.concat(tags);
+						repo.changePullRequestTags(id, json, pullRequest.tags);
+					});
+			};
+			document.getElementById("tags").appendChild(add);
+		}
 
 		drawPullRequestStatus();
 
