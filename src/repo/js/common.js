@@ -213,9 +213,49 @@ function showAction(action, context) {
 		node.appendChild(header);
 
 		if(comment.owned) {
+			let textarea = document.createElement("textarea");
+			textarea.className = "comment-textarea";
+			textarea.style.display = "none";
+			node.appendChild(textarea);
+
 			let edit = document.createElement("div");
 			edit.className = "comment-edit";
+			edit.onclick = () => {
+				content.style.display = "none";
+				edit.style.display = "none";
+
+				textarea.style.display = "";
+				save.style.display = "";
+
+				textarea.value = comment.originalBody;
+				textarea.focus();
+			};
 			header.appendChild(edit);
+
+			let save = document.createElement("div");
+			save.className = "comment-save";
+			save.style.display = "none";
+			save.onclick = () => {
+				textarea.disabled = true;
+
+				let funcName = {
+					"issue": "changeIssueComment",
+					"pull request": "changePullRequestComment"
+				}[context];
+
+				repo[funcName](comment.id, comment.json, textarea.value)
+					.then(() => {
+						textarea.disabled = false;
+						content.innerHTML = repo.renderMarked(textarea.value);
+
+						content.style.display = "";
+						edit.style.display = "";
+
+						textarea.style.display = "none";
+						save.style.display = "none";
+					});
+			};
+			header.appendChild(save);
 		}
 
 		let content = document.createElement("div");

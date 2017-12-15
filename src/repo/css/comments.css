@@ -111,14 +111,19 @@
 }
 
 
-.comment-edit {
+.comment-edit, .comment-save {
 	display: inline-block;
 	width: 16px;
 	height: 16px;
 	float: right;
 
-	background-image: url(../../img/edit.svg);
 	background-repeat: no-repeat;
 	background-size: contain;
 	background-position: center;
+}
+.comment-edit {
+	background-image: url(../../img/edit.svg);
+}
+.comment-save {
+	background-image: url(../../img/tick.svg);
 }
