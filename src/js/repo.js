@@ -34,39 +34,37 @@ FOLLOW_QUERIES = {
 			pull_requests_json.site IN (:params) AND pull_request_comments.json_id IN (SELECT json_id FROM json WHERE json.site = pull_requests_json.site)\
 	",
 	actions: "\
-		SELECT tbl.type AS type, tbl.date_added AS date_added, tbl.title AS title, tbl.action AS body, tbl.url AS url FROM (\
-			SELECT\
-				'comment' AS type, issue_actions.date_added AS date_added, issues_json.title AS title, issue_actions.action AS action, issue_actions.param AS param, 'repo/issues/view/?' || issues_json.site || '/' || issues_json.id || '@' || REPLACE(issues_json.directory, 'data/users/', '') AS url\
-			FROM\
-				issue_actions\
-			LEFT JOIN\
-				(SELECT id, title, body, json_id, site, directory FROM issues LEFT JOIN json USING (json_id)) AS issues_json\
-			ON\
-				(issue_actions.issue_id = issues_json.id AND issue_actions.issue_json = issues_json.directory)\
-			LEFT JOIN\
-				(SELECT cert_user_id, json_id AS action_json_id FROM json) AS action_json\
-			ON\
-				(action_json.action_json_id = issue_actions.json_id)\
-			WHERE\
-				issues_json.site IN (:params) AND issue_actions.json_id IN (SELECT json_id FROM json WHERE json.site = issues_json.site)\
-			\
-			UNION ALL\
-			\
-			SELECT\
-				'comment' AS type, pull_request_actions.date_added AS date_added, pull_requests_json.title AS title, pull_request_actions.action AS action, pull_request_actions.param AS param, 'repo/pull-requests/view/?' || pull_requests_json.site || '/' || pull_requests_json.id || '@' || REPLACE(pull_requests_json.directory, 'data/users/', '') AS url\
-			FROM\
-				pull_request_actions\
-			LEFT JOIN\
-				(SELECT id, title, body, json_id, site, directory FROM pull_requests LEFT JOIN json USING (json_id)) AS pull_requests_json\
-			ON\
-				(pull_request_actions.pull_request_id = pull_requests_json.id AND pull_request_actions.pull_request_json = pull_requests_json.directory)\
-			LEFT JOIN\
-				(SELECT cert_user_id, json_id AS action_json_id FROM json) AS action_json\
-			ON\
-				(action_json.action_json_id = pull_request_actions.json_id)\
-			WHERE\
-				pull_requests_json.site IN (:params) AND pull_request_actions.json_id IN (SELECT json_id FROM json WHERE json.site = pull_requests_json.site)\
-		) AS tbl\
+		SELECT\
+			'comment' AS type, issue_actions.date_added AS date_added, issues_json.title AS title, issue_actions.action AS body, issue_actions.param AS param, 'repo/issues/view/?' || issues_json.site || '/' || issues_json.id || '@' || REPLACE(issues_json.directory, 'data/users/', '') AS url\
+		FROM\
+			issue_actions\
+		LEFT JOIN\
+			(SELECT id, title, body, json_id, site, directory FROM issues LEFT JOIN json USING (json_id)) AS issues_json\
+		ON\
+			(issue_actions.issue_id = issues_json.id AND issue_actions.issue_json = issues_json.directory)\
+		LEFT JOIN\
+			(SELECT cert_user_id, json_id AS action_json_id FROM json) AS action_json\
+		ON\
+			(action_json.action_json_id = issue_actions.json_id)\
+		WHERE\
+			issues_json.site IN (:params) AND issue_actions.json_id IN (SELECT json_id FROM json WHERE json.site = issues_json.site)\
+		\
+		UNION\
+		\
+		SELECT\
+			'comment' AS type, pull_request_actions.date_added AS date_added, pull_requests_json.title AS title, pull_request_actions.action AS body, pull_request_actions.param AS param, 'repo/pull-requests/view/?' || pull_requests_json.site || '/' || pull_requests_json.id || '@' || REPLACE(pull_requests_json.directory, 'data/users/', '') AS url\
+		FROM\
+			pull_request_actions\
+		LEFT JOIN\
+			(SELECT id, title, body, json_id, site, directory FROM pull_requests LEFT JOIN json USING (json_id)) AS pull_requests_json\
+		ON\
+			(pull_request_actions.pull_request_id = pull_requests_json.id AND pull_request_actions.pull_request_json = pull_requests_json.directory)\
+		LEFT JOIN\
+			(SELECT cert_user_id, json_id AS action_json_id FROM json) AS action_json\
+		ON\
+			(action_json.action_json_id = pull_request_actions.json_id)\
+		WHERE\
+			pull_requests_json.site IN (:params) AND pull_request_actions.json_id IN (SELECT json_id FROM json WHERE json.site = pull_requests_json.site)\
 	"
 };
 
