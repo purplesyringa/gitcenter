@@ -996,8 +996,25 @@ class Repository {
 			})
 			.then(row => {
 				row.json = "data/users/" + auth.address;
+				row.owned = true;
 				return row;
 			});
+	}
+	changeIssue(id, json, content) {
+		return this.zeroDB.changeRow(
+			"merged-GitCenter/" + this.address + "/" + json + "/data.json",
+			"merged-GitCenter/" + this.address + "/" + json + "/content.json",
+			"issues",
+			issue => {
+				if(issue.id != id) {
+					return issue;
+				}
+
+				issue.body = content;
+
+				return issue;
+			}
+		);
 	}
 	getIssues(page) {
 		return this.zeroDB.query("SELECT issues.*, json.directory as json, json.cert_user_id FROM issues, json WHERE issues.json_id = json.json_id AND json.site = :address ORDER BY issues.date_added DESC LIMIT " + (page * 10) + ", 11", {
@@ -1033,6 +1050,8 @@ class Repository {
 			});
 	}
 	getIssueComments(id, json) {
+		let comments;
+
 		return this.zeroDB.query("\
 			SELECT\
 				-1 AS id,\
@@ -1072,8 +1091,33 @@ class Repository {
 			id: id,
 			address: this.address
 		})
-			.then(comments => {
-				return comments.map(comment => this.highlightComment(comment));
+			.then(c => {
+				comments = c;
+				comments = comments.map(comment => this.highlightComment(comment));
+
+				return this.isSignable();
+			})
+			.then(signable => {
+				if(signable) {
+					return comments.map(comment => {
+						comment.owned = true;
+						return comment;
+					});
+				}
+
+				let auth = this.zeroAuth.getAuth();
+				if(auth) {
+					return comments.map(comment => {
+						if(comment.json == "data/users/" + auth.address) {
+							comment.owned = true;
+						} else {
+							comment.owned = false;
+						}
+						return comment;
+					});
+				} else {
+					return comments;
+				}
 			});
 	}
 	getIssueActions(id, json) {
@@ -1144,9 +1188,26 @@ class Repository {
 			})
 			.then(jsonRow => {
 				row.cert_user_id = jsonRow[0].cert_user_id;
+				row.owned = true;
 
 				return row;
 			});
+	}
+	changeIssueComment(id, json, content) {
+		return this.zeroDB.changeRow(
+			"merged-GitCenter/" + this.address + "/" + json + "/data.json",
+			"merged-GitCenter/" + this.address + "/" + json + "/content.json",
+			"issue_comments",
+			comment => {
+				if(comment.id != id) {
+					return comment;
+				}
+
+				comment.body = content;
+
+				return comment;
+			}
+		);
 	}
 	changeIssueStatus(id, json, open) {
 		return this.zeroDB.changeRow(
@@ -1221,8 +1282,25 @@ class Repository {
 			})
 			.then(row => {
 				row.json = "data/users/" + auth.address;
+				row.owned = true;
 				return row;
 			});
+	}
+	changePullRequest(id, json, content) {
+		return this.zeroDB.changeRow(
+			"merged-GitCenter/" + this.address + "/" + json + "/data.json",
+			"merged-GitCenter/" + this.address + "/" + json + "/content.json",
+			"pull_requests",
+			pullRequest => {
+				if(pullRequest.id != id) {
+					return pullRequest;
+				}
+
+				pullRequest.body = content;
+
+				return pullRequest;
+			}
+		);
 	}
 	getPullRequests(page) {
 		return this.zeroDB.query("SELECT pull_requests.*, json.directory as json, json.cert_user_id FROM pull_requests, json WHERE pull_requests.json_id = json.json_id AND json.site = :address ORDER BY pull_requests.date_added DESC LIMIT " + (page * 10) + ", 11", {
@@ -1258,6 +1336,8 @@ class Repository {
 			});
 	}
 	getPullRequestComments(id, json) {
+		let comments;
+
 		return this.zeroDB.query("\
 			SELECT\
 				-1 AS id,\
@@ -1297,8 +1377,33 @@ class Repository {
 			id: id,
 			address: this.address
 		})
-			.then(comments => {
-				return comments.map(comment => this.highlightComment(comment));
+			.then(c => {
+				comments = c;
+				comments = comments.map(comment => this.highlightComment(comment));
+
+				return this.isSignable();
+			})
+			.then(signable => {
+				if(signable) {
+					return comments.map(comment => {
+						comment.owned = true;
+						return comment;
+					});
+				}
+
+				let auth = this.zeroAuth.getAuth();
+				if(auth) {
+					return comments.map(comment => {
+						if(comment.json == "data/users/" + auth.address) {
+							comment.owned = true;
+						} else {
+							comment.owned = false;
+						}
+						return comment;
+					});
+				} else {
+					return comments;
+				}
 			});
 	}
 	getPullRequestActions(id, json) {
@@ -1369,9 +1474,26 @@ class Repository {
 			})
 			.then(jsonRow => {
 				row.cert_user_id = jsonRow[0].cert_user_id;
+				row.owned = true;
 
 				return row;
 			});
+	}
+	changePullRequestComment(id, json, content) {
+		return this.zeroDB.changeRow(
+			"merged-GitCenter/" + this.address + "/" + json + "/data.json",
+			"merged-GitCenter/" + this.address + "/" + json + "/content.json",
+			"pull_request_comments",
+			comment => {
+				if(comment.id != id) {
+					return comment;
+				}
+
+				comment.body = content;
+
+				return comment;
+			}
+		);
 	}
 	changePullRequestStatus(id, json, merged) {
 		return this.zeroDB.changeRow(
@@ -1440,6 +1562,7 @@ class Repository {
 			});
 	}
 	highlightComment(comment) {
+		comment.originalBody = comment.body;
 		comment.body = this.renderMarked(comment.body);
 		return comment;
 	}

@@ -193,3 +193,81 @@ function showLinks() {
 			});
 	}
 }
+
+function showAction(action, context) {
+	if(action.action) {
+		let node = document.createElement("div");
+		node.className = "action";
+		node.innerHTML = repo.parseAction(action, context);
+
+		document.getElementById("comments").appendChild(node);
+	} else {
+		let comment = action;
+
+		let node = document.createElement("div");
+		node.className = "comment" + (json == comment.json ? " comment-owned" : "");
+
+		let header = document.createElement("div");
+		header.className = "comment-header";
+		header.textContent = comment.cert_user_id + " " + (comment.id == -1 ? "posted " + context : "commented") + " " + repo.translateDate(comment.date_added);
+		node.appendChild(header);
+
+		if(comment.owned) {
+			let textarea = document.createElement("textarea");
+			textarea.className = "comment-textarea";
+			textarea.style.display = "none";
+			node.appendChild(textarea);
+
+			let edit = document.createElement("div");
+			edit.className = "comment-edit";
+			edit.onclick = () => {
+				content.style.display = "none";
+				edit.style.display = "none";
+
+				textarea.style.display = "";
+				save.style.display = "";
+
+				textarea.value = comment.originalBody;
+				textarea.focus();
+			};
+			header.appendChild(edit);
+
+			let save = document.createElement("div");
+			save.className = "comment-save";
+			save.style.display = "none";
+			save.onclick = () => {
+				textarea.disabled = true;
+
+				let funcName = {
+					"issue": "changeIssue",
+					"pull request": "changePullRequest"
+				}[context];
+
+				let parentId = {
+					"issue": comment.issue_id,
+					"pull request": comment.pull_request_id
+				}[context];
+
+				repo[funcName + (comment.id == -1 ? "" : "Comment")](comment.id == -1 ? parentId : comment.id, comment.json, textarea.value)
+					.then(() => {
+						textarea.disabled = false;
+						content.innerHTML = repo.renderMarked(textarea.value);
+
+						content.style.display = "";
+						edit.style.display = "";
+
+						textarea.style.display = "none";
+						save.style.display = "none";
+					});
+			};
+			header.appendChild(save);
+		}
+
+		let content = document.createElement("div");
+		content.className = "comment-content";
+		content.innerHTML = comment.body;
+		node.appendChild(content);
+
+		document.getElementById("comments").appendChild(node);
+	}
+}

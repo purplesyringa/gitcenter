@@ -13,33 +13,6 @@ if(isNaN(id) || json == "data/users/") {
 	location.href = "../?" + address;
 }
 
-function showAction(action) {
-	if(action.action) {
-		let node = document.createElement("div");
-		node.className = "action";
-		node.innerHTML = repo.parseAction(action, "pull request");
-
-		document.getElementById("comments").appendChild(node);
-	} else {
-		let comment = action;
-
-		let node = document.createElement("div");
-		node.className = "comment" + (json == comment.json ? " comment-owned" : "");
-
-		let header = document.createElement("div");
-		header.className = "comment-header";
-		header.textContent = comment.cert_user_id + " " + (comment.id == -1 ? "posted pull request" : "commented") + " " + repo.translateDate(comment.date_added);
-		node.appendChild(header);
-
-		let content = document.createElement("div");
-		content.className = "comment-content";
-		content.innerHTML = comment.body;
-		node.appendChild(content);
-
-		document.getElementById("comments").appendChild(node);
-	}
-}
-
 function drawPullRequestStatus() {
 	let statusText = pullRequest.merged ? "merged" : "opened";
 
@@ -92,7 +65,7 @@ repo.addMerger()
 		return repo.getPullRequestActions(id, json);
 	})
 	.then(actions => {
-		actions.forEach(showAction);
+		actions.forEach(action => showAction(action, "pull request"));
 
 		document.getElementById("comment_submit").onclick = () => {
 			let contentNode = document.getElementById("comment_content");
@@ -104,7 +77,7 @@ repo.addMerger()
 
 			repo.addPullRequestComment(id, json, contentNode.value)
 				.then(comment => {
-					showAction(repo.highlightComment(comment));
+					showAction(repo.highlightComment(comment), "pull request");
 
 					contentNode.value = "";
 					contentNode.disabled = false;
@@ -127,7 +100,7 @@ repo.addMerger()
 				} else {
 					promise = repo.addPullRequestComment(id, json, contentNode.value)
 						.then(comment => {
-							showAction(repo.highlightComment(comment));
+							showAction(repo.highlightComment(comment), "pull request");
 						});
 				}
 
@@ -136,7 +109,7 @@ repo.addMerger()
 						return repo.changePullRequestStatus(id, json, !pullRequest.merged);
 					})
 					.then(action => {
-						showAction(action);
+						showAction(action, "pull request");
 
 						pullRequest.merged = !pullRequest.merged;
 						drawPullRequestStatus();

@@ -13,33 +13,6 @@ if(isNaN(id) || json == "data/users/") {
 	location.href = "../?" + address;
 }
 
-function showAction(action) {
-	if(action.action) {
-		let node = document.createElement("div");
-		node.className = "action";
-		node.innerHTML = repo.parseAction(action, "issue");
-
-		document.getElementById("comments").appendChild(node);
-	} else {
-		let comment = action;
-
-		let node = document.createElement("div");
-		node.className = "comment" + (json == comment.json ? " comment-owned" : "");
-
-		let header = document.createElement("div");
-		header.className = "comment-header";
-		header.textContent = comment.cert_user_id + " " + (comment.id == -1 ? "posted issue" : "commented") + " " + repo.translateDate(comment.date_added);
-		node.appendChild(header);
-
-		let content = document.createElement("div");
-		content.className = "comment-content";
-		content.innerHTML = comment.body;
-		node.appendChild(content);
-
-		document.getElementById("comments").appendChild(node);
-	}
-}
-
 function drawIssueStatus() {
 	let statusText = issue.open ? (issue.reopened ? "reopened" : "open") : "closed";
 
@@ -90,7 +63,7 @@ repo.addMerger()
 		return repo.getIssueActions(id, json);
 	})
 	.then(actions => {
-		actions.forEach(showAction);
+		actions.forEach(action => showAction(action, "issue"));
 
 		document.getElementById("comment_submit").onclick = () => {
 			let contentNode = document.getElementById("comment_content");
@@ -102,7 +75,7 @@ repo.addMerger()
 
 			repo.addIssueComment(id, json, contentNode.value)
 				.then(comment => {
-					showAction(repo.highlightComment(comment));
+					showAction(repo.highlightComment(comment), "issue");
 
 					contentNode.value = "";
 					contentNode.disabled = false;
@@ -125,7 +98,7 @@ repo.addMerger()
 				} else {
 					promise = repo.addIssueComment(id, json, contentNode.value)
 						.then(comment => {
-							showAction(repo.highlightComment(comment));
+							showAction(repo.highlightComment(comment), "issue");
 						});
 				}
 
@@ -134,7 +107,7 @@ repo.addMerger()
 						return repo.changeIssueStatus(id, json, !issue.open);
 					})
 					.then(action => {
-						showAction(action);
+						showAction(action, "issue");
 
 						if(issue.open) {
 							issue.open = false;

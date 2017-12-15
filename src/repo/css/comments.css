@@ -35,6 +35,19 @@
 	background-color: #FFC;
 }
 
+.comment-textarea {
+	display: block;
+	width: calc(100% - 32px);
+	padding: 12px 16px;
+	background-color: #FFF;
+	border-radius: 0 0 4px 4px;
+	resize: none;
+	border: none;
+	height: 128px;
+
+	font-size: 16px;
+}
+
 
 .comment-title-edit, .comment-content-edit, .comment-info-edit {
 	display: block;
@@ -95,4 +108,22 @@
 
 	font-size: 16px;
 	color: #444;
+}
+
+
+.comment-edit, .comment-save {
+	display: inline-block;
+	width: 16px;
+	height: 16px;
+	float: right;
+
+	background-repeat: no-repeat;
+	background-size: contain;
+	background-position: center;
+}
+.comment-edit {
+	background-image: url(../../img/edit.svg);
+}
+.comment-save {
+	background-image: url(../../img/tick.svg);
 }
