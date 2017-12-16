@@ -237,6 +237,45 @@ class RepositoryIssues {
 				return comments.concat(actions).sort((a, b) => a.date_added - b.date_added);
 			});
 	}
+	addObjectComment(object, objectId, objectJson, content) {
+		let auth, row;
+		return this.zeroAuth.requestAuth()
+			.then(a => {
+				auth = a;
+
+				return this.zeroDB.insertRow(
+					"merged-GitCenter/" + this.address + "/data/users/" + auth.address + "/data.json",
+					"merged-GitCenter/" + this.address + "/data/users/" + auth.address + "/content.json",
+					object + "_comments",
+					{
+						[object + "_id"]: objectId,
+						[object + "_json"]: objectJson,
+						body: content,
+						date_added: Date.now()
+					},
+					{
+						source: "next_" + object + "_comment_id",
+						column: "id"
+					}
+				);
+			})
+			.then(r => {
+				row = r;
+
+				return this.zeroDB.getJsonID(this.address + "/data/users/" + auth.address + "/data.json", 3);
+			})
+			.then(json_id => {
+				row.json = "data/users/" + auth.address;
+
+				return this.zeroDB.query("SELECT * FROM json WHERE json_id = :jsonId", {jsonId: json_id});
+			})
+			.then(jsonRow => {
+				row.cert_user_id = jsonRow[0].cert_user_id;
+				row.owned = true;
+
+				return row;
+			});
+	}
 
 	/*********************************** Issues ***********************************/
 	addIssue(title, content, tags) {
@@ -271,43 +310,7 @@ class RepositoryIssues {
 		return this.getObjectActions("issue", id, json);
 	}
 	addIssueComment(issueId, issueJson, content) {
-		let auth, row;
-		return this.zeroAuth.requestAuth()
-			.then(a => {
-				auth = a;
-
-				return this.zeroDB.insertRow(
-					"merged-GitCenter/" + this.address + "/data/users/" + auth.address + "/data.json",
-					"merged-GitCenter/" + this.address + "/data/users/" + auth.address + "/content.json",
-					"issue_comments",
-					{
-						issue_id: issueId,
-						issue_json: issueJson,
-						body: content,
-						date_added: Date.now()
-					},
-					{
-						source: "next_issue_comment_id",
-						column: "id"
-					}
-				);
-			})
-			.then(r => {
-				row = r;
-
-				return this.zeroDB.getJsonID(this.address + "/data/users/" + auth.address + "/data.json", 3);
-			})
-			.then(json_id => {
-				row.json = "data/users/" + auth.address;
-
-				return this.zeroDB.query("SELECT * FROM json WHERE json_id = :jsonId", {jsonId: json_id});
-			})
-			.then(jsonRow => {
-				row.cert_user_id = jsonRow[0].cert_user_id;
-				row.owned = true;
-
-				return row;
-			});
+		return this.addObjectComment("issue", issueId, issueJson, content);
 	}
 	changeIssueComment(id, json, content) {
 		return this.zeroDB.changeRow(
@@ -414,43 +417,7 @@ class RepositoryIssues {
 		return this.getObjectActions("pull_request", id, json);
 	}
 	addPullRequestComment(pullRequestId, pullRequestJson, content) {
-		let auth, row;
-		return this.zeroAuth.requestAuth()
-			.then(a => {
-				auth = a;
-
-				return this.zeroDB.insertRow(
-					"merged-GitCenter/" + this.address + "/data/users/" + auth.address + "/data.json",
-					"merged-GitCenter/" + this.address + "/data/users/" + auth.address + "/content.json",
-					"pull_request_comments",
-					{
-						pull_request_id: pullRequestId,
-						pull_request_json: pullRequestJson,
-						body: content,
-						date_added: Date.now()
-					},
-					{
-						source: "next_pull_request_comment_id",
-						column: "id"
-					}
-				);
-			})
-			.then(r => {
-				row = r;
-
-				return this.zeroDB.getJsonID(this.address + "/data/users/" + auth.address + "/data.json", 3);
-			})
-			.then(json_id => {
-				row.json = "data/users/" + auth.address;
-
-				return this.zeroDB.query("SELECT * FROM json WHERE json_id = :jsonId", {jsonId: json_id});
-			})
-			.then(jsonRow => {
-				row.cert_user_id = jsonRow[0].cert_user_id;
-				row.owned = true;
-
-				return row;
-			});
+		return this.addObjectComment("pull_request", pullRequestId, pullRequestJson, content);
 	}
 	changePullRequestComment(id, json, content) {
 		return this.zeroDB.changeRow(
