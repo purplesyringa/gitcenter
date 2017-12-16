@@ -203,6 +203,40 @@ class RepositoryIssues {
 				}
 			});
 	}
+	getObjectActions(object, id, json) {
+		let comments;
+		return this.getObjectComments(object, id, json)
+			.then(c => {
+				comments = c;
+
+				return this.zeroDB.query("\
+					SELECT\
+						{object}_actions.id AS id,\
+						{object}_actions.action AS action,\
+						{object}_actions.param AS param,\
+						{object}_actions.date_added AS date_added,\
+						json.directory AS json,\
+						json.cert_user_id AS cert_user_id,\
+						{object}_actions.{object}_id AS {object}_id,\
+						{object}_actions.{object}_json AS {object}_json\
+					FROM {object}_actions, json\
+					WHERE\
+						{object}_actions.json_id = json.json_id AND\
+						{object}_actions.{object}_json = :json AND\
+						{object}_actions.{object}_id = :id AND\
+						json.site = :address\
+					\
+					ORDER BY date_added ASC\
+				".replace(/{object}/g, object), {
+					json: json,
+					id: id,
+					address: this.address
+				});
+			})
+			.then(actions => {
+				return comments.concat(actions).sort((a, b) => a.date_added - b.date_added);
+			});
+	}
 
 	/*********************************** Issues ***********************************/
 	addIssue(title, content, tags) {
@@ -234,38 +268,7 @@ class RepositoryIssues {
 		return this.getObjectComments("issue", id, json);
 	}
 	getIssueActions(id, json) {
-		let comments;
-		return this.getIssueComments(id, json)
-			.then(c => {
-				comments = c;
-
-				return this.zeroDB.query("\
-					SELECT\
-						issue_actions.id AS id,\
-						issue_actions.action AS action,\
-						issue_actions.param AS param,\
-						issue_actions.date_added AS date_added,\
-						json.directory AS json,\
-						json.cert_user_id AS cert_user_id,\
-						issue_actions.issue_id AS issue_id,\
-						issue_actions.issue_json AS issue_json\
-					FROM issue_actions, json\
-					WHERE\
-						issue_actions.json_id = json.json_id AND\
-						issue_actions.issue_json = :json AND\
-						issue_actions.issue_id = :id AND\
-						json.site = :address\
-					\
-					ORDER BY date_added ASC\
-				", {
-					json: json,
-					id: id,
-					address: this.address
-				});
-			})
-			.then(actions => {
-				return comments.concat(actions).sort((a, b) => a.date_added - b.date_added);
-			});
+		return this.getObjectActions("issue", id, json);
 	}
 	addIssueComment(issueId, issueJson, content) {
 		let auth, row;
@@ -408,38 +411,7 @@ class RepositoryIssues {
 		return this.getObjectComments("pull_request", id, json);
 	}
 	getPullRequestActions(id, json) {
-		let comments;
-		return this.getPullRequestComments(id, json)
-			.then(c => {
-				comments = c;
-
-				return this.zeroDB.query("\
-					SELECT\
-						pull_request_actions.id AS id,\
-						pull_request_actions.action AS action,\
-						pull_request_actions.param AS param,\
-						pull_request_actions.date_added AS date_added,\
-						json.directory AS json,\
-						json.cert_user_id AS cert_user_id,\
-						pull_request_actions.pull_request_id AS pull_request_id,\
-						pull_request_actions.pull_request_json AS pull_request_json\
-					FROM pull_request_actions, json\
-					WHERE\
-						pull_request_actions.json_id = json.json_id AND\
-						pull_request_actions.pull_request_json = :json AND\
-						pull_request_actions.pull_request_id = :id AND\
-						json.site = :address\
-					\
-					ORDER BY date_added ASC\
-				", {
-					json: json,
-					id: id,
-					address: this.address
-				});
-			})
-			.then(actions => {
-				return comments.concat(actions).sort((a, b) => a.date_added - b.date_added);
-			});
+		return this.getObjectActions("pull_request", id, json);
 	}
 	addPullRequestComment(pullRequestId, pullRequestJson, content) {
 		let auth, row;
