@@ -13,30 +13,6 @@ if(isNaN(id) || json == "data/users/") {
 	location.href = "../?" + address;
 }
 
-function addTag(tag) {
-	let color = repo.tagToColor(tag);
-
-	let node = document.createElement("div");
-	node.className = "tag";
-	node.style.backgroundColor = color.background;
-	node.style.color = color.foreground;
-	node.textContent = tag;
-	document.getElementById("tags").appendChild(node);
-
-	if(pullRequest.owned) {
-		let remove = document.createElement("div");
-		remove.className = "tag-remove";
-		remove.innerHTML = "&times;";
-		remove.onclick = () => {
-			node.parentNode.removeChild(node);
-			pullRequest.tags.splice(pullRequest.tags.indexOf(tag), 1);
-
-			repo.changePullRequestTags(id, json, pullRequest.tags);
-		};
-		node.appendChild(remove);
-	}
-}
-
 
 let pullRequest;
 repo.addMerger()
@@ -63,7 +39,7 @@ repo.addMerger()
 		document.getElementById("pull_request_fork_address").textContent = pullRequest.fork_address;
 		document.getElementById("pull_request_fork_branch").textContent = pullRequest.fork_branch;
 
-		pullRequest.tags.forEach(addTag);
+		pullRequest.tags.forEach(tag => addTag("pull_request", pullRequest, tag));
 		if(pullRequest.owned) {
 			let add = document.createElement("div");
 			add.className = "tag-add";
@@ -76,7 +52,7 @@ repo.addMerger()
 							.map(tag => tag.trim())
 							.filter(tag => tag);
 
-						tags.forEach(addTag);
+						tags.forEach(tag => addTag("pull_request", pullRequest, tag));
 						add.parentNode.appendChild(add); // Move to end of container
 
 						pullRequest.tags = pullRequest.tags.concat(tags);

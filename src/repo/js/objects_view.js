@@ -5,3 +5,28 @@ function drawObjectStatus(context, cssContext, imgContext, textContext, statusTe
 
 	document.getElementById("comment_submit_close").innerHTML = "Comment and " + statusUpdate;
 }
+
+
+function addTag(context, object, tag) {
+	let color = repo.tagToColor(tag);
+
+	let node = document.createElement("div");
+	node.className = "tag";
+	node.style.backgroundColor = color.background;
+	node.style.color = color.foreground;
+	node.textContent = tag;
+	document.getElementById("tags").appendChild(node);
+
+	if(object.owned) {
+		let remove = document.createElement("div");
+		remove.className = "tag-remove";
+		remove.innerHTML = "&times;";
+		remove.onclick = () => {
+			node.parentNode.removeChild(node);
+			object.tags.splice(object.tags.indexOf(tag), 1);
+
+			repo.issues.changeObjectTags(context, id, json, object.tags);
+		};
+		node.appendChild(remove);
+	}
+}
