@@ -132,71 +132,44 @@ class RepositoryIssues {
 				return obj;
 			});
 	}
-
-	/*********************************** Issues ***********************************/
-	addIssue(title, content, tags) {
-		return this.addObject("issue", {
-			title: title,
-			body: content,
-			date_added: Date.now(),
-			open: 1,
-			reopened: 0,
-			tags: tags.join(",")
-		});
-	}
-	changeIssue(id, json, content) {
-		return this.changeObject("issue", id, json, content);
-	}
-	changeIssueTags(id, json, tags) {
-		return this.changeObjectTags("issue", id, json, tags);
-	}
-	removeIssue(id, json) {
-		return this.removeObject("issue", id, json);
-	}
-	getIssues(page) {
-		return this.getObjects("issue", page);
-	}
-	getIssue(id, json) {
-		return this.getObject("issue", id, json);
-	}
-	getIssueComments(id, json) {
+	getObjectComments(object, id, json) {
 		let comments;
 
 		return this.zeroDB.query("\
 			SELECT\
 				-1 AS id,\
-				issues.body AS body,\
-				issues.date_added AS date_added,\
+				{object}s.body AS body,\
+				{object}s.date_added AS date_added,\
 				json.directory AS json,\
 				json.cert_user_id AS cert_user_id,\
-				issues.id AS issue_id,\
-				json.directory AS issue_json\
-			FROM issues, json\
+				{object}s.id AS {object}_id,\
+				json.directory AS {object}_json\
+			FROM {object}s, json\
 			WHERE\
-				issues.json_id = json.json_id AND\
+				{object}s.json_id = json.json_id AND\
 				json.directory = :json AND\
-				issues.id = :id AND\
+				{object}s.id = :id AND\
 				json.site = :address\
 			\
 			UNION ALL\
 			\
 			SELECT\
-				issue_comments.id AS id,\
-				issue_comments.body AS body,\
-				issue_comments.date_added AS date_added,\
+				{object}_comments.id AS id,\
+				{object}_comments.body AS body,\
+				{object}_comments.date_added AS date_added,\
 				json.directory AS json,\
 				json.cert_user_id AS cert_user_id,\
-				issue_comments.issue_id AS issue_id,\
-				issue_comments.issue_json AS issue_json\
-			FROM issue_comments, json\
+				{object}_comments.{object}_id AS {object}_id,\
+				{object}_comments.{object}_json AS {object}_json\
+			FROM {object}_comments, json\
 			WHERE\
-				issue_comments.json_id = json.json_id AND\
-				issue_comments.issue_json = :json AND\
-				issue_comments.issue_id = :id AND\
+				{object}_comments.json_id = json.json_id AND\
+				{object}_comments.{object}_json = :json AND\
+				{object}_comments.{object}_id = :id AND\
 				json.site = :address\
 			\
 			ORDER BY date_added ASC\
-		", {
+		".replace(/{object}/g, object), {
 			json: json,
 			id: id,
 			address: this.address
@@ -229,6 +202,36 @@ class RepositoryIssues {
 					return comments;
 				}
 			});
+	}
+
+	/*********************************** Issues ***********************************/
+	addIssue(title, content, tags) {
+		return this.addObject("issue", {
+			title: title,
+			body: content,
+			date_added: Date.now(),
+			open: 1,
+			reopened: 0,
+			tags: tags.join(",")
+		});
+	}
+	changeIssue(id, json, content) {
+		return this.changeObject("issue", id, json, content);
+	}
+	changeIssueTags(id, json, tags) {
+		return this.changeObjectTags("issue", id, json, tags);
+	}
+	removeIssue(id, json) {
+		return this.removeObject("issue", id, json);
+	}
+	getIssues(page) {
+		return this.getObjects("issue", page);
+	}
+	getIssue(id, json) {
+		return this.getObject("issue", id, json);
+	}
+	getIssueComments(id, json) {
+		return this.getObjectComments("issue", id, json);
 	}
 	getIssueActions(id, json) {
 		let comments;
@@ -402,75 +405,7 @@ class RepositoryIssues {
 		return this.getObject("pull_request", id, json);
 	}
 	getPullRequestComments(id, json) {
-		let comments;
-
-		return this.zeroDB.query("\
-			SELECT\
-				-1 AS id,\
-				pull_requests.body AS body,\
-				pull_requests.date_added AS date_added,\
-				json.directory AS json,\
-				json.cert_user_id AS cert_user_id,\
-				pull_requests.id AS pull_request_id,\
-				json.directory AS pull_request_json\
-			FROM pull_requests, json\
-			WHERE\
-				pull_requests.json_id = json.json_id AND\
-				json.directory = :json AND\
-				pull_requests.id = :id AND\
-				json.site = :address\
-			\
-			UNION ALL\
-			\
-			SELECT\
-				pull_request_comments.id AS id,\
-				pull_request_comments.body AS body,\
-				pull_request_comments.date_added AS date_added,\
-				json.directory AS json,\
-				json.cert_user_id AS cert_user_id,\
-				pull_request_comments.pull_request_id AS pull_request_id,\
-				pull_request_comments.pull_request_json AS pull_request_json\
-			FROM pull_request_comments, json\
-			WHERE\
-				pull_request_comments.json_id = json.json_id AND\
-				pull_request_comments.pull_request_json = :json AND\
-				pull_request_comments.pull_request_id = :id AND\
-				json.site = :address\
-			\
-			ORDER BY date_added ASC\
-		", {
-			json: json,
-			id: id,
-			address: this.address
-		})
-			.then(c => {
-				comments = c;
-				comments = comments.map(comment => this.repo.highlightComment(comment));
-
-				return this.repo.isSignable();
-			})
-			.then(signable => {
-				if(signable) {
-					return comments.map(comment => {
-						comment.owned = true;
-						return comment;
-					});
-				}
-
-				let auth = this.zeroAuth.getAuth();
-				if(auth) {
-					return comments.map(comment => {
-						if(comment.json == "data/users/" + auth.address) {
-							comment.owned = true;
-						} else {
-							comment.owned = false;
-						}
-						return comment;
-					});
-				} else {
-					return comments;
-				}
-			});
+		return this.getObjectComments("pull_request", id, json);
 	}
 	getPullRequestActions(id, json) {
 		let comments;
