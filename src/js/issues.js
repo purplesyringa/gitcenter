@@ -89,7 +89,7 @@ class RepositoryIssues {
 				json.site = :address\
 			ORDER BY {object}s.date_added DESC\
 			LIMIT " + (page * 10) + ", 11\
-		").replace(/\{object\}/g, object), {
+		").replace(/{object}/g, object), {
 			address: this.address
 		})
 			.then(objects => {
@@ -101,6 +101,35 @@ class RepositoryIssues {
 						}),
 					nextPage: objects.length > 10
 				};
+			});
+	}
+	getObject(object, id, json) {
+		let obj;
+		return this.zeroDB.query("\
+			SELECT\
+				{object}s.*,\
+				json.directory,\
+				json.cert_user_id\
+			FROM {object}s, json\
+			WHERE\
+				{object}s.json_id = json.json_id AND\
+				json.directory = :json AND\
+				{object}s.id = :id AND\
+				json.site = :address\
+		".replace(/{object}/g, object), {
+			json: json,
+			id: id,
+			address: this.address
+		})
+			.then(i => {
+				obj = i[0];
+				obj.tags = obj.tags ? obj.tags.split(",") : [];
+
+				return this.repo.isSignable(obj.directory + "/content.json");
+			})
+			.then(signable => {
+				obj.owned = signable;
+				return obj;
 			});
 	}
 
@@ -128,22 +157,7 @@ class RepositoryIssues {
 		return this.getObjects("issue", page);
 	}
 	getIssue(id, json) {
-		let issue;
-		return this.zeroDB.query("SELECT issues.*, json.directory, json.cert_user_id FROM issues, json WHERE issues.json_id = json.json_id AND json.directory = :json AND issues.id = :id AND json.site = :address", {
-			json: json,
-			id: id,
-			address: this.address
-		})
-			.then(i => {
-				issue = i[0];
-				issue.tags = issue.tags ? issue.tags.split(",") : [];
-
-				return this.repo.isSignable(issue.directory + "/content.json");
-			})
-			.then(signable => {
-				issue.owned = signable;
-				return issue;
-			});
+		return this.getObject("issue", id, json);
 	}
 	getIssueComments(id, json) {
 		let comments;
@@ -385,22 +399,7 @@ class RepositoryIssues {
 		return this.getObjects("pull_request", page);
 	}
 	getPullRequest(id, json) {
-		let pullRequest;
-		return this.zeroDB.query("SELECT pull_requests.*, json.directory, json.cert_user_id FROM pull_requests, json WHERE pull_requests.json_id = json.json_id AND json.directory = :json AND pull_requests.id = :id AND json.site = :address", {
-			json: json,
-			id: id,
-			address: this.address
-		})
-			.then(p => {
-				pullRequest = p[0];
-				pullRequest.tags = pullRequest.tags ? pullRequest.tags.split(",") : [];
-
-				return this.repo.isSignable(pullRequest.directory + "/content.json");
-			})
-			.then(signable => {
-				pullRequest.owned = signable;
-				return pullRequest;
-			});
+		return this.getObject("pull_request", id, json);
 	}
 	getPullRequestComments(id, json) {
 		let comments;
