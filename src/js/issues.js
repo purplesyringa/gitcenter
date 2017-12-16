@@ -302,6 +302,47 @@ class RepositoryIssues {
 			}
 		);
 	}
+	runObject(object, id, json, handler, action) {
+		return this.zeroDB.changeRow(
+			"merged-GitCenter/" + this.address + "/" + json + "/data.json",
+			"merged-GitCenter/" + this.address + "/" + json + "/content.json",
+			object + "s",
+			obj => {
+				if(obj.id != id) {
+					return obj;
+				}
+
+				return handler(obj);
+			}
+		)
+			.then(() => {
+				if(action) {
+					return this.zeroDB.insertRow(
+						"merged-GitCenter/" + this.address + "/" + json + "/data.json",
+						"merged-GitCenter/" + this.address + "/" + json + "/content.json",
+						object + "_actions",
+						{
+							[object + "_id"]: id,
+							[object + "_json"]: json,
+							action: action.action,
+							param: action.param,
+							date_added: Date.now()
+						},
+						{
+							source: "next_" + object + "_action_id",
+							column: "id"
+						}
+					);
+				}
+			})
+			.then(row => {
+				if(row) {
+					let auth = this.zeroAuth.getAuth();
+					row.cert_user_id = auth ? auth.user : "You";
+					return row;
+				}
+			});
+	}
 
 	/*********************************** Issues ***********************************/
 	addIssue(title, content, tags) {
@@ -345,48 +386,19 @@ class RepositoryIssues {
 		return this.removeObjectComment("issue", id, json);
 	}
 	changeIssueStatus(id, json, open) {
-		return this.zeroDB.changeRow(
-			"merged-GitCenter/" + this.address + "/" + json + "/data.json",
-			"merged-GitCenter/" + this.address + "/" + json + "/content.json",
-			"issues",
-			issue => {
-				if(issue.id != id) {
-					return issue;
-				}
-
-				if(open) {
-					issue.open = true;
-					issue.reopened = true;
-				} else {
-					issue.open = false;
-				}
-
-				return issue;
+		return this.runObject("issue", id, json, issue => {
+			if(open) {
+				issue.open = true;
+				issue.reopened = true;
+			} else {
+				issue.open = false;
 			}
-		)
-			.then(() => {
-				return this.zeroDB.insertRow(
-					"merged-GitCenter/" + this.address + "/" + json + "/data.json",
-					"merged-GitCenter/" + this.address + "/" + json + "/content.json",
-					"issue_actions",
-					{
-						issue_id: id,
-						issue_json: json,
-						action: "changeStatus",
-						param: open ? "reopen" : "close",
-						date_added: Date.now()
-					},
-					{
-						source: "next_issue_action_id",
-						column: "id"
-					}
-				);
-			})
-			.then(row => {
-				let auth = this.zeroAuth.getAuth();
-				row.cert_user_id = auth ? auth.user : "You";
-				return row;
-			});
+
+			return issue;
+		}, {
+			action: "changeStatus",
+			param: open ? "reopen" : "close"
+		});
 	}
 
 	/******************************** Pull requests *******************************/
@@ -432,43 +444,13 @@ class RepositoryIssues {
 		return this.removeObjectComment("pull_request", id, json);
 	}
 	changePullRequestStatus(id, json, merged) {
-		return this.zeroDB.changeRow(
-			"merged-GitCenter/" + this.address + "/" + json + "/data.json",
-			"merged-GitCenter/" + this.address + "/" + json + "/content.json",
-			"pull_requests",
-			pullRequest => {
-				if(pullRequest.id != id) {
-					return pullRequest;
-				}
-
-				pullRequest.merged = merged;
-
-				return pullRequest;
-			}
-		)
-			.then(() => {
-				return this.zeroDB.insertRow(
-					"merged-GitCenter/" + this.address + "/" + json + "/data.json",
-					"merged-GitCenter/" + this.address + "/" + json + "/content.json",
-					"pull_request_actions",
-					{
-						pull_request_id: id,
-						pull_request_json: json,
-						action: "changeStatus",
-						param: merged ? "close" : "reopen",
-						date_added: Date.now()
-					},
-					{
-						source: "next_pull_request_action_id",
-						column: "id"
-					}
-				);
-			})
-			.then(row => {
-				let auth = this.zeroAuth.getAuth();
-				row.cert_user_id = auth ? auth.user : "You";
-				return row;
-			});
+		return this.runObject("pull_request", id, json, pullRequest => {
+			pullRequest.merged = merged;
+			return pullRequest;
+		}, {
+			action: "changeStatus",
+			param: merged ? "close" : "reopen"
+		});
 	}
 	importPullRequest(pullRequest) {
 		let forkAddress = pullRequest.fork_address;
