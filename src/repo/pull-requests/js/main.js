@@ -26,45 +26,7 @@ repo.addMerger()
 		return repo.getPullRequests(Number.isSafeInteger(additional) ? additional : 0);
 	})
 	.then(pullRequests => {
-		pullRequests.objects.forEach(pullRequest => {
-			let tr = document.createElement("tr");
-			tr.onclick = () => {
-				location.href = "view/?" + address + "/" + pullRequest.id + "@" + pullRequest.json.replace("data/users/", "");
-			};
-
-			let content = document.createElement("td");
-
-			let icon = document.createElement("div");
-			icon.className = "pull-request-icon pull-request-status-" + (pullRequest.merged ? "merged" : "opened");
-			content.appendChild(icon);
-
-			let title = document.createElement("div");
-			title.className = "pull-request-title";
-			title.textContent = pullRequest.title;
-			content.appendChild(title);
-
-			let tags = document.createElement("div");
-			tags.className = "tags";
-			pullRequest.tags.forEach(tag => {
-				let color = repo.tagToColor(tag);
-
-				let node = document.createElement("div");
-				node.className = "tag";
-				node.textContent = tag;
-				node.style.backgroundColor = color.background;
-				node.style.color = color.foreground;
-				tags.appendChild(node);
-			});
-			content.appendChild(tags);
-
-			let info = document.createElement("div");
-			info.textContent = "#P" + pullRequest.id + "@" + pullRequest.json.replace("data/users/", "") + " opened " + repo.translateDate(pullRequest.date_added) + " by " + pullRequest.cert_user_id;
-			info.className = "pull-requests-bottom";
-			content.appendChild(info);
-
-			tr.appendChild(content);
-			document.getElementById("pull_requests").appendChild(tr);
-		});
+		showObjects("pull_request", "pull-request", pullRequests);
 
 		if(currentPage > 0) {
 			let button = document.getElementById("navigation_back");

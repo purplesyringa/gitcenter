@@ -26,45 +26,7 @@ repo.addMerger()
 		return repo.getIssues(Number.isSafeInteger(additional) ? additional : 0);
 	})
 	.then(issues => {
-		issues.objects.forEach(issue => {
-			let tr = document.createElement("tr");
-			tr.onclick = () => {
-				location.href = "view/?" + address + "/" + issue.id + "@" + issue.json.replace("data/users/", "");
-			};
-
-			let content = document.createElement("td");
-
-			let icon = document.createElement("div");
-			icon.className = "issue-icon issue-status-" + (issue.open ? (issue.reopened ? "reopened" : "open") : "closed");
-			content.appendChild(icon);
-
-			let title = document.createElement("div");
-			title.className = "issue-title";
-			title.textContent = issue.title;
-			content.appendChild(title);
-
-			let tags = document.createElement("div");
-			tags.className = "tags";
-			issue.tags.forEach(tag => {
-				let color = repo.tagToColor(tag);
-
-				let node = document.createElement("div");
-				node.className = "tag";
-				node.textContent = tag;
-				node.style.backgroundColor = color.background;
-				node.style.color = color.foreground;
-				tags.appendChild(node);
-			});
-			content.appendChild(tags);
-
-			let info = document.createElement("div");
-			info.textContent = "#" + issue.id + "@" + issue.json.replace("data/users/", "") + " opened " + repo.translateDate(issue.date_added) + " by " + issue.cert_user_id;
-			info.className = "issues-bottom";
-			content.appendChild(info);
-
-			tr.appendChild(content);
-			document.getElementById("issues").appendChild(tr);
-		});
+		showObjects("issue", "issue", issues);
 
 		if(currentPage > 0) {
 			let button = document.getElementById("navigation_back");
