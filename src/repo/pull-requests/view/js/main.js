@@ -41,46 +41,17 @@ repo.addMerger()
 
 		showTags("pull_request", pullRequest);
 		drawObjectStatus("pull_request", "pull-request", "pr", "pull request", pullRequest.merged ? "merged" : "opened", pullRequest.merged ? "reopen pull request" : "mark pull request as merged");
-		showCommentButtons("pull_request", "pull request", id, json);
+		showCommentButtons("pull_request", "pull request", pullRequest, id, json, () => {
+			pullRequest.merged = !pullRequest.merged;
+			drawObjectStatus("pull_request", "pull-request", "pr", "pull request", pullRequest.merged ? "merged" : "opened", pullRequest.merged ? "reopen pull request" : "mark pull request as merged");
+
+			return repo.issues.changePullRequestStatus(id, json, pullRequest.merged);
+		});
 
 		return showActions("pull_request", "pull request", id, json);
 	})
 	.then(() => {
 		if(pullRequest.owned) {
-			document.getElementById("comment_submit_close").style.display = "inline-block";
-			document.getElementById("comment_submit_close").onclick = () => {
-				let contentNode = document.getElementById("comment_content");
-				if(contentNode.disabled) {
-					return;
-				}
-
-				contentNode.disabled = true;
-
-				let promise;
-				if(contentNode.value == "") {
-					promise = Promise.resolve();
-				} else {
-					promise = repo.addPullRequestComment(id, json, contentNode.value)
-						.then(comment => {
-							showAction(repo.highlightComment(comment), "pull request");
-						});
-				}
-
-				promise
-					.then(() => {
-						return repo.changePullRequestStatus(id, json, !pullRequest.merged);
-					})
-					.then(action => {
-						showAction(action, "pull request");
-
-						pullRequest.merged = !pullRequest.merged;
-						drawObjectStatus("pull_request", "pull-request", "pr", "pull request", pullRequest.merged ? "merged" : "opened", pullRequest.merged ? "reopen pull request" : "mark pull request as merged");
-
-						contentNode.value = "";
-						contentNode.disabled = false;
-					});
-			};
-
 			let commentImport = document.getElementById("comment_import");
 			commentImport.style.display = "inline-block";
 			commentImport.title = "Import branch " + pullRequest.fork_address + "/" + pullRequest.fork_branch + " as " + address + "/pr-" + id + "-" + json;

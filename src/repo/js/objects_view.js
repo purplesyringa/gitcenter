@@ -174,7 +174,7 @@ function showActions(context, textContext, id, json) {
 }
 
 
-function showCommentButtons(context, textContext, id, json) {
+function showCommentButtons(context, textContext, object, id, json, closeHandler) {
 	document.getElementById("comment_submit").onclick = () => {
 		let contentNode = document.getElementById("comment_content");
 		if(contentNode.disabled || contentNode.value == "") {
@@ -191,4 +191,37 @@ function showCommentButtons(context, textContext, id, json) {
 				contentNode.disabled = false;
 			});
 	};
+
+	if(object.owned) {
+		document.getElementById("comment_submit_close").style.display = "inline-block";
+		document.getElementById("comment_submit_close").onclick = () => {
+			let contentNode = document.getElementById("comment_content");
+			if(contentNode.disabled) {
+				return;
+			}
+
+			contentNode.disabled = true;
+
+			let promise;
+			if(contentNode.value == "") {
+				promise = Promise.resolve();
+			} else {
+				promise = repo.issues.addObjectComment(context, id, json, contentNode.value)
+					.then(comment => {
+						showAction(repo.highlightComment(comment), textContext);
+					});
+			}
+
+			promise
+				.then(() => {
+					return closeHandler();
+				})
+				.then(action => {
+					showAction(action, textContext);
+
+					contentNode.value = "";
+					contentNode.disabled = false;
+				});
+		};
+	}
 }
