@@ -27,18 +27,7 @@ repo.addMerger()
 	})
 	.then(issues => {
 		showObjects("issue", "issue", issues);
-
-		if(currentPage > 0) {
-			let button = document.getElementById("navigation_back");
-			button.classList.remove("button-disabled");
-			button.href = "?" + address + "/" + (currentPage - 1);
-		}
-
-		if(issues.nextPage) {
-			let button = document.getElementById("navigation_next");
-			button.classList.remove("button-disabled");
-			button.href = "?" + address + "/" + (currentPage + 1);
-		}
+		showNavigation(issues, currentPage);
 
 		return repo.isFollowing();
 	})

@@ -44,3 +44,17 @@ function showObjects(context, cssContext, objects) {
 		document.getElementById(context + "s").appendChild(tr);
 	});
 }
+
+function showNavigation(objects, currentPage) {
+	if(currentPage > 0) {
+		let button = document.getElementById("navigation_back");
+		button.classList.remove("button-disabled");
+		button.href = "?" + address + "/" + (currentPage - 1);
+	}
+
+	if(objects.nextPage) {
+		let button = document.getElementById("navigation_next");
+		button.classList.remove("button-disabled");
+		button.href = "?" + address + "/" + (currentPage + 1);
+	}
+}
