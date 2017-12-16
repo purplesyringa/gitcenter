@@ -26,7 +26,7 @@ repo.addMerger()
 		return repo.getIssues(Number.isSafeInteger(additional) ? additional : 0);
 	})
 	.then(issues => {
-		issues.issues.forEach(issue => {
+		issues.objects.forEach(issue => {
 			let tr = document.createElement("tr");
 			tr.onclick = () => {
 				location.href = "view/?" + address + "/" + issue.id + "@" + issue.json.replace("data/users/", "");

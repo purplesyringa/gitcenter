@@ -77,6 +77,32 @@ class RepositoryIssues {
 			}
 		);
 	}
+	getObjects(object, page) {
+		return this.zeroDB.query(("\
+			SELECT\
+				{object}s.*,\
+				json.directory as json,\
+				json.cert_user_id\
+			FROM {object}s, json\
+			WHERE\
+				{object}s.json_id = json.json_id AND\
+				json.site = :address\
+			ORDER BY {object}s.date_added DESC\
+			LIMIT " + (page * 10) + ", 11\
+		").replace(/\{object\}/g, object), {
+			address: this.address
+		})
+			.then(objects => {
+				return {
+					objects: objects.slice(0, 10)
+						.map(object => {
+							object.tags = object.tags ? object.tags.split(",") : [];
+							return object;
+						}),
+					nextPage: objects.length > 10
+				};
+			});
+	}
 
 	/*********************************** Issues ***********************************/
 	addIssue(title, content, tags) {
@@ -99,19 +125,7 @@ class RepositoryIssues {
 		return this.removeObject("issue", id, json);
 	}
 	getIssues(page) {
-		return this.zeroDB.query("SELECT issues.*, json.directory as json, json.cert_user_id FROM issues, json WHERE issues.json_id = json.json_id AND json.site = :address ORDER BY issues.date_added DESC LIMIT " + (page * 10) + ", 11", {
-			address: this.address
-		})
-			.then(issues => {
-				return {
-					issues: issues.slice(0, 10)
-						.map(issue => {
-							issue.tags = issue.tags ? issue.tags.split(",") : [];
-							return issue;
-						}),
-					nextPage: issues.length > 10
-				};
-			});
+		return this.getObjects("issue", page);
 	}
 	getIssue(id, json) {
 		let issue;
@@ -368,19 +382,7 @@ class RepositoryIssues {
 		return this.removeObject("pull_request", id, json);
 	}
 	getPullRequests(page) {
-		return this.zeroDB.query("SELECT pull_requests.*, json.directory as json, json.cert_user_id FROM pull_requests, json WHERE pull_requests.json_id = json.json_id AND json.site = :address ORDER BY pull_requests.date_added DESC LIMIT " + (page * 10) + ", 11", {
-			address: this.address
-		})
-			.then(pullRequests => {
-				return {
-					pullRequests: pullRequests.slice(0, 10)
-						.map(pullRequest => {
-							pullRequest.tags = pullRequest.tags ? pullRequest.tags.split(",") : [];
-							return pullRequest;
-						}),
-					nextPage: pullRequests.length > 10
-				};
-			});
+		return this.getObjects("pull_request", page);
 	}
 	getPullRequest(id, json) {
 		let pullRequest;

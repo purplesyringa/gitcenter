@@ -26,7 +26,7 @@ repo.addMerger()
 		return repo.getPullRequests(Number.isSafeInteger(additional) ? additional : 0);
 	})
 	.then(pullRequests => {
-		pullRequests.pullRequests.forEach(pullRequest => {
+		pullRequests.objects.forEach(pullRequest => {
 			let tr = document.createElement("tr");
 			tr.onclick = () => {
 				location.href = "view/?" + address + "/" + pullRequest.id + "@" + pullRequest.json.replace("data/users/", "");
