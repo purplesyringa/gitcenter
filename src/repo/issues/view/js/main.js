@@ -39,48 +39,18 @@ repo.addMerger()
 
 		showTags("issue", issue);
 		drawObjectStatus("issue", "issue", "issue", "issue", issue.open ? (issue.reopened ? "reopened" : "open") : "closed", issue.open ? "close issue" : "reopen issue");
+		showCommentButtons("issue", "issue", issue, id, json, () => {
+			if(issue.open) {
+				issue.open = false;
+			} else {
+				issue.open = true;
+				issue.reopened = true;
+			}
+
+			drawObjectStatus("issue", "issue", "issue", "issue", issue.open ? (issue.reopened ? "reopened" : "open") : "closed", issue.open ? "close issue" : "reopen issue");
+
+			return repo.issues.changeIssueStatus(id, json, issue.open);
+		});
 
 		return showActions("issue", "issue", id, json);
-	})
-	.then(() => {
-		if(issue.owned) {
-			document.getElementById("comment_submit_close").style.display = "inline-block";
-			document.getElementById("comment_submit_close").onclick = () => {
-				let contentNode = document.getElementById("comment_content");
-				if(contentNode.disabled) {
-					return;
-				}
-
-				contentNode.disabled = true;
-
-				let promise;
-				if(contentNode.value == "") {
-					promise = Promise.resolve();
-				} else {
-					promise = repo.addIssueComment(id, json, contentNode.value)
-						.then(comment => {
-							showAction(repo.highlightComment(comment), "issue");
-						});
-				}
-
-				promise
-					.then(() => {
-						return repo.changeIssueStatus(id, json, !issue.open);
-					})
-					.then(action => {
-						showAction(action, "issue");
-
-						if(issue.open) {
-							issue.open = false;
-						} else {
-							issue.open = true;
-							issue.reopened = true;
-						}
-						drawObjectStatus("issue", "issue", "issue", "issue", issue.open ? (issue.reopened ? "reopened" : "open") : "closed", issue.open ? "close issue" : "reopen issue");
-
-						contentNode.value = "";
-						contentNode.disabled = false;
-					});
-			};
-		}
 	});

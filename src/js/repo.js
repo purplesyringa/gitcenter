@@ -77,6 +77,8 @@ FOLLOW_QUERIES = adjustFollowQueries(INITIAL_FOLLOW_QUERIES, [
 	{object: "issue", url_object: "issue", text_object: "issue", follow: "issue"},
 	{object: "pull_request", url_object: "pull-request", text_object: "pull request", follow: "pullRequest"}
 ]);
+FOLLOW_QUERIES.actions = FOLLOW_QUERIES.issueActions + "\nUNION\n" + FOLLOW_QUERIES.pullRequestActions;
+
 function adjustFollowQueries(queries, objects) {
 	return objects
 		.map(object => {
