@@ -67,6 +67,16 @@ class RepositoryIssues {
 			}
 		);
 	}
+	removeObject(object, id, json) {
+		return this.zeroDB.removeRow(
+			"merged-GitCenter/" + this.address + "/" + json + "/data.json",
+			"merged-GitCenter/" + this.address + "/" + json + "/content.json",
+			object + "s",
+			object => {
+				return object.id == id;
+			}
+		);
+	}
 
 	/*********************************** Issues ***********************************/
 	addIssue(title, content, tags) {
@@ -86,14 +96,7 @@ class RepositoryIssues {
 		return this.changeObjectTags("issue", id, json, tags);
 	}
 	removeIssue(id, json) {
-		return this.zeroDB.removeRow(
-			"merged-GitCenter/" + this.address + "/" + json + "/data.json",
-			"merged-GitCenter/" + this.address + "/" + json + "/content.json",
-			"issues",
-			issue => {
-				return issue.id == id;
-			}
-		);
+		return this.removeObject("issue", id, json);
 	}
 	getIssues(page) {
 		return this.zeroDB.query("SELECT issues.*, json.directory as json, json.cert_user_id FROM issues, json WHERE issues.json_id = json.json_id AND json.site = :address ORDER BY issues.date_added DESC LIMIT " + (page * 10) + ", 11", {
@@ -362,14 +365,7 @@ class RepositoryIssues {
 		return this.changeObjectTags("pull_request", id, json, tags);
 	}
 	removePullRequest(id, json) {
-		return this.zeroDB.removeRow(
-			"merged-GitCenter/" + this.address + "/" + json + "/data.json",
-			"merged-GitCenter/" + this.address + "/" + json + "/content.json",
-			"pull_requests",
-			pullRequest => {
-				return pullRequest.id == id;
-			}
-		);
+		return this.removeObject("pull_request", id, json);
 	}
 	getPullRequests(page) {
 		return this.zeroDB.query("SELECT pull_requests.*, json.directory as json, json.cert_user_id FROM pull_requests, json WHERE pull_requests.json_id = json.json_id AND json.site = :address ORDER BY pull_requests.date_added DESC LIMIT " + (page * 10) + ", 11", {
