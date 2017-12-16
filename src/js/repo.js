@@ -106,6 +106,8 @@ class Repository {
 		this.zeroDB = new ZeroDB(zeroPage);
 	}
 
+	// Checks whether file `path` of repository can be signed by current user.
+	// If undefined, path is assumed to be content.json
 	isSignable(path) {
 		if(!path) {
 			path = "content.json";
@@ -127,6 +129,8 @@ class Repository {
 				return true;
 			});
 	}
+
+	// Returns cache for current repository from localStorage
 	getLocalCache() {
 		return this.zeroPage.cmd("wrapperGetLocalStorage")
 			.then(storage => {
@@ -137,6 +141,7 @@ class Repository {
 				return storage.repoCache[this.address];
 			})
 	}
+	// Saves cache for current repository
 	setLocalCache(cache) {
 		return this.zeroPage.cmd("wrapperGetLocalStorage")
 			.then(storage => {
@@ -154,7 +159,10 @@ class Repository {
 			});
 	}
 
-	// Permission actions
+	/***************************** Permission actions *****************************/
+
+	// Tries to add current site as merged site. Also adds index as merged, ZeroID
+	// as CORS. If current repository is a fork, also tries to set it up.
 	addMerger() {
 		let siteInfo, list, content, repoBase;
 		return this.zeroPage.getSiteInfo()
@@ -213,6 +221,8 @@ class Repository {
 				}
 			});
 	}
+
+	// Add site `address` as merged site and wait for any file to download.
 	addMergedSite(address) {
 		return this.zeroPage.cmd("mergerSiteList")
 			.then(list => {
@@ -240,7 +250,11 @@ class Repository {
 			});
 	}
 
-	// Content actions
+	/******************************* Content actions ******************************/
+
+	// Sign and publish `path` of current repository using `signStyle`.
+	// `signStyle` is `site` for using site private key or anything else for using
+	// ZeroID.
 	signAndPublish(path, signStyle) {
 		return this.zeroPage.cmd("siteSign", {inner_path: path, privatekey: signStyle == "site" ? "stored" : null})
 			.then(() => {
@@ -252,16 +266,25 @@ class Repository {
 				}
 			});
 	}
+
+	// Returns parsed content.json
 	getContent() {
 		return this.zeroFS.readFile("merged-GitCenter/" + this.address + "/content.json", true)
 			.then(content => JSON.parse(content));
 	}
+
+	// Saves content.json
 	setContent(content) {
 		return this.zeroFS.writeFile("merged-GitCenter/" + this.address + "/content.json", JSON.stringify(content, null, "\t"));
 	}
+
+	// Signs and publishes content.json
+	// `signStyle` is described in `signAndPublish`
 	signContent(signStyle) {
 		return this.signAndPublish("merged-GitCenter/" + this.address + "/content.json", signStyle);
 	}
+
+	// Signs content.json
 	sign() {
 		return this.zeroPage.cmd("siteSign", {inner_path: "merged-GitCenter/" + this.address + "/content.json"})
 			.then(res => {
@@ -271,6 +294,7 @@ class Repository {
 			});
 	}
 
+	// Returns array of valid signers for current repository
 	getSigners() {
 		return this.getContent()
 			.then(content => {
@@ -287,6 +311,8 @@ class Repository {
 				return signers;
 			});
 	}
+
+	// Returns true if current ZeroID is a valid signer
 	isOwned() {
 		let signers;
 		return this.getSigners()
@@ -299,6 +325,8 @@ class Repository {
 				return signers.indexOf(address) > -1;
 			});
 	}
+
+	// Returns name of repository owner
 	getOwner() {
 		let address;
 
@@ -350,6 +378,7 @@ class Repository {
 			});
 	}
 
+	// Changes title of repository (deprecated)
 	rename(newName) {
 		return this.getContent()
 			.then(content => {
@@ -358,6 +387,8 @@ class Repository {
 			})
 			.then(() => this.sign());
 	}
+
+	// Changes description of repository
 	changeDescription(description) {
 		return this.getContent()
 			.then(content => {
@@ -366,6 +397,8 @@ class Repository {
 			})
 			.then(() => this.sign());
 	}
+
+	// Adds or removes hooks from repository
 	changeHooks(hooks) {
 		return this.getContent()
 			.then(content => {
@@ -374,6 +407,8 @@ class Repository {
 			})
 			.then(() => this.sign());
 	}
+
+	// Sets up new repository (not fork). Sets title, description, signers.
 	install(title, description, address) {
 		let auth, content;
 		return this.getContent()
@@ -394,7 +429,8 @@ class Repository {
 				return this.setContent(content);
 			})
 			.then(() => {
-				return this.zeroFS.readFile("data/users/" + auth.address + "/data.json").catch(() => "{}");
+				return this.zeroFS.readFile("data/users/" + auth.address + "/data.json")
+					.catch(() => "{}");
 			})
 			.then(profile => {
 				profile = JSON.parse(profile);
@@ -410,8 +446,16 @@ class Repository {
 			});
 	}
 
-	// Fork
+	/************************************ Fork ************************************/
+
+	// Clones a repository
 	fork() {
+		// `siteClone` doesn't give us any clue about what is resulting repository
+		// address. So we assume that one doesn't fork a repository during the same
+		// repository is forked. We set `justForked` to local cache of this repository.
+		// Later we will check if `justForked` is set for `cloned_from` site of
+		// content.json. Notice that `cloned_from` can be 1Repo..., though that doesn't
+		// have cache at all usually.
 		return this.getLocalCache()
 			.then(cache => {
 				cache = cache || {};
@@ -422,6 +466,9 @@ class Repository {
 				return this.zeroPage.cmd("siteClone", [this.address]);
 			});
 	}
+
+	// Sets `signers` property of fork and removes `my` from title. This is done
+	// here and not in fork() because `siteClone` doesn't give us control over fork.
 	installFork() {
 		let auth;
 		return this.zeroAuth.requestAuth()
@@ -439,13 +486,17 @@ class Repository {
 			});
 	}
 
-	// Git actions
+	/********************************* Git actions ********************************/
+
+	// Returns list of files in directory
 	getFiles(branch, dir) {
 		return this.git.readBranchCommit(branch)
 			.then(commit => {
 				return this.getTree(commit.content.tree, dir);
 			});
 	}
+
+	// Returns list of files in directory and submodules
 	getTree(tree, dir) {
 		let submodules;
 
@@ -480,6 +531,8 @@ class Repository {
 				return tree.content;
 			});
 	}
+
+	// Returns file content
 	getFile(branch, path) {
 		return this.git.readBranchCommit(branch)
 			.then(commit => {
@@ -493,6 +546,8 @@ class Repository {
 				return blob.content;
 			});
 	}
+
+	// Returns branch list
 	getBranches() {
 		return this.git.getRefList()
 			.then(refs => {
@@ -503,6 +558,8 @@ class Repository {
 					));
 			});
 	}
+
+	// Changes file content. Commits with message `message` on branch `base`
 	saveFile(path, content, base, message) {
 		let auth, author, commit, parent;
 		return this.zeroAuth.requestAuth()
@@ -560,6 +617,8 @@ class Repository {
 			})
 			.then(() => commit);
 	}
+
+	// Uploads file (see `base` and `message` on saveFile())
 	uploadFile(path, base, message) {
 		return new Promise((resolve, reject) => {
 			let input = document.createElement("input");
@@ -577,12 +636,15 @@ class Repository {
 			input.click();
 		});
 	}
+
+	// Returns diff between commit and its parent (on merge commits uses 1st parent)
 	diff(branch) {
 		let commit;
 		return this.git.readBranchCommit(branch)
 			.then(c => {
 				commit = c;
 
+				// Compare root commit to empty tree
 				if(commit.content.parents.length == 0) {
 					return {
 						content: {
@@ -599,6 +661,8 @@ class Repository {
 				return Promise.all(
 					diff.map(item => {
 						if(item.type == "blob") {
+							// Diff all blobs
+
 							let promise;
 							if(item.action == "modified") {
 								promise = this.diffBlob(item.id, item.baseId);
@@ -614,6 +678,8 @@ class Repository {
 									return item;
 								});
 						} else if(item.type == "submodule") {
+							// Diff all submodules
+
 							if(item.action == "modified") {
 								item.content = this.diffSubmodule(item.id, item.baseId);
 							} else if(item.action == "add") {
@@ -630,6 +696,8 @@ class Repository {
 				);
 			});
 	}
+
+	// Diff tree against `base`. `root` is current path (empty string usually)
 	diffTree(tree, base, root) {
 		return Promise.all(
 			[
@@ -821,6 +889,8 @@ class Repository {
 					}));
 			});
 	}
+
+	// Diffs two blobs using jsdifflib
 	diffBlob(blob, base) {
 		let blobContent;
 		return (blob ? this.git.readUnknownObject(blob) : Promise.resolve({content: []}))
@@ -878,6 +948,8 @@ class Repository {
 				return view;
 			});
 	}
+
+	// Returns diff view for submodule
 	diffSubmodule(submodule, base) {
 		let baseContent = base ? difflib.stringAsLines("Subproject commit " + base) : [];
 		let submoduleContent = submodule ? difflib.stringAsLines("Subproject commit " + submodule) : [];
@@ -898,7 +970,9 @@ class Repository {
 		return view;
 	}
 
-	// Releases
+	/********************************** Releases **********************************/
+
+	// Returns release list
 	getReleases() {
 		let tags, releases;
 
@@ -970,6 +1044,8 @@ class Repository {
 				return releases;
 			});
 	}
+
+	// Marks tag as `not release`
 	removeRelease(tag) {
 		return this.getContent()
 			.then(content => {
@@ -1650,11 +1726,17 @@ class Repository {
 				return this.git.setRef("refs/heads/pr-" + pullRequest.id + "-" + pullRequest.cert_user_id.replace(/@.*/, ""), ref);
 			});
 	}
+
+	/********************************** Markdown **********************************/
+
+	// Sets `originalBody` of comment to `body`, sets `body` to parsed `body`
 	highlightComment(comment) {
 		comment.originalBody = comment.body;
 		comment.body = this.renderMarked(comment.body);
 		return comment;
 	}
+
+	// Sets options for marked
 	setUpMarked() {
 		if(!this.markedOptions) {
 			let issueParser = "<a href=\"/1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t/repo/issues/view/?" + this.address + "/$1@$2\">#$1@$2</a>";
@@ -1715,17 +1797,23 @@ class Repository {
 			marked.setOptions(this.markedOptions);
 		}
 	}
+
+	// Renders markdown using marked (first sets it up)
 	renderMarked(text) {
 		this.setUpMarked();
 		return this.markedOptions.renderer.all(marked(text));
 	}
+
+	// Returns human-parsable string for action
 	parseAction(action, context) {
 		if(action.action == "changeStatus") {
 			return action.cert_user_id + " " + (action.param == "close" ? "closed" : "reopened") + " " + context + " " + this.translateDate(action.date_added);
 		}
 	}
 
-	// Muted
+	/************************************ Muted ***********************************/
+
+	// Returns array of muted usernames
 	getMuted() {
 		return this.zeroFS.readFile("merged-GitCenter/" + this.address + "/data/users/content.json")
 			.then(content => {
@@ -1735,6 +1823,8 @@ class Repository {
 					.filter(username => content.user_contents.permissions[username] == false);
 			});
 	}
+
+	// Mutes username
 	mute(name) {
 		return this.zeroFS.readFile("merged-GitCenter/" + this.address + "/data/users/content.json")
 			.then(content => {
@@ -1750,6 +1840,8 @@ class Repository {
 				return this.signAndPublish("merged-GitCenter/" + this.address + "/data/users/content.json", "site");
 			});
 	}
+
+	// Unmutes username
 	unmute(name) {
 		return this.zeroFS.readFile("merged-GitCenter/" + this.address + "/data/users/content.json")
 			.then(content => {
@@ -1768,7 +1860,9 @@ class Repository {
 			});
 	}
 
-	// Maintainers
+	/*********************************** ZeroID ***********************************/
+
+	// Reads `name` file of ZeroID and caches it
 	getZeroIdFile(name, cache, property) {
 		if(this[cache]) {
 			return Promise.resolve(this[cache]);
@@ -1785,6 +1879,8 @@ class Repository {
 				return this[cache];
 			});
 	}
+
+	// Returns user info by auth address
 	findUserById(id) {
 		return this.getZeroIdFile("data/users.json", "_cached_users_json", "users")
 			.then(users => {
@@ -1849,6 +1945,7 @@ class Repository {
 										return;
 									}
 
+
 									resulted++;
 									if(resulted == userNames.length) {
 										rejecter("ID " + id + " was not found");
@@ -1860,6 +1957,8 @@ class Repository {
 					});
 			});
 	}
+
+	// Returns user info by ZeroID name
 	findUserByName(userName) {
 		return this.getZeroIdFile("data/users.json", "_cached_users_json", "users")
 			.then(users => {
@@ -1907,6 +2006,10 @@ class Repository {
 					});
 			});
 	}
+
+	/********************************* Maintainers ********************************/
+
+	// Returns maintainer list as array of usernames (deprecated)
 	getMaintainers() {
 		let signers;
 
@@ -1922,6 +2025,8 @@ class Repository {
 			})
 			.then(userNames => userNames.filter(userName => userName));
 	}
+
+	// Removes maintainer from list (deprecated)
 	removeMaintainer(name) {
 		let cert, content, signers;
 		return this.findUserByName(name)
@@ -1945,6 +2050,8 @@ class Repository {
 				return this.signContent();
 			});
 	}
+
+	// Adds maintainer to list (deprecated)
 	addMaintainer(name, signStyle) {
 		let cert, content, signers;
 		return this.findUserByName(name)
@@ -1972,7 +2079,9 @@ class Repository {
 			});
 	}
 
-	// Follow
+	/*********************************** Follow ***********************************/
+
+	// Follow current repository issues and pull requests
 	follow() {
 		return this.zeroPage.cmd("feedListFollow")
 			.then(feedList => {
@@ -1997,6 +2106,8 @@ class Repository {
 				return this.zeroPage.cmd("feedFollow", [feedList]);
 			});
 	}
+
+	// Unfollow current repository issues and pull requests
 	unfollow() {
 		return this.zeroPage.cmd("feedListFollow")
 			.then(feedList => {
@@ -2010,6 +2121,8 @@ class Repository {
 				return this.zeroPage.cmd("feedFollow", [feedList]);
 			});
 	}
+
+	// Installs new version of follow list
 	updateFollow() {
 		return this.zeroPage.cmd("feedListFollow")
 			.then(feedList => {
@@ -2060,13 +2173,16 @@ class Repository {
 				}
 			});
 	}
+
+	// Merge and unique
 	getFollowListFor(feedList) {
-		// Merge and unique
 		return Object.values(feedList)
 			.map(data => data[1])
 			.reduce((arr, val) => arr.concat(val), [])
 			.filter((val, i, arr) => arr.indexOf(val) == i);
 	}
+
+	// Returns whether you are following current repository
 	isFollowing() {
 		return this.zeroPage.cmd("feedListFollow")
 			.then(feedList => {
@@ -2077,7 +2193,9 @@ class Repository {
 			});
 	}
 
-	// Index
+	/************************************ Index ***********************************/
+
+	// Add current repository to index
 	addToIndex() {
 		let content, auth;
 		return this.getContent()
@@ -2111,6 +2229,8 @@ class Repository {
 				return this.signAndPublish("merged-GitCenter/1iNDExENNBsfHc6SKmy1HaeasHhm3RPcL/data/users/" + auth.address + "/content.json");
 			});
 	}
+
+	// Remove current repository from index
 	removeFromIndex() {
 		let auth;
 		return this.zeroAuth.requestAuth()
@@ -2144,6 +2264,8 @@ class Repository {
 				return indexers.length ? indexers : false;
 			});
 	}
+
+	// Returns bitmask for repository place in index
 	isInIndex() {
 		// 0b01
 		//   ^^ indexed by somebody else
@@ -2159,6 +2281,8 @@ class Repository {
 				return (indexedByYou << 1) | indexedBySomebody;
 			});
 	}
+
+	// Returns indexer list
 	getIndexers() {
 		return this.zeroDB.query("SELECT repo_index.*, json.cert_user_id FROM repo_index, json WHERE repo_index.json_id = json.json_id AND repo_index.address = :address", {
 			address: this.address
@@ -2168,7 +2292,9 @@ class Repository {
 			});
 	}
 
-	// Starring
+	/********************************** Starring **********************************/
+
+	// Return {starred: is starred by you, count: total star count}
 	getStars() {
 		let auth = this.zeroAuth.getAuth();
 
@@ -2182,6 +2308,8 @@ class Repository {
 				};
 			});
 	}
+
+	// Stars/unstars repository (based on current value) and returns getStars() result
 	star() {
 		let auth, starred;
 
@@ -2225,6 +2353,9 @@ class Repository {
 			});
 	}
 
+	/****************************** Helper functions ******************************/
+
+	// Translates time and date from timestamp to human-readable format
 	translateDate(date) {
 		date = new Date(date);
 
@@ -2255,6 +2386,8 @@ class Repository {
 			);
 		}
 	}
+
+	// Translates time from timestamp to human-readable format (deprecated)
 	translateTime(date) {
 		date = new Date(date);
 
@@ -2265,6 +2398,7 @@ class Repository {
 		);
 	}
 
+	// Returns log
 	getCommits(leaf, count) {
 		let heads = [];
 		let commits = [];
@@ -2301,6 +2435,8 @@ class Repository {
 			})
 			.then(() => commits);
 	}
+
+	// Converts author (like "Name <email> timestamp") to text
 	parseAuthor(author) {
 		let name = author.substr(0, author.indexOf("<")).trim();
 		let email = author.substr(0, author.indexOf(">")).substr(author.indexOf("<") + 1);
@@ -2314,6 +2450,8 @@ class Repository {
 
 		return name + " commited " + this.translateDate(relativeDate) + " " + this.translateTime(relativeDate) + " " + offsetString;
 	}
+
+	// Downloads data as octet-stream
 	download(name, data) {
 		let blob = new Blob([data], {type: "application/octet-stream"});
 		let link = document.createElement("a");
@@ -2324,6 +2462,7 @@ class Repository {
 		document.body.removeChild(link);
 	}
 
+	// Converts text to color
 	tagToColor(tag) {
 		tag = tag + tag + tag;
 
