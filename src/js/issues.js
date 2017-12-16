@@ -41,18 +41,13 @@ class RepositoryIssues {
 			return obj;
 		}, null);
 	}
-	changeObjectTags(object, id, json, tags) {
+	changeObjectTags(context, id, json, tags) {
 		let action = null;
 
-		return this.getObject(object, id, json)
+		return this.getObject(context, id, json)
 			.then(object => {
-				let oldTags = object.tags
-					.split(",")
-					.map(tag => tag.trim())
-					.filter(tag => tag.length);
-
-				let added = tags.filter(tag => oldTags.indexOf(tag) == -1);
-				let removed = oldTags.filter(tag => tags.indexOf(tag) == -1);
+				let added = tags.filter(tag => object.tags.indexOf(tag) == -1);
+				let removed = object.tags.filter(tag => tags.indexOf(tag) == -1);
 				if(added.length && removed.length) {
 					action = {
 						action: "changeTags",
@@ -70,7 +65,7 @@ class RepositoryIssues {
 					};
 				}
 
-				return this.runObject(object, id, json, obj => {
+				return this.runObject(context, id, json, obj => {
 					obj.tags = tags.join(",");
 					return obj;
 				}, action);

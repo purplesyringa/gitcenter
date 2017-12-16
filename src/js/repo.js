@@ -45,8 +45,15 @@ INITIAL_FOLLOW_QUERIES = {
 			{object}_actions.param AS param,\
 			'repo/{url_object}s/view/?' || {object}s_json.site || '/' || {object}s_json.id || '@' || REPLACE({object}s_json.directory, 'data/users/', '') AS url,\
 			'@' || REPLACE(cert_user_id, '@zeroid.bit', '') || ': ' || (\
-				CASE WHEN {object}_actions.action = 'changeStatus'\
-					THEN (CASE WHEN {object}_actions.param = 'reopen' THEN 'Reopened {text_object}' ELSE 'Closed {text_object}' END)\
+				CASE\
+					WHEN {object}_actions.action = 'changeStatus'\
+						THEN (CASE WHEN {object}_actions.param = 'reopen' THEN 'Reopened {text_object}' ELSE 'Closed {text_object}' END)\
+					WHEN {object}_actions.action = 'changeTags'\
+						THEN 'Changed tags: ' || {object}_actions.param\
+					WHEN {object}_actions.action = 'addTags'\
+						THEN 'Added tags ' || REPLACE({object}_actions.param, ',', ', ')\
+					WHEN {object}_actions.action = 'removeTags'\
+						THEN 'Removed tags ' || REPLACE({object}_actions.param, ',', ', ')\
 					ELSE 'Action ' || {object}_actions.action\
 				END\
 			) AS body\

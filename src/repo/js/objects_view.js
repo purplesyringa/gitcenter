@@ -50,7 +50,7 @@ function showTags(context, object) {
 					add.parentNode.appendChild(add); // Move to end of container
 
 					object.tags = object.tags.concat(tags);
-					repo.changeObjectTags(context, id, json, object.tags);
+					repo.issues.changeObjectTags(context, id, json, object.tags);
 				});
 		};
 		document.getElementById("tags").appendChild(add);
