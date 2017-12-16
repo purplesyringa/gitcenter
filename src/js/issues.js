@@ -10,8 +10,9 @@ class RepositoryIssues {
 		this.repo = repo;
 	}
 
-	// Issues
-	addIssue(title, content, tags) {
+	/*********************************** Objects **********************************/
+
+	addObject(object, data) {
 		let auth, row;
 		return this.zeroAuth.requestAuth()
 			.then(a => {
@@ -20,17 +21,10 @@ class RepositoryIssues {
 				return this.zeroDB.insertRow(
 					"merged-GitCenter/" + this.address + "/data/users/" + auth.address + "/data.json",
 					"merged-GitCenter/" + this.address + "/data/users/" + auth.address + "/content.json",
-					"issues",
+					object + "s",
+					data,
 					{
-						title: title,
-						body: content,
-						date_added: Date.now(),
-						open: 1,
-						reopened: 0,
-						tags: tags.join(",")
-					},
-					{
-						source: "next_issue_id",
+						source: "next_" + object + "_id",
 						column: "id"
 					}
 				);
@@ -40,6 +34,18 @@ class RepositoryIssues {
 				row.owned = true;
 				return row;
 			});
+	}
+
+	/*********************************** Issues ***********************************/
+	addIssue(title, content, tags) {
+		return this.addObject("issue", {
+			title: title,
+			body: content,
+			date_added: Date.now(),
+			open: 1,
+			reopened: 0,
+			tags: tags.join(",")
+		});
 	}
 	changeIssue(id, json, content) {
 		return this.zeroDB.changeRow(
@@ -331,37 +337,17 @@ class RepositoryIssues {
 			});
 	}
 
-	// Pull requests
+	/******************************** Pull requests *******************************/
 	addPullRequest(title, content, forkAddress, forkBranch, tags) {
-		let auth, row;
-		return this.zeroAuth.requestAuth()
-			.then(a => {
-				auth = a;
-
-				return this.zeroDB.insertRow(
-					"merged-GitCenter/" + this.address + "/data/users/" + auth.address + "/data.json",
-					"merged-GitCenter/" + this.address + "/data/users/" + auth.address + "/content.json",
-					"pull_requests",
-					{
-						title: title,
-						body: content,
-						date_added: Date.now(),
-						merged: 0,
-						fork_address: forkAddress,
-						fork_branch: forkBranch,
-						tags: tags.join(",")
-					},
-					{
-						source: "next_pull_request_id",
-						column: "id"
-					}
-				);
-			})
-			.then(row => {
-				row.json = "data/users/" + auth.address;
-				row.owned = true;
-				return row;
-			});
+		return this.addObject("pull_request", {
+			title: title,
+			body: content,
+			date_added: Date.now(),
+			merged: 0,
+			fork_address: forkAddress,
+			fork_branch: forkBranch,
+			tags: tags.join(",")
+		});
 	}
 	changePullRequest(id, json, content) {
 		return this.zeroDB.changeRow(
