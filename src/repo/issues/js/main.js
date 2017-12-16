@@ -18,11 +18,5 @@ repo.addMerger()
 		showTabs(1);
 		document.getElementById("new_issue").href = "new/?" + address;
 
-		additional = +additional;
-		return repo.getIssues(Number.isSafeInteger(additional) ? additional : 0);
-	})
-	.then(issues => {
-		showObjects("issue", "issue", issues);
-		showNavigation(issues, currentPage);
-		showFollowing();
+		loadObjects("issue", "issue", currentPage);
 	});

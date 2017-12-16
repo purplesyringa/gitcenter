@@ -18,11 +18,5 @@ repo.addMerger()
 		showTabs(1);
 		document.getElementById("new_pull_request").href = "new/?" + address;
 
-		additional = +additional;
-		return repo.getPullRequests(Number.isSafeInteger(additional) ? additional : 0);
-	})
-	.then(pullRequests => {
-		showObjects("pull_request", "pull-request", pullRequests);
-		showNavigation(pullRequests, currentPage);
-		showFollowing();
+		loadObjects("pull_request", "pull-request", currentPage);
 	});

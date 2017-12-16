@@ -1,3 +1,13 @@
+function loadObjects(context, cssContext, page) {
+	return repo.issues.getObjects(context, page)
+		.then(objects => {
+			showObjects(context, cssContext, objects);
+			showNavigation(objects, currentPage);
+			showFollowing();
+		});
+}
+
+
 function showObjects(context, cssContext, objects) {
 	objects.objects.forEach(object => {
 		let status = {
