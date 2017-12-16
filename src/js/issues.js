@@ -276,6 +276,32 @@ class RepositoryIssues {
 				return row;
 			});
 	}
+	changeObjectComment(object, id, json, content) {
+		return this.zeroDB.changeRow(
+			"merged-GitCenter/" + this.address + "/" + json + "/data.json",
+			"merged-GitCenter/" + this.address + "/" + json + "/content.json",
+			object + "_comments",
+			comment => {
+				if(comment.id != id) {
+					return comment;
+				}
+
+				comment.body = content;
+
+				return comment;
+			}
+		);
+	}
+	removeObjectComment(object, id, json) {
+		return this.zeroDB.removeRow(
+			"merged-GitCenter/" + this.address + "/" + json + "/data.json",
+			"merged-GitCenter/" + this.address + "/" + json + "/content.json",
+			object + "_comments",
+			comment => {
+				return comment.id == id;
+			}
+		);
+	}
 
 	/*********************************** Issues ***********************************/
 	addIssue(title, content, tags) {
@@ -313,30 +339,10 @@ class RepositoryIssues {
 		return this.addObjectComment("issue", issueId, issueJson, content);
 	}
 	changeIssueComment(id, json, content) {
-		return this.zeroDB.changeRow(
-			"merged-GitCenter/" + this.address + "/" + json + "/data.json",
-			"merged-GitCenter/" + this.address + "/" + json + "/content.json",
-			"issue_comments",
-			comment => {
-				if(comment.id != id) {
-					return comment;
-				}
-
-				comment.body = content;
-
-				return comment;
-			}
-		);
+		return this.changeObjectComment("issue", id, json, content);
 	}
 	removeIssueComment(id, json) {
-		return this.zeroDB.removeRow(
-			"merged-GitCenter/" + this.address + "/" + json + "/data.json",
-			"merged-GitCenter/" + this.address + "/" + json + "/content.json",
-			"issue_comments",
-			comment => {
-				return comment.id == id;
-			}
-		);
+		return this.removeObjectComment("issue", id, json);
 	}
 	changeIssueStatus(id, json, open) {
 		return this.zeroDB.changeRow(
@@ -420,30 +426,10 @@ class RepositoryIssues {
 		return this.addObjectComment("pull_request", pullRequestId, pullRequestJson, content);
 	}
 	changePullRequestComment(id, json, content) {
-		return this.zeroDB.changeRow(
-			"merged-GitCenter/" + this.address + "/" + json + "/data.json",
-			"merged-GitCenter/" + this.address + "/" + json + "/content.json",
-			"pull_request_comments",
-			comment => {
-				if(comment.id != id) {
-					return comment;
-				}
-
-				comment.body = content;
-
-				return comment;
-			}
-		);
+		return this.changeObjectComment("pull_request", id, json, content);
 	}
 	removePullRequestComment(id, json) {
-		return this.zeroDB.removeRow(
-			"merged-GitCenter/" + this.address + "/" + json + "/data.json",
-			"merged-GitCenter/" + this.address + "/" + json + "/content.json",
-			"pull_request_comments",
-			comment => {
-				return comment.id == id;
-			}
-		);
+		return this.removeObjectComment("pull_request", id, json);
 	}
 	changePullRequestStatus(id, json, merged) {
 		return this.zeroDB.changeRow(
