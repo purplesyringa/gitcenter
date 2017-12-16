@@ -42,10 +42,39 @@ class RepositoryIssues {
 		}, null);
 	}
 	changeObjectTags(object, id, json, tags) {
-		return this.runObject(object, id, json, obj => {
-			obj.tags = tags.join(",");
-			return obj;
-		}, null);
+		let action = null;
+
+		return this.getObject(object, id, json)
+			.then(object => {
+				let oldTags = object.tags
+					.split(",")
+					.map(tag => tag.trim())
+					.filter(tag => tag.length);
+
+				let added = tags.filter(tag => oldTags.indexOf(tag) == -1);
+				let removed = oldTags.filter(tag => tags.indexOf(tag) == -1);
+				if(added.length && removed.length) {
+					action = {
+						action: "changeTags",
+						param: "added " + added.join(", ") + ", removed " + removed.join(", ")
+					};
+				} else if(added.length) {
+					action = {
+						action: "addTags",
+						param: added.join(",")
+					};
+				} else if(removed.length) {
+					action = {
+						action: "removeTags",
+						param: removed.join(",")
+					};
+				}
+
+				return this.runObject(object, id, json, obj => {
+					obj.tags = tags.join(",");
+					return obj;
+				}, action);
+			});
 	}
 	removeObject(object, id, json) {
 		return this.zeroDB.removeRow(
