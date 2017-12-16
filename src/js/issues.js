@@ -434,7 +434,10 @@ class RepositoryIssues {
 	}
 	importPullRequest(pullRequest) {
 		let forkAddress = pullRequest.fork_address;
-		if(forkAddress.indexOf("1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t") > -1) {
+		if(
+			forkAddress.indexOf("1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t") > -1 ||
+			forkAddress.indexOf("gitcenter.bit") > -1
+		) {
 			// http://127.0.0.1:43110/1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t/repo/?address
 			forkAddress = forkAddress.match(/repo\/\?(.*)/)[1];
 		} else {
