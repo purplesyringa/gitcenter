@@ -42,28 +42,9 @@ repo.addMerger()
 		showTags("pull_request", pullRequest);
 		drawObjectStatus("pull_request", "pull-request", "pr", "pull request", pullRequest.merged ? "merged" : "opened", pullRequest.merged ? "reopen pull request" : "mark pull request as merged");
 
-		return repo.getPullRequestActions(id, json);
+		return showActions("pull_request", "pull request", id, json);
 	})
-	.then(actions => {
-		actions.forEach(action => showAction(action, "pull request"));
-
-		document.getElementById("comment_submit").onclick = () => {
-			let contentNode = document.getElementById("comment_content");
-			if(contentNode.disabled || contentNode.value == "") {
-				return;
-			}
-
-			contentNode.disabled = true;
-
-			repo.addPullRequestComment(id, json, contentNode.value)
-				.then(comment => {
-					showAction(repo.highlightComment(comment), "pull request");
-
-					contentNode.value = "";
-					contentNode.disabled = false;
-				});
-		};
-
+	.then(() => {
 		if(pullRequest.owned) {
 			document.getElementById("comment_submit_close").style.display = "inline-block";
 			document.getElementById("comment_submit_close").onclick = () => {

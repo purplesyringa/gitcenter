@@ -56,3 +56,27 @@ function showTags(context, object) {
 		document.getElementById("tags").appendChild(add);
 	}
 }
+
+function showActions(context, textContext, id, json) {
+	return repo.issues.getObjectActions(context, id, json)
+		.then(actions => {
+			actions.forEach(action => showAction(action, textContext));
+
+			document.getElementById("comment_submit").onclick = () => {
+				let contentNode = document.getElementById("comment_content");
+				if(contentNode.disabled || contentNode.value == "") {
+					return;
+				}
+
+				contentNode.disabled = true;
+
+				repo.issues.addObjectComment(context, id, json, contentNode.value)
+					.then(comment => {
+						showAction(repo.highlightComment(comment), textContext);
+
+						contentNode.value = "";
+						contentNode.disabled = false;
+					});
+			};
+		});
+}

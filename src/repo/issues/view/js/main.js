@@ -40,28 +40,9 @@ repo.addMerger()
 		showTags("issue", issue);
 		drawObjectStatus("issue", "issue", "issue", "issue", issue.open ? (issue.reopened ? "reopened" : "open") : "closed", issue.open ? "close issue" : "reopen issue");
 
-		return repo.getIssueActions(id, json);
+		return showActions("issue", "issue", id, json);
 	})
-	.then(actions => {
-		actions.forEach(action => showAction(action, "issue"));
-
-		document.getElementById("comment_submit").onclick = () => {
-			let contentNode = document.getElementById("comment_content");
-			if(contentNode.disabled || contentNode.value == "") {
-				return;
-			}
-
-			contentNode.disabled = true;
-
-			repo.addIssueComment(id, json, contentNode.value)
-				.then(comment => {
-					showAction(repo.highlightComment(comment), "issue");
-
-					contentNode.value = "";
-					contentNode.disabled = false;
-				});
-		};
-
+	.then(() => {
 		if(issue.owned) {
 			document.getElementById("comment_submit_close").style.display = "inline-block";
 			document.getElementById("comment_submit_close").onclick = () => {
