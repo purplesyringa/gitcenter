@@ -35,6 +35,22 @@ class RepositoryIssues {
 				return row;
 			});
 	}
+	changeObject(object, id, json, content) {
+		return this.zeroDB.changeRow(
+			"merged-GitCenter/" + this.address + "/" + json + "/data.json",
+			"merged-GitCenter/" + this.address + "/" + json + "/content.json",
+			object + "s",
+			object => {
+				if(object.id != id) {
+					return object;
+				}
+
+				object.body = content;
+
+				return object;
+			}
+		);
+	}
 
 	/*********************************** Issues ***********************************/
 	addIssue(title, content, tags) {
@@ -48,20 +64,7 @@ class RepositoryIssues {
 		});
 	}
 	changeIssue(id, json, content) {
-		return this.zeroDB.changeRow(
-			"merged-GitCenter/" + this.address + "/" + json + "/data.json",
-			"merged-GitCenter/" + this.address + "/" + json + "/content.json",
-			"issues",
-			issue => {
-				if(issue.id != id) {
-					return issue;
-				}
-
-				issue.body = content;
-
-				return issue;
-			}
-		);
+		return this.changeObject("issue", id, json, content);
 	}
 	changeIssueTags(id, json, tags) {
 		return this.zeroDB.changeRow(
@@ -350,20 +353,7 @@ class RepositoryIssues {
 		});
 	}
 	changePullRequest(id, json, content) {
-		return this.zeroDB.changeRow(
-			"merged-GitCenter/" + this.address + "/" + json + "/data.json",
-			"merged-GitCenter/" + this.address + "/" + json + "/content.json",
-			"pull_requests",
-			pullRequest => {
-				if(pullRequest.id != id) {
-					return pullRequest;
-				}
-
-				pullRequest.body = content;
-
-				return pullRequest;
-			}
-		);
+		return this.changeObject("pull_request", id, json, content);
 	}
 	changePullRequestTags(id, json, tags) {
 		return this.zeroDB.changeRow(
