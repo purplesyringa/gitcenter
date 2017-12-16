@@ -1,84 +1,100 @@
-FOLLOW_QUERIES = {
-	issues: "SELECT 'issue' AS type, issues.date_added AS date_added, issues.title AS title, issues.body AS body, 'repo/issues/view/?' || json.site || '/' || issues.id || '@' || REPLACE(json.directory, 'data/users/', '') AS url FROM issues, json WHERE issues.json_id = json.json_id AND json.site IN (:params)",
-	pullRequests: "SELECT 'pull_request' AS type, pull_requests.date_added AS date_added, pull_requests.title AS title, pull_requests.body AS body, 'repo/pull-requests/view/?' || json.site || '/' || pull_requests.id || '@' || REPLACE(json.directory, 'data/users/', '') AS url FROM pull_requests, json WHERE pull_requests.json_id = json.json_id AND json.site IN (:params)",
-	issueComments: "\
+INITIAL_FOLLOW_QUERIES = {
+	"{object}s": "\
 		SELECT\
-			'comment' AS type, issue_comments.date_added AS date_added, issues_json.title AS title, '@' || REPLACE(cert_user_id, '@zeroid.bit', '') || ': ' || issue_comments.body AS body, 'repo/issues/view/?' || issues_json.site || '/' || issues_json.id || '@' || REPLACE(issues_json.directory, 'data/users/', '') AS url\
+			'{object}' AS type,\
+			{object}s.date_added AS date_added,\
+			{object}s.title AS title,\
+			{object}s.body AS body,\
+			'repo/{url_object}s/view/?' || json.site || '/' || {object}s.id || '@' || REPLACE(json.directory, 'data/users/', '') AS url\
+		FROM {object}s, json\
+		WHERE {object}s.json_id = json.json_id AND json.site IN (:params)\
+	",
+	"{object}Comments": "\
+		SELECT\
+			'comment' AS type,\
+			{object}_comments.date_added AS date_added,\
+			{object}s_json.title AS title,\
+			'@' || REPLACE(cert_user_id, '@zeroid.bit', '') || ': ' || {object}_comments.body AS body,\
+			'repo/{url_object}s/view/?' || {object}s_json.site || '/' || {object}s_json.id || '@' || REPLACE({object}s_json.directory, 'data/users/', '') AS url\
 		FROM\
-			issue_comments\
+			{object}_comments\
 		LEFT JOIN\
-			(SELECT id, title, body, json_id, site, directory FROM issues LEFT JOIN json USING (json_id)) AS issues_json\
+			(\
+				SELECT id, title, body, json_id, site, directory\
+				FROM {object}s\
+				LEFT JOIN json USING (json_id)\
+			) AS {object}s_json\
 		ON\
-			(issue_comments.issue_id = issues_json.id AND issue_comments.issue_json = issues_json.directory)\
+			(\
+				{object}_comments.{object}_id = {object}s_json.id AND\
+				{object}_comments.{object}_json = {object}s_json.directory\
+			)\
 		LEFT JOIN\
 			(SELECT cert_user_id, json_id AS comment_json_id FROM json) AS comment_json\
 		ON\
-			(comment_json.comment_json_id = issue_comments.json_id)\
+			(comment_json.comment_json_id = {object}_comments.json_id)\
 		WHERE\
-			issues_json.site IN (:params) AND issue_comments.json_id IN (SELECT json_id FROM json WHERE json.site = issues_json.site)\
+			{object}s_json.site IN (:params) AND\
+			{object}_comments.json_id IN (SELECT json_id FROM json WHERE json.site = {object}s_json.site)\
 	",
-	pullRequestComments: "\
+	"{object}Actions": "\
 		SELECT\
-			'comment' AS type, pull_request_comments.date_added AS date_added, pull_requests_json.title AS title, '@' || REPLACE(cert_user_id, '@zeroid.bit', '') || ': ' || pull_request_comments.body AS body, 'repo/pull-requests/view/?' || pull_requests_json.site || '/' || pull_requests_json.id || '@' || REPLACE(pull_requests_json.directory, 'data/users/', '') AS url\
-		FROM\
-			pull_request_comments\
-		LEFT JOIN\
-			(SELECT id, title, body, json_id, site, directory FROM pull_requests LEFT JOIN json USING (json_id)) AS pull_requests_json\
-		ON\
-			(pull_request_comments.pull_request_id = pull_requests_json.id AND pull_request_comments.pull_request_json = pull_requests_json.directory)\
-		LEFT JOIN\
-			(SELECT cert_user_id, json_id AS comment_json_id FROM json) AS comment_json\
-		ON\
-			(comment_json.comment_json_id = pull_request_comments.json_id)\
-		WHERE\
-			pull_requests_json.site IN (:params) AND pull_request_comments.json_id IN (SELECT json_id FROM json WHERE json.site = pull_requests_json.site)\
-	",
-	actions: "\
-		SELECT\
-			'comment' AS type, issue_actions.date_added AS date_added, issues_json.title AS title, issue_actions.param AS param, 'repo/issues/view/?' || issues_json.site || '/' || issues_json.id || '@' || REPLACE(issues_json.directory, 'data/users/', '') AS url,\
+			'comment' AS type,\
+			{object}_actions.date_added AS date_added,\
+			{object}s_json.title AS title,\
+			{object}_actions.param AS param,\
+			'repo/{url_object}s/view/?' || {object}s_json.site || '/' || {object}s_json.id || '@' || REPLACE({object}s_json.directory, 'data/users/', '') AS url,\
 			'@' || REPLACE(cert_user_id, '@zeroid.bit', '') || ': ' || (\
-				CASE WHEN issue_actions.action = 'changeStatus'\
-					THEN (CASE WHEN issue_actions.param = 'reopen' THEN 'Reopened issue' ELSE 'Closed issue' END)\
-					ELSE 'Action ' || issue_actions.action\
+				CASE WHEN {object}_actions.action = 'changeStatus'\
+					THEN (CASE WHEN {object}_actions.param = 'reopen' THEN 'Reopened {text_object}' ELSE 'Closed {text_object}' END)\
+					ELSE 'Action ' || {object}_actions.action\
 				END\
 			) AS body\
 		FROM\
-			issue_actions\
+			{object}_actions\
 		LEFT JOIN\
-			(SELECT id, title, body, json_id, site, directory FROM issues LEFT JOIN json USING (json_id)) AS issues_json\
+			(\
+				SELECT id, title, body, json_id, site, directory\
+				FROM {object}s\
+				LEFT JOIN json USING (json_id)\
+			) AS {object}s_json\
 		ON\
-			(issue_actions.issue_id = issues_json.id AND issue_actions.issue_json = issues_json.directory)\
-		LEFT JOIN\
-			(SELECT cert_user_id, json_id AS action_json_id FROM json) AS action_json\
-		ON\
-			(action_json.action_json_id = issue_actions.json_id)\
-		WHERE\
-			issues_json.site IN (:params) AND issue_actions.json_id IN (SELECT json_id FROM json WHERE json.site = issues_json.site)\
-		\
-		UNION\
-		\
-		SELECT\
-			'comment' AS type, pull_request_actions.date_added AS date_added, pull_requests_json.title AS title, pull_request_actions.param AS param, 'repo/pull-requests/view/?' || pull_requests_json.site || '/' || pull_requests_json.id || '@' || REPLACE(pull_requests_json.directory, 'data/users/', '') AS url,\
-			'@' || REPLACE(cert_user_id, '@zeroid.bit', '') || ': ' || (\
-				CASE WHEN pull_request_actions.action = 'changeStatus'\
-					THEN (CASE WHEN pull_request_actions.param = 'reopen' THEN 'Reopened pull request' ELSE 'Closed pull request' END)\
-					ELSE 'Action ' || pull_request_actions.action\
-				END\
-			) AS body\
-		FROM\
-			pull_request_actions\
-		LEFT JOIN\
-			(SELECT id, title, body, json_id, site, directory FROM pull_requests LEFT JOIN json USING (json_id)) AS pull_requests_json\
-		ON\
-			(pull_request_actions.pull_request_id = pull_requests_json.id AND pull_request_actions.pull_request_json = pull_requests_json.directory)\
+			(\
+				{object}_actions.{object}_id = {object}s_json.id AND\
+				{object}_actions.{object}_json = {object}s_json.directory\
+			)\
 		LEFT JOIN\
 			(SELECT cert_user_id, json_id AS action_json_id FROM json) AS action_json\
 		ON\
-			(action_json.action_json_id = pull_request_actions.json_id)\
+			(action_json.action_json_id = {object}_actions.json_id)\
 		WHERE\
-			pull_requests_json.site IN (:params) AND pull_request_actions.json_id IN (SELECT json_id FROM json WHERE json.site = pull_requests_json.site)\
+			{object}s_json.site IN (:params) AND\
+			{object}_actions.json_id IN (SELECT json_id FROM json WHERE json.site = {object}s_json.site)\
 	"
 };
+
+FOLLOW_QUERIES = adjustFollowQueries(INITIAL_FOLLOW_QUERIES, [
+	{object: "issue", url_object: "issue", text_object: "issue", follow: "issue"},
+	{object: "pull_request", url_object: "pull-request", text_object: "pull request", follow: "pullRequest"}
+]);
+function adjustFollowQueries(queries, objects) {
+	return objects
+		.map(object => {
+			return Object.keys(queries)
+				.map(key => {
+					let value = queries[key]
+						.replace(/{object}/g, object.object)
+						.replace(/{url_object}/g, object.url_object)
+						.replace(/{text_object}/g, object.text_object);
+
+					key = key.replace(/{object}/g, object.follow);
+
+					return {[key]: value};
+				});
+		})
+		.reduce((arr, val) => arr.concat(val), []) // flatten
+		.reduce((obj, val) => Object.assign(obj, val), {}); // to object
+}
 
 class Repository {
 	constructor(address, zeroPage) {
@@ -87,8 +103,11 @@ class Repository {
 		this.zeroFS = new ZeroFS(zeroPage);
 		this.zeroAuth = new ZeroAuth(zeroPage);
 		this.zeroDB = new ZeroDB(zeroPage);
+		this.issues = new RepositoryIssues(this);
 	}
 
+	// Checks whether file `path` of repository can be signed by current user.
+	// If undefined, path is assumed to be content.json
 	isSignable(path) {
 		if(!path) {
 			path = "content.json";
@@ -110,6 +129,8 @@ class Repository {
 				return true;
 			});
 	}
+
+	// Returns cache for current repository from localStorage
 	getLocalCache() {
 		return this.zeroPage.cmd("wrapperGetLocalStorage")
 			.then(storage => {
@@ -120,6 +141,7 @@ class Repository {
 				return storage.repoCache[this.address];
 			})
 	}
+	// Saves cache for current repository
 	setLocalCache(cache) {
 		return this.zeroPage.cmd("wrapperGetLocalStorage")
 			.then(storage => {
@@ -137,7 +159,10 @@ class Repository {
 			});
 	}
 
-	// Permission actions
+	/***************************** Permission actions *****************************/
+
+	// Tries to add current site as merged site. Also adds index as merged, ZeroID
+	// as CORS. If current repository is a fork, also tries to set it up.
 	addMerger() {
 		let siteInfo, list, content, repoBase;
 		return this.zeroPage.getSiteInfo()
@@ -196,6 +221,8 @@ class Repository {
 				}
 			});
 	}
+
+	// Add site `address` as merged site and wait for any file to download.
 	addMergedSite(address) {
 		return this.zeroPage.cmd("mergerSiteList")
 			.then(list => {
@@ -223,7 +250,11 @@ class Repository {
 			});
 	}
 
-	// Content actions
+	/******************************* Content actions ******************************/
+
+	// Sign and publish `path` of current repository using `signStyle`.
+	// `signStyle` is `site` for using site private key or anything else for using
+	// ZeroID.
 	signAndPublish(path, signStyle) {
 		return this.zeroPage.cmd("siteSign", {inner_path: path, privatekey: signStyle == "site" ? "stored" : null})
 			.then(() => {
@@ -235,16 +266,25 @@ class Repository {
 				}
 			});
 	}
+
+	// Returns parsed content.json
 	getContent() {
 		return this.zeroFS.readFile("merged-GitCenter/" + this.address + "/content.json", true)
 			.then(content => JSON.parse(content));
 	}
+
+	// Saves content.json
 	setContent(content) {
 		return this.zeroFS.writeFile("merged-GitCenter/" + this.address + "/content.json", JSON.stringify(content, null, "\t"));
 	}
+
+	// Signs and publishes content.json
+	// `signStyle` is described in `signAndPublish`
 	signContent(signStyle) {
 		return this.signAndPublish("merged-GitCenter/" + this.address + "/content.json", signStyle);
 	}
+
+	// Signs content.json
 	sign() {
 		return this.zeroPage.cmd("siteSign", {inner_path: "merged-GitCenter/" + this.address + "/content.json"})
 			.then(res => {
@@ -254,6 +294,7 @@ class Repository {
 			});
 	}
 
+	// Returns array of valid signers for current repository
 	getSigners() {
 		return this.getContent()
 			.then(content => {
@@ -270,6 +311,8 @@ class Repository {
 				return signers;
 			});
 	}
+
+	// Returns true if current ZeroID is a valid signer
 	isOwned() {
 		let signers;
 		return this.getSigners()
@@ -282,6 +325,8 @@ class Repository {
 				return signers.indexOf(address) > -1;
 			});
 	}
+
+	// Returns name of repository owner
 	getOwner() {
 		let address;
 
@@ -333,6 +378,7 @@ class Repository {
 			});
 	}
 
+	// Changes title of repository (deprecated)
 	rename(newName) {
 		return this.getContent()
 			.then(content => {
@@ -341,6 +387,8 @@ class Repository {
 			})
 			.then(() => this.sign());
 	}
+
+	// Changes description of repository
 	changeDescription(description) {
 		return this.getContent()
 			.then(content => {
@@ -349,6 +397,8 @@ class Repository {
 			})
 			.then(() => this.sign());
 	}
+
+	// Adds or removes hooks from repository
 	changeHooks(hooks) {
 		return this.getContent()
 			.then(content => {
@@ -357,6 +407,8 @@ class Repository {
 			})
 			.then(() => this.sign());
 	}
+
+	// Sets up new repository (not fork). Sets title, description, signers.
 	install(title, description, address) {
 		let auth, content;
 		return this.getContent()
@@ -377,7 +429,8 @@ class Repository {
 				return this.setContent(content);
 			})
 			.then(() => {
-				return this.zeroFS.readFile("data/users/" + auth.address + "/data.json").catch(() => "{}");
+				return this.zeroFS.readFile("data/users/" + auth.address + "/data.json")
+					.catch(() => "{}");
 			})
 			.then(profile => {
 				profile = JSON.parse(profile);
@@ -393,8 +446,16 @@ class Repository {
 			});
 	}
 
-	// Fork
+	/************************************ Fork ************************************/
+
+	// Clones a repository
 	fork() {
+		// `siteClone` doesn't give us any clue about what is resulting repository
+		// address. So we assume that one doesn't fork a repository during the same
+		// repository is forked. We set `justForked` to local cache of this repository.
+		// Later we will check if `justForked` is set for `cloned_from` site of
+		// content.json. Notice that `cloned_from` can be 1Repo..., though that doesn't
+		// have cache at all usually.
 		return this.getLocalCache()
 			.then(cache => {
 				cache = cache || {};
@@ -405,6 +466,9 @@ class Repository {
 				return this.zeroPage.cmd("siteClone", [this.address]);
 			});
 	}
+
+	// Sets `signers` property of fork and removes `my` from title. This is done
+	// here and not in fork() because `siteClone` doesn't give us control over fork.
 	installFork() {
 		let auth;
 		return this.zeroAuth.requestAuth()
@@ -422,13 +486,17 @@ class Repository {
 			});
 	}
 
-	// Git actions
+	/********************************* Git actions ********************************/
+
+	// Returns list of files in directory
 	getFiles(branch, dir) {
 		return this.git.readBranchCommit(branch)
 			.then(commit => {
 				return this.getTree(commit.content.tree, dir);
 			});
 	}
+
+	// Returns list of files in directory and submodules
 	getTree(tree, dir) {
 		let submodules;
 
@@ -463,6 +531,8 @@ class Repository {
 				return tree.content;
 			});
 	}
+
+	// Returns file content
 	getFile(branch, path) {
 		return this.git.readBranchCommit(branch)
 			.then(commit => {
@@ -476,6 +546,8 @@ class Repository {
 				return blob.content;
 			});
 	}
+
+	// Returns branch list
 	getBranches() {
 		return this.git.getRefList()
 			.then(refs => {
@@ -486,6 +558,8 @@ class Repository {
 					));
 			});
 	}
+
+	// Changes file content. Commits with message `message` on branch `base`
 	saveFile(path, content, base, message) {
 		let auth, author, commit, parent;
 		return this.zeroAuth.requestAuth()
@@ -543,6 +617,8 @@ class Repository {
 			})
 			.then(() => commit);
 	}
+
+	// Uploads file (see `base` and `message` on saveFile())
 	uploadFile(path, base, message) {
 		return new Promise((resolve, reject) => {
 			let input = document.createElement("input");
@@ -560,12 +636,15 @@ class Repository {
 			input.click();
 		});
 	}
+
+	// Returns diff between commit and its parent (on merge commits uses 1st parent)
 	diff(branch) {
 		let commit;
 		return this.git.readBranchCommit(branch)
 			.then(c => {
 				commit = c;
 
+				// Compare root commit to empty tree
 				if(commit.content.parents.length == 0) {
 					return {
 						content: {
@@ -582,6 +661,8 @@ class Repository {
 				return Promise.all(
 					diff.map(item => {
 						if(item.type == "blob") {
+							// Diff all blobs
+
 							let promise;
 							if(item.action == "modified") {
 								promise = this.diffBlob(item.id, item.baseId);
@@ -597,6 +678,8 @@ class Repository {
 									return item;
 								});
 						} else if(item.type == "submodule") {
+							// Diff all submodules
+
 							if(item.action == "modified") {
 								item.content = this.diffSubmodule(item.id, item.baseId);
 							} else if(item.action == "add") {
@@ -613,6 +696,8 @@ class Repository {
 				);
 			});
 	}
+
+	// Diff tree against `base`. `root` is current path (empty string usually)
 	diffTree(tree, base, root) {
 		return Promise.all(
 			[
@@ -804,6 +889,8 @@ class Repository {
 					}));
 			});
 	}
+
+	// Diffs two blobs using jsdifflib
 	diffBlob(blob, base) {
 		let blobContent;
 		return (blob ? this.git.readUnknownObject(blob) : Promise.resolve({content: []}))
@@ -861,6 +948,8 @@ class Repository {
 				return view;
 			});
 	}
+
+	// Returns diff view for submodule
 	diffSubmodule(submodule, base) {
 		let baseContent = base ? difflib.stringAsLines("Subproject commit " + base) : [];
 		let submoduleContent = submodule ? difflib.stringAsLines("Subproject commit " + submodule) : [];
@@ -881,7 +970,9 @@ class Repository {
 		return view;
 	}
 
-	// Releases
+	/********************************** Releases **********************************/
+
+	// Returns release list
 	getReleases() {
 		let tags, releases;
 
@@ -953,6 +1044,8 @@ class Repository {
 				return releases;
 			});
 	}
+
+	// Marks tag as `not release`
 	removeRelease(tag) {
 		return this.getContent()
 			.then(content => {
@@ -969,675 +1062,95 @@ class Repository {
 			});
 	}
 
+	/******************************** Issues / PRs ********************************/
+	// Fallback to RepositoryIssues
+
 	// Issues
-	addIssue(title, content, tags) {
-		let auth, row;
-		return this.zeroAuth.requestAuth()
-			.then(a => {
-				auth = a;
-
-				return this.zeroDB.insertRow(
-					"merged-GitCenter/" + this.address + "/data/users/" + auth.address + "/data.json",
-					"merged-GitCenter/" + this.address + "/data/users/" + auth.address + "/content.json",
-					"issues",
-					{
-						title: title,
-						body: content,
-						date_added: Date.now(),
-						open: 1,
-						reopened: 0,
-						tags: tags.join(",")
-					},
-					{
-						source: "next_issue_id",
-						column: "id"
-					}
-				);
-			})
-			.then(row => {
-				row.json = "data/users/" + auth.address;
-				row.owned = true;
-				return row;
-			});
+	addIssue(...args) {
+		return this.issues.addIssue(...args);
 	}
-	changeIssue(id, json, content) {
-		return this.zeroDB.changeRow(
-			"merged-GitCenter/" + this.address + "/" + json + "/data.json",
-			"merged-GitCenter/" + this.address + "/" + json + "/content.json",
-			"issues",
-			issue => {
-				if(issue.id != id) {
-					return issue;
-				}
-
-				issue.body = content;
-
-				return issue;
-			}
-		);
+	changeIssue(...args) {
+		return this.issues.changeIssue(...args);
 	}
-	changeIssueTags(id, json, tags) {
-		return this.zeroDB.changeRow(
-			"merged-GitCenter/" + this.address + "/" + json + "/data.json",
-			"merged-GitCenter/" + this.address + "/" + json + "/content.json",
-			"issues",
-			issue => {
-				if(issue.id != id) {
-					return issue;
-				}
-
-				issue.tags = tags.join(",");
-
-				return issue;
-			}
-		);
+	changeIssueTags(...args) {
+		return this.issues.changeIssueTags(...args);
 	}
-	removeIssue(id, json) {
-		return this.zeroDB.removeRow(
-			"merged-GitCenter/" + this.address + "/" + json + "/data.json",
-			"merged-GitCenter/" + this.address + "/" + json + "/content.json",
-			"issues",
-			issue => {
-				return issue.id == id;
-			}
-		);
+	removeIssue(...args) {
+		return this.issues.removeIssue(...args);
 	}
-	getIssues(page) {
-		return this.zeroDB.query("SELECT issues.*, json.directory as json, json.cert_user_id FROM issues, json WHERE issues.json_id = json.json_id AND json.site = :address ORDER BY issues.date_added DESC LIMIT " + (page * 10) + ", 11", {
-			address: this.address
-		})
-			.then(issues => {
-				return {
-					issues: issues.slice(0, 10)
-						.map(issue => {
-							issue.tags = issue.tags ? issue.tags.split(",") : [];
-							return issue;
-						}),
-					nextPage: issues.length > 10
-				};
-			});
+	getIssues(...args) {
+		return this.issues.getIssues(...args);
 	}
-	getIssue(id, json) {
-		let issue;
-		return this.zeroDB.query("SELECT issues.*, json.directory, json.cert_user_id FROM issues, json WHERE issues.json_id = json.json_id AND json.directory = :json AND issues.id = :id AND json.site = :address", {
-			json: json,
-			id: id,
-			address: this.address
-		})
-			.then(i => {
-				issue = i[0];
-				issue.tags = issue.tags ? issue.tags.split(",") : [];
-
-				return this.isSignable(issue.directory + "/content.json");
-			})
-			.then(signable => {
-				issue.owned = signable;
-				return issue;
-			});
+	getIssue(...args) {
+		return this.issues.getIssue(...args);
 	}
-	getIssueComments(id, json) {
-		let comments;
-
-		return this.zeroDB.query("\
-			SELECT\
-				-1 AS id,\
-				issues.body AS body,\
-				issues.date_added AS date_added,\
-				json.directory AS json,\
-				json.cert_user_id AS cert_user_id,\
-				issues.id AS issue_id,\
-				json.directory AS issue_json\
-			FROM issues, json\
-			WHERE\
-				issues.json_id = json.json_id AND\
-				json.directory = :json AND\
-				issues.id = :id AND\
-				json.site = :address\
-			\
-			UNION ALL\
-			\
-			SELECT\
-				issue_comments.id AS id,\
-				issue_comments.body AS body,\
-				issue_comments.date_added AS date_added,\
-				json.directory AS json,\
-				json.cert_user_id AS cert_user_id,\
-				issue_comments.issue_id AS issue_id,\
-				issue_comments.issue_json AS issue_json\
-			FROM issue_comments, json\
-			WHERE\
-				issue_comments.json_id = json.json_id AND\
-				issue_comments.issue_json = :json AND\
-				issue_comments.issue_id = :id AND\
-				json.site = :address\
-			\
-			ORDER BY date_added ASC\
-		", {
-			json: json,
-			id: id,
-			address: this.address
-		})
-			.then(c => {
-				comments = c;
-				comments = comments.map(comment => this.highlightComment(comment));
-
-				return this.isSignable();
-			})
-			.then(signable => {
-				if(signable) {
-					return comments.map(comment => {
-						comment.owned = true;
-						return comment;
-					});
-				}
-
-				let auth = this.zeroAuth.getAuth();
-				if(auth) {
-					return comments.map(comment => {
-						if(comment.json == "data/users/" + auth.address) {
-							comment.owned = true;
-						} else {
-							comment.owned = false;
-						}
-						return comment;
-					});
-				} else {
-					return comments;
-				}
-			});
+	getIssueComments(...args) {
+		return this.issues.getIssueComments(...args);
 	}
-	getIssueActions(id, json) {
-		let comments;
-		return this.getIssueComments(id, json)
-			.then(c => {
-				comments = c;
-
-				return this.zeroDB.query("\
-					SELECT\
-						issue_actions.id AS id,\
-						issue_actions.action AS action,\
-						issue_actions.param AS param,\
-						issue_actions.date_added AS date_added,\
-						json.directory AS json,\
-						json.cert_user_id AS cert_user_id,\
-						issue_actions.issue_id AS issue_id,\
-						issue_actions.issue_json AS issue_json\
-					FROM issue_actions, json\
-					WHERE\
-						issue_actions.json_id = json.json_id AND\
-						issue_actions.issue_json = :json AND\
-						issue_actions.issue_id = :id AND\
-						json.site = :address\
-					\
-					ORDER BY date_added ASC\
-				", {
-					json: json,
-					id: id,
-					address: this.address
-				});
-			})
-			.then(actions => {
-				return comments.concat(actions).sort((a, b) => a.date_added - b.date_added);
-			});
+	getIssueActions(...args) {
+		return this.issues.getIssueActions(...args);
 	}
-	addIssueComment(issueId, issueJson, content) {
-		let auth, row;
-		return this.zeroAuth.requestAuth()
-			.then(a => {
-				auth = a;
-
-				return this.zeroDB.insertRow(
-					"merged-GitCenter/" + this.address + "/data/users/" + auth.address + "/data.json",
-					"merged-GitCenter/" + this.address + "/data/users/" + auth.address + "/content.json",
-					"issue_comments",
-					{
-						issue_id: issueId,
-						issue_json: issueJson,
-						body: content,
-						date_added: Date.now()
-					},
-					{
-						source: "next_issue_comment_id",
-						column: "id"
-					}
-				);
-			})
-			.then(r => {
-				row = r;
-
-				return this.zeroDB.getJsonID(this.address + "/data/users/" + auth.address + "/data.json", 3);
-			})
-			.then(json_id => {
-				row.json = "data/users/" + auth.address;
-
-				return this.zeroDB.query("SELECT * FROM json WHERE json_id = :jsonId", {jsonId: json_id});
-			})
-			.then(jsonRow => {
-				row.cert_user_id = jsonRow[0].cert_user_id;
-				row.owned = true;
-
-				return row;
-			});
+	addIssueComment(...args) {
+		return this.issues.addIssueComment(...args);
 	}
-	changeIssueComment(id, json, content) {
-		return this.zeroDB.changeRow(
-			"merged-GitCenter/" + this.address + "/" + json + "/data.json",
-			"merged-GitCenter/" + this.address + "/" + json + "/content.json",
-			"issue_comments",
-			comment => {
-				if(comment.id != id) {
-					return comment;
-				}
-
-				comment.body = content;
-
-				return comment;
-			}
-		);
+	changeIssueComment(...args) {
+		return this.issues.changeIssueComment(...args);
 	}
-	removeIssueComment(id, json) {
-		return this.zeroDB.removeRow(
-			"merged-GitCenter/" + this.address + "/" + json + "/data.json",
-			"merged-GitCenter/" + this.address + "/" + json + "/content.json",
-			"issue_comments",
-			comment => {
-				return comment.id == id;
-			}
-		);
+	removeIssueComment(...args) {
+		return this.issues.removeIssueComment(...args);
 	}
-	changeIssueStatus(id, json, open) {
-		return this.zeroDB.changeRow(
-			"merged-GitCenter/" + this.address + "/" + json + "/data.json",
-			"merged-GitCenter/" + this.address + "/" + json + "/content.json",
-			"issues",
-			issue => {
-				if(issue.id != id) {
-					return issue;
-				}
-
-				if(open) {
-					issue.open = true;
-					issue.reopened = true;
-				} else {
-					issue.open = false;
-				}
-
-				return issue;
-			}
-		)
-			.then(() => {
-				return this.zeroDB.insertRow(
-					"merged-GitCenter/" + this.address + "/" + json + "/data.json",
-					"merged-GitCenter/" + this.address + "/" + json + "/content.json",
-					"issue_actions",
-					{
-						issue_id: id,
-						issue_json: json,
-						action: "changeStatus",
-						param: open ? "reopen" : "close",
-						date_added: Date.now()
-					},
-					{
-						source: "next_issue_action_id",
-						column: "id"
-					}
-				);
-			})
-			.then(row => {
-				let auth = this.zeroAuth.getAuth();
-				row.cert_user_id = auth ? auth.user : "You";
-				return row;
-			});
+	changeIssueStatus(...args) {
+		return this.issues.changeIssueStatus(...args);
 	}
 
 	// Pull requests
-	addPullRequest(title, content, forkAddress, forkBranch, tags) {
-		let auth, row;
-		return this.zeroAuth.requestAuth()
-			.then(a => {
-				auth = a;
-
-				return this.zeroDB.insertRow(
-					"merged-GitCenter/" + this.address + "/data/users/" + auth.address + "/data.json",
-					"merged-GitCenter/" + this.address + "/data/users/" + auth.address + "/content.json",
-					"pull_requests",
-					{
-						title: title,
-						body: content,
-						date_added: Date.now(),
-						merged: 0,
-						fork_address: forkAddress,
-						fork_branch: forkBranch,
-						tags: tags.join(",")
-					},
-					{
-						source: "next_pull_request_id",
-						column: "id"
-					}
-				);
-			})
-			.then(row => {
-				row.json = "data/users/" + auth.address;
-				row.owned = true;
-				return row;
-			});
+	addPullRequest(...args) {
+		return this.issues.addPullRequest(...args);
 	}
-	changePullRequest(id, json, content) {
-		return this.zeroDB.changeRow(
-			"merged-GitCenter/" + this.address + "/" + json + "/data.json",
-			"merged-GitCenter/" + this.address + "/" + json + "/content.json",
-			"pull_requests",
-			pullRequest => {
-				if(pullRequest.id != id) {
-					return pullRequest;
-				}
-
-				pullRequest.body = content;
-
-				return pullRequest;
-			}
-		);
+	changePullRequest(...args) {
+		return this.issues.changePullRequest(...args);
 	}
-	changePullRequestTags(id, json, tags) {
-		return this.zeroDB.changeRow(
-			"merged-GitCenter/" + this.address + "/" + json + "/data.json",
-			"merged-GitCenter/" + this.address + "/" + json + "/content.json",
-			"pull_requests",
-			pullRequest => {
-				if(pullRequest.id != id) {
-					return pullRequest;
-				}
-
-				pullRequest.tags = tags.join(",");
-
-				return pullRequest;
-			}
-		);
+	changePullRequestTags(...args) {
+		return this.issues.changePullRequestTags(...args);
 	}
-	removePullRequest(id, json) {
-		return this.zeroDB.removeRow(
-			"merged-GitCenter/" + this.address + "/" + json + "/data.json",
-			"merged-GitCenter/" + this.address + "/" + json + "/content.json",
-			"pull_requests",
-			pullRequest => {
-				return pullRequest.id == id;
-			}
-		);
+	removePullRequest(...args) {
+		return this.issues.removePullRequest(...args);
 	}
-	getPullRequests(page) {
-		return this.zeroDB.query("SELECT pull_requests.*, json.directory as json, json.cert_user_id FROM pull_requests, json WHERE pull_requests.json_id = json.json_id AND json.site = :address ORDER BY pull_requests.date_added DESC LIMIT " + (page * 10) + ", 11", {
-			address: this.address
-		})
-			.then(pullRequests => {
-				return {
-					pullRequests: pullRequests.slice(0, 10)
-						.map(pullRequest => {
-							pullRequest.tags = pullRequest.tags ? pullRequest.tags.split(",") : [];
-							return pullRequest;
-						}),
-					nextPage: pullRequests.length > 10
-				};
-			});
+	getPullRequests(...args) {
+		return this.issues.getPullRequests(...args);
 	}
-	getPullRequest(id, json) {
-		let pullRequest;
-		return this.zeroDB.query("SELECT pull_requests.*, json.directory, json.cert_user_id FROM pull_requests, json WHERE pull_requests.json_id = json.json_id AND json.directory = :json AND pull_requests.id = :id AND json.site = :address", {
-			json: json,
-			id: id,
-			address: this.address
-		})
-			.then(p => {
-				pullRequest = p[0];
-				pullRequest.tags = pullRequest.tags ? pullRequest.tags.split(",") : [];
-
-				return this.isSignable(pullRequest.directory + "/content.json");
-			})
-			.then(signable => {
-				pullRequest.owned = signable;
-				return pullRequest;
-			});
+	getPullRequest(...args) {
+		return this.issues.getPullRequest(...args);
 	}
-	getPullRequestComments(id, json) {
-		let comments;
-
-		return this.zeroDB.query("\
-			SELECT\
-				-1 AS id,\
-				pull_requests.body AS body,\
-				pull_requests.date_added AS date_added,\
-				json.directory AS json,\
-				json.cert_user_id AS cert_user_id,\
-				pull_requests.id AS pull_request_id,\
-				json.directory AS pull_request_json\
-			FROM pull_requests, json\
-			WHERE\
-				pull_requests.json_id = json.json_id AND\
-				json.directory = :json AND\
-				pull_requests.id = :id AND\
-				json.site = :address\
-			\
-			UNION ALL\
-			\
-			SELECT\
-				pull_request_comments.id AS id,\
-				pull_request_comments.body AS body,\
-				pull_request_comments.date_added AS date_added,\
-				json.directory AS json,\
-				json.cert_user_id AS cert_user_id,\
-				pull_request_comments.pull_request_id AS pull_request_id,\
-				pull_request_comments.pull_request_json AS pull_request_json\
-			FROM pull_request_comments, json\
-			WHERE\
-				pull_request_comments.json_id = json.json_id AND\
-				pull_request_comments.pull_request_json = :json AND\
-				pull_request_comments.pull_request_id = :id AND\
-				json.site = :address\
-			\
-			ORDER BY date_added ASC\
-		", {
-			json: json,
-			id: id,
-			address: this.address
-		})
-			.then(c => {
-				comments = c;
-				comments = comments.map(comment => this.highlightComment(comment));
-
-				return this.isSignable();
-			})
-			.then(signable => {
-				if(signable) {
-					return comments.map(comment => {
-						comment.owned = true;
-						return comment;
-					});
-				}
-
-				let auth = this.zeroAuth.getAuth();
-				if(auth) {
-					return comments.map(comment => {
-						if(comment.json == "data/users/" + auth.address) {
-							comment.owned = true;
-						} else {
-							comment.owned = false;
-						}
-						return comment;
-					});
-				} else {
-					return comments;
-				}
-			});
+	getPullRequestComments(...args) {
+		return this.issues.getPullRequestComments(...args);
 	}
-	getPullRequestActions(id, json) {
-		let comments;
-		return this.getPullRequestComments(id, json)
-			.then(c => {
-				comments = c;
-
-				return this.zeroDB.query("\
-					SELECT\
-						pull_request_actions.id AS id,\
-						pull_request_actions.action AS action,\
-						pull_request_actions.param AS param,\
-						pull_request_actions.date_added AS date_added,\
-						json.directory AS json,\
-						json.cert_user_id AS cert_user_id,\
-						pull_request_actions.pull_request_id AS pull_request_id,\
-						pull_request_actions.pull_request_json AS pull_request_json\
-					FROM pull_request_actions, json\
-					WHERE\
-						pull_request_actions.json_id = json.json_id AND\
-						pull_request_actions.pull_request_json = :json AND\
-						pull_request_actions.pull_request_id = :id AND\
-						json.site = :address\
-					\
-					ORDER BY date_added ASC\
-				", {
-					json: json,
-					id: id,
-					address: this.address
-				});
-			})
-			.then(actions => {
-				return comments.concat(actions).sort((a, b) => a.date_added - b.date_added);
-			});
+	getPullRequestActions(...args) {
+		return this.issues.getPullRequestActions(...args);
 	}
-	addPullRequestComment(pullRequestId, pullRequestJson, content) {
-		let auth, row;
-		return this.zeroAuth.requestAuth()
-			.then(a => {
-				auth = a;
-
-				return this.zeroDB.insertRow(
-					"merged-GitCenter/" + this.address + "/data/users/" + auth.address + "/data.json",
-					"merged-GitCenter/" + this.address + "/data/users/" + auth.address + "/content.json",
-					"pull_request_comments",
-					{
-						pull_request_id: pullRequestId,
-						pull_request_json: pullRequestJson,
-						body: content,
-						date_added: Date.now()
-					},
-					{
-						source: "next_pull_request_comment_id",
-						column: "id"
-					}
-				);
-			})
-			.then(r => {
-				row = r;
-
-				return this.zeroDB.getJsonID(this.address + "/data/users/" + auth.address + "/data.json", 3);
-			})
-			.then(json_id => {
-				row.json = "data/users/" + auth.address;
-
-				return this.zeroDB.query("SELECT * FROM json WHERE json_id = :jsonId", {jsonId: json_id});
-			})
-			.then(jsonRow => {
-				row.cert_user_id = jsonRow[0].cert_user_id;
-				row.owned = true;
-
-				return row;
-			});
+	addPullRequestComment(...args) {
+		return this.issues.addPullRequestComment(...args);
 	}
-	changePullRequestComment(id, json, content) {
-		return this.zeroDB.changeRow(
-			"merged-GitCenter/" + this.address + "/" + json + "/data.json",
-			"merged-GitCenter/" + this.address + "/" + json + "/content.json",
-			"pull_request_comments",
-			comment => {
-				if(comment.id != id) {
-					return comment;
-				}
-
-				comment.body = content;
-
-				return comment;
-			}
-		);
+	changePullRequestComment(...args) {
+		return this.issues.changePullRequestComment(...args);
 	}
-	removePullRequestComment(id, json) {
-		return this.zeroDB.removeRow(
-			"merged-GitCenter/" + this.address + "/" + json + "/data.json",
-			"merged-GitCenter/" + this.address + "/" + json + "/content.json",
-			"pull_request_comments",
-			comment => {
-				return comment.id == id;
-			}
-		);
+	removePullRequestComment(...args) {
+		return this.issues.removePullRequestComment(...args);
 	}
-	changePullRequestStatus(id, json, merged) {
-		return this.zeroDB.changeRow(
-			"merged-GitCenter/" + this.address + "/" + json + "/data.json",
-			"merged-GitCenter/" + this.address + "/" + json + "/content.json",
-			"pull_requests",
-			pullRequest => {
-				if(pullRequest.id != id) {
-					return pullRequest;
-				}
-
-				pullRequest.merged = merged;
-
-				return pullRequest;
-			}
-		)
-			.then(() => {
-				return this.zeroDB.insertRow(
-					"merged-GitCenter/" + this.address + "/" + json + "/data.json",
-					"merged-GitCenter/" + this.address + "/" + json + "/content.json",
-					"pull_request_actions",
-					{
-						pull_request_id: id,
-						pull_request_json: json,
-						action: "changeStatus",
-						param: merged ? "close" : "reopen",
-						date_added: Date.now()
-					},
-					{
-						source: "next_pull_request_action_id",
-						column: "id"
-					}
-				);
-			})
-			.then(row => {
-				let auth = this.zeroAuth.getAuth();
-				row.cert_user_id = auth ? auth.user : "You";
-				return row;
-			});
+	changePullRequestStatus(...args) {
+		return this.issues.changePullRequestStatus(...args);
 	}
-	importPullRequest(pullRequest) {
-		let forkAddress = pullRequest.fork_address;
-		if(forkAddress.indexOf("1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t") > -1) {
-			// http://127.0.0.1:43110/1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t/repo/?address
-			forkAddress = forkAddress.match(/repo\/\?(.*)/)[1];
-		} else {
-			// http://127.0.0.1:43110/address
-			// or
-			// address
-			forkAddress = forkAddress.match(/1[A-Za-z0-9]{25,34}/)[0];
-		}
 
-		let other = new Repository(forkAddress, this.zeroPage);
+	/********************************** Markdown **********************************/
 
-		let ref;
-		return other.addMerger()
-			.then(() => {
-				return other.git.getBranchCommit(pullRequest.fork_branch);
-			})
-			.then(r => {
-				ref = r;
-				return this.git.importObjectWithDependencies(other.git, ref);
-			})
-			.then(() => {
-				return this.git.setRef("refs/heads/pr-" + pullRequest.id + "-" + pullRequest.cert_user_id.replace(/@.*/, ""), ref);
-			});
-	}
+	// Sets `originalBody` of comment to `body`, sets `body` to parsed `body`
 	highlightComment(comment) {
 		comment.originalBody = comment.body;
 		comment.body = this.renderMarked(comment.body);
 		return comment;
 	}
+
+	// Sets options for marked
 	setUpMarked() {
 		if(!this.markedOptions) {
 			let issueParser = "<a href=\"/1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t/repo/issues/view/?" + this.address + "/$1@$2\">#$1@$2</a>";
@@ -1698,17 +1211,23 @@ class Repository {
 			marked.setOptions(this.markedOptions);
 		}
 	}
+
+	// Renders markdown using marked (first sets it up)
 	renderMarked(text) {
 		this.setUpMarked();
 		return this.markedOptions.renderer.all(marked(text));
 	}
+
+	// Returns human-parsable string for action
 	parseAction(action, context) {
 		if(action.action == "changeStatus") {
 			return action.cert_user_id + " " + (action.param == "close" ? "closed" : "reopened") + " " + context + " " + this.translateDate(action.date_added);
 		}
 	}
 
-	// Muted
+	/************************************ Muted ***********************************/
+
+	// Returns array of muted usernames
 	getMuted() {
 		return this.zeroFS.readFile("merged-GitCenter/" + this.address + "/data/users/content.json")
 			.then(content => {
@@ -1718,6 +1237,8 @@ class Repository {
 					.filter(username => content.user_contents.permissions[username] == false);
 			});
 	}
+
+	// Mutes username
 	mute(name) {
 		return this.zeroFS.readFile("merged-GitCenter/" + this.address + "/data/users/content.json")
 			.then(content => {
@@ -1733,6 +1254,8 @@ class Repository {
 				return this.signAndPublish("merged-GitCenter/" + this.address + "/data/users/content.json", "site");
 			});
 	}
+
+	// Unmutes username
 	unmute(name) {
 		return this.zeroFS.readFile("merged-GitCenter/" + this.address + "/data/users/content.json")
 			.then(content => {
@@ -1751,7 +1274,9 @@ class Repository {
 			});
 	}
 
-	// Maintainers
+	/*********************************** ZeroID ***********************************/
+
+	// Reads `name` file of ZeroID and caches it
 	getZeroIdFile(name, cache, property) {
 		if(this[cache]) {
 			return Promise.resolve(this[cache]);
@@ -1768,6 +1293,8 @@ class Repository {
 				return this[cache];
 			});
 	}
+
+	// Returns user info by auth address
 	findUserById(id) {
 		return this.getZeroIdFile("data/users.json", "_cached_users_json", "users")
 			.then(users => {
@@ -1832,6 +1359,7 @@ class Repository {
 										return;
 									}
 
+
 									resulted++;
 									if(resulted == userNames.length) {
 										rejecter("ID " + id + " was not found");
@@ -1843,6 +1371,8 @@ class Repository {
 					});
 			});
 	}
+
+	// Returns user info by ZeroID name
 	findUserByName(userName) {
 		return this.getZeroIdFile("data/users.json", "_cached_users_json", "users")
 			.then(users => {
@@ -1890,6 +1420,10 @@ class Repository {
 					});
 			});
 	}
+
+	/********************************* Maintainers ********************************/
+
+	// Returns maintainer list as array of usernames (deprecated)
 	getMaintainers() {
 		let signers;
 
@@ -1905,6 +1439,8 @@ class Repository {
 			})
 			.then(userNames => userNames.filter(userName => userName));
 	}
+
+	// Removes maintainer from list (deprecated)
 	removeMaintainer(name) {
 		let cert, content, signers;
 		return this.findUserByName(name)
@@ -1928,6 +1464,8 @@ class Repository {
 				return this.signContent();
 			});
 	}
+
+	// Adds maintainer to list (deprecated)
 	addMaintainer(name, signStyle) {
 		let cert, content, signers;
 		return this.findUserByName(name)
@@ -1955,12 +1493,14 @@ class Repository {
 			});
 	}
 
-	// Follow
+	/*********************************** Follow ***********************************/
+
+	// Follow current repository issues and pull requests
 	follow() {
 		return this.zeroPage.cmd("feedListFollow")
 			.then(feedList => {
 				if(!feedList["Issues"]) {
-					feedList["Issues"] = [FOLLOW_QUERIES.issues, []];
+					feedList["Issues"] = [FOLLOW_QUERIES.objects, []];
 				}
 				if(!feedList["Pull requests"]) {
 					feedList["Pull requests"] = [FOLLOW_QUERIES.pullRequests, []];
@@ -1980,6 +1520,8 @@ class Repository {
 				return this.zeroPage.cmd("feedFollow", [feedList]);
 			});
 	}
+
+	// Unfollow current repository issues and pull requests
 	unfollow() {
 		return this.zeroPage.cmd("feedListFollow")
 			.then(feedList => {
@@ -1993,6 +1535,8 @@ class Repository {
 				return this.zeroPage.cmd("feedFollow", [feedList]);
 			});
 	}
+
+	// Installs new version of follow list
 	updateFollow() {
 		return this.zeroPage.cmd("feedListFollow")
 			.then(feedList => {
@@ -2043,13 +1587,16 @@ class Repository {
 				}
 			});
 	}
+
+	// Merge and unique
 	getFollowListFor(feedList) {
-		// Merge and unique
 		return Object.values(feedList)
 			.map(data => data[1])
 			.reduce((arr, val) => arr.concat(val), [])
 			.filter((val, i, arr) => arr.indexOf(val) == i);
 	}
+
+	// Returns whether you are following current repository
 	isFollowing() {
 		return this.zeroPage.cmd("feedListFollow")
 			.then(feedList => {
@@ -2060,7 +1607,9 @@ class Repository {
 			});
 	}
 
-	// Index
+	/************************************ Index ***********************************/
+
+	// Add current repository to index
 	addToIndex() {
 		let content, auth;
 		return this.getContent()
@@ -2094,6 +1643,8 @@ class Repository {
 				return this.signAndPublish("merged-GitCenter/1iNDExENNBsfHc6SKmy1HaeasHhm3RPcL/data/users/" + auth.address + "/content.json");
 			});
 	}
+
+	// Remove current repository from index
 	removeFromIndex() {
 		let auth;
 		return this.zeroAuth.requestAuth()
@@ -2127,6 +1678,8 @@ class Repository {
 				return indexers.length ? indexers : false;
 			});
 	}
+
+	// Returns bitmask for repository place in index
 	isInIndex() {
 		// 0b01
 		//   ^^ indexed by somebody else
@@ -2142,6 +1695,8 @@ class Repository {
 				return (indexedByYou << 1) | indexedBySomebody;
 			});
 	}
+
+	// Returns indexer list
 	getIndexers() {
 		return this.zeroDB.query("SELECT repo_index.*, json.cert_user_id FROM repo_index, json WHERE repo_index.json_id = json.json_id AND repo_index.address = :address", {
 			address: this.address
@@ -2151,7 +1706,9 @@ class Repository {
 			});
 	}
 
-	// Starring
+	/********************************** Starring **********************************/
+
+	// Return {starred: is starred by you, count: total star count}
 	getStars() {
 		let auth = this.zeroAuth.getAuth();
 
@@ -2165,6 +1722,8 @@ class Repository {
 				};
 			});
 	}
+
+	// Stars/unstars repository (based on current value) and returns getStars() result
 	star() {
 		let auth, starred;
 
@@ -2208,6 +1767,9 @@ class Repository {
 			});
 	}
 
+	/****************************** Helper functions ******************************/
+
+	// Translates time and date from timestamp to human-readable format
 	translateDate(date) {
 		date = new Date(date);
 
@@ -2238,6 +1800,8 @@ class Repository {
 			);
 		}
 	}
+
+	// Translates time from timestamp to human-readable format (deprecated)
 	translateTime(date) {
 		date = new Date(date);
 
@@ -2248,6 +1812,7 @@ class Repository {
 		);
 	}
 
+	// Returns log
 	getCommits(leaf, count) {
 		let heads = [];
 		let commits = [];
@@ -2284,6 +1849,8 @@ class Repository {
 			})
 			.then(() => commits);
 	}
+
+	// Converts author (like "Name <email> timestamp") to text
 	parseAuthor(author) {
 		let name = author.substr(0, author.indexOf("<")).trim();
 		let email = author.substr(0, author.indexOf(">")).substr(author.indexOf("<") + 1);
@@ -2297,6 +1864,8 @@ class Repository {
 
 		return name + " commited " + this.translateDate(relativeDate) + " " + this.translateTime(relativeDate) + " " + offsetString;
 	}
+
+	// Downloads data as octet-stream
 	download(name, data) {
 		let blob = new Blob([data], {type: "application/octet-stream"});
 		let link = document.createElement("a");
@@ -2307,6 +1876,7 @@ class Repository {
 		document.body.removeChild(link);
 	}
 
+	// Converts text to color
 	tagToColor(tag) {
 		tag = tag + tag + tag;
 

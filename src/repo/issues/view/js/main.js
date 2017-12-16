@@ -13,40 +13,6 @@ if(isNaN(id) || json == "data/users/") {
 	location.href = "../?" + address;
 }
 
-function drawIssueStatus() {
-	let statusText = issue.open ? (issue.reopened ? "reopened" : "open") : "closed";
-
-	document.getElementById("issue_status").className = "issue-status issue-status-" + statusText;
-	document.getElementById("issue_status_img").src = "../../../img/issue-" + statusText + "-white.svg";
-	document.getElementById("issue_status_text").innerHTML = statusText[0].toUpperCase() + statusText.substr(1);
-
-	document.getElementById("comment_submit_close").innerHTML = "Comment and " + (issue.open ? "close" : "reopen") + " issue";
-}
-
-function addTag(tag) {
-	let color = repo.tagToColor(tag);
-
-	let node = document.createElement("div");
-	node.className = "tag";
-	node.style.backgroundColor = color.background;
-	node.style.color = color.foreground;
-	node.textContent = tag;
-	document.getElementById("tags").appendChild(node);
-
-	if(issue.owned) {
-		let remove = document.createElement("div");
-		remove.className = "tag-remove";
-		remove.innerHTML = "&times;";
-		remove.onclick = () => {
-			node.parentNode.removeChild(node);
-			issue.tags.splice(issue.tags.indexOf(tag), 1);
-
-			repo.changeIssueTags(id, json, issue.tags);
-		};
-		node.appendChild(remove);
-	}
-}
-
 
 let issue;
 repo.addMerger()
@@ -71,53 +37,12 @@ repo.addMerger()
 		document.getElementById("issue_id").textContent = id;
 		document.getElementById("issue_json_id").textContent = json.replace("data/users/", "");
 
-		issue.tags.forEach(addTag);
-		if(issue.owned) {
-			let add = document.createElement("div");
-			add.className = "tag-add";
-			add.innerHTML = "+";
-			add.onclick = () => {
-				zeroPage.prompt("New tags (comma-separated):")
-					.then(tags => {
-						tags = tags
-							.split(",")
-							.map(tag => tag.trim())
-							.filter(tag => tag);
+		showTags("issue", issue);
+		drawObjectStatus("issue", "issue", "issue", "issue", issue.open ? (issue.reopened ? "reopened" : "open") : "closed", issue.open ? "close issue" : "reopen issue");
 
-						tags.forEach(addTag);
-						add.parentNode.appendChild(add); // Move to end of container
-
-						issue.tags = issue.tags.concat(tags);
-						repo.changeIssueTags(id, json, issue.tags);
-					});
-			};
-			document.getElementById("tags").appendChild(add);
-		}
-
-		drawIssueStatus();
-
-		return repo.getIssueActions(id, json);
+		return showActions("issue", "issue", id, json);
 	})
-	.then(actions => {
-		actions.forEach(action => showAction(action, "issue"));
-
-		document.getElementById("comment_submit").onclick = () => {
-			let contentNode = document.getElementById("comment_content");
-			if(contentNode.disabled || contentNode.value == "") {
-				return;
-			}
-
-			contentNode.disabled = true;
-
-			repo.addIssueComment(id, json, contentNode.value)
-				.then(comment => {
-					showAction(repo.highlightComment(comment), "issue");
-
-					contentNode.value = "";
-					contentNode.disabled = false;
-				});
-		};
-
+	.then(() => {
 		if(issue.owned) {
 			document.getElementById("comment_submit_close").style.display = "inline-block";
 			document.getElementById("comment_submit_close").onclick = () => {
@@ -151,7 +76,7 @@ repo.addMerger()
 							issue.open = true;
 							issue.reopened = true;
 						}
-						drawIssueStatus();
+						drawObjectStatus("issue", "issue", "issue", "issue", issue.open ? (issue.reopened ? "reopened" : "open") : "closed", issue.open ? "close issue" : "reopen issue");
 
 						contentNode.value = "";
 						contentNode.disabled = false;
