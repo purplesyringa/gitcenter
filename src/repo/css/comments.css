@@ -117,6 +117,7 @@
 	height: 16px;
 	float: right;
 	margin-left: 16px;
+	cursor: pointer;
 
 	background-repeat: no-repeat;
 	background-size: contain;
