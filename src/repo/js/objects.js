@@ -58,3 +58,30 @@ function showNavigation(objects, currentPage) {
 		button.href = "?" + address + "/" + (currentPage + 1);
 	}
 }
+
+function showFollowing() {
+	function updateFollowing(isFollowing) {
+		document.getElementById("follow").innerHTML = isFollowing ? "Stop following" : "Follow issues and pull requests in newsfeed";
+	}
+
+	return repo.isFollowing()
+		.then(isFollowing => {
+			let followButton = document.getElementById("follow");
+			updateFollowing(isFollowing);
+			followButton.onclick = () => {
+				if(isFollowing) {
+					repo.unfollow()
+						.then(() => {
+							isFollowing = false;
+							updateFollowing(isFollowing);
+						});
+				} else {
+					repo.follow()
+						.then(() => {
+							isFollowing = true;
+							updateFollowing(isFollowing);
+						});
+				}
+			};
+		});
+}
