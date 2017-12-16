@@ -41,6 +41,7 @@ repo.addMerger()
 
 		showTags("pull_request", pullRequest);
 		drawObjectStatus("pull_request", "pull-request", "pr", "pull request", pullRequest.merged ? "merged" : "opened", pullRequest.merged ? "reopen pull request" : "mark pull request as merged");
+		showCommentButtons("pull_request", "pull request", id, json);
 
 		return showActions("pull_request", "pull request", id, json);
 	})

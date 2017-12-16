@@ -39,6 +39,7 @@ repo.addMerger()
 
 		showTags("issue", issue);
 		drawObjectStatus("issue", "issue", "issue", "issue", issue.open ? (issue.reopened ? "reopened" : "open") : "closed", issue.open ? "close issue" : "reopen issue");
+		showCommentButtons("issue", "issue", id, json);
 
 		return showActions("issue", "issue", id, json);
 	})
