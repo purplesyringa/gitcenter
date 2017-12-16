@@ -30,3 +30,29 @@ function addTag(context, object, tag) {
 		node.appendChild(remove);
 	}
 }
+
+function showTags(context, object) {
+	object.tags.forEach(tag => addTag(context, object, tag));
+
+	if(object.owned) {
+		let add = document.createElement("div");
+		add.className = "tag-add";
+		add.innerHTML = "+";
+		add.onclick = () => {
+			zeroPage.prompt("New tags (comma-separated):")
+				.then(tags => {
+					tags = tags
+						.split(",")
+						.map(tag => tag.trim())
+						.filter(tag => tag);
+
+					tags.forEach(tag => addTag(context, object, tag));
+					add.parentNode.appendChild(add); // Move to end of container
+
+					object.tags = object.tags.concat(tags);
+					repo.changeObjectTags(context, id, json, object.tags);
+				});
+		};
+		document.getElementById("tags").appendChild(add);
+	}
+}

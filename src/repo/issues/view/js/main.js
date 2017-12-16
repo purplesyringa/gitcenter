@@ -37,29 +37,7 @@ repo.addMerger()
 		document.getElementById("issue_id").textContent = id;
 		document.getElementById("issue_json_id").textContent = json.replace("data/users/", "");
 
-		issue.tags.forEach(tag => addTag("issue", issue, tag));
-		if(issue.owned) {
-			let add = document.createElement("div");
-			add.className = "tag-add";
-			add.innerHTML = "+";
-			add.onclick = () => {
-				zeroPage.prompt("New tags (comma-separated):")
-					.then(tags => {
-						tags = tags
-							.split(",")
-							.map(tag => tag.trim())
-							.filter(tag => tag);
-
-						tags.forEach(tag => addTag("issue", issue, tag));
-						add.parentNode.appendChild(add); // Move to end of container
-
-						issue.tags = issue.tags.concat(tags);
-						repo.changeIssueTags(id, json, issue.tags);
-					});
-			};
-			document.getElementById("tags").appendChild(add);
-		}
-
+		showTags("issue", issue);
 		drawObjectStatus("issue", "issue", "issue", "issue", issue.open ? (issue.reopened ? "reopened" : "open") : "closed", issue.open ? "close issue" : "reopen issue");
 
 		return repo.getIssueActions(id, json);
