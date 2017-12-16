@@ -13,16 +13,6 @@ if(isNaN(id) || json == "data/users/") {
 	location.href = "../?" + address;
 }
 
-function drawPullRequestStatus() {
-	let statusText = pullRequest.merged ? "merged" : "opened";
-
-	document.getElementById("pull_request_status").className = "pull-request-status pull-request-status-" + statusText;
-	document.getElementById("pull_request_status_img").src = "../../../img/pr-" + statusText + "-white.svg";
-	document.getElementById("pull_request_status_text").innerHTML = statusText[0].toUpperCase() + statusText.substr(1);
-
-	document.getElementById("comment_submit_close").innerHTML = "Comment and " + (pullRequest.merged ? "reopen" : "mark") + " pull request" + (pullRequest.merged ? "" : " as merged");
-}
-
 function addTag(tag) {
 	let color = repo.tagToColor(tag);
 
@@ -96,7 +86,7 @@ repo.addMerger()
 			document.getElementById("tags").appendChild(add);
 		}
 
-		drawPullRequestStatus();
+		drawObjectStatus("pull_request", "pull-request", "pr", "pull request", pullRequest.merged ? "merged" : "opened", pullRequest.merged ? "reopen pull request" : "mark pull request as merged");
 
 		return repo.getPullRequestActions(id, json);
 	})
@@ -148,7 +138,7 @@ repo.addMerger()
 						showAction(action, "pull request");
 
 						pullRequest.merged = !pullRequest.merged;
-						drawPullRequestStatus();
+						drawObjectStatus("pull_request", "pull-request", "pr", "pull request", pullRequest.merged ? "merged" : "opened", pullRequest.merged ? "reopen pull request" : "mark pull request as merged");
 
 						contentNode.value = "";
 						contentNode.disabled = false;

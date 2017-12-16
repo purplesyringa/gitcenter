@@ -13,16 +13,6 @@ if(isNaN(id) || json == "data/users/") {
 	location.href = "../?" + address;
 }
 
-function drawIssueStatus() {
-	let statusText = issue.open ? (issue.reopened ? "reopened" : "open") : "closed";
-
-	document.getElementById("issue_status").className = "issue-status issue-status-" + statusText;
-	document.getElementById("issue_status_img").src = "../../../img/issue-" + statusText + "-white.svg";
-	document.getElementById("issue_status_text").innerHTML = statusText[0].toUpperCase() + statusText.substr(1);
-
-	document.getElementById("comment_submit_close").innerHTML = "Comment and " + (issue.open ? "close" : "reopen") + " issue";
-}
-
 function addTag(tag) {
 	let color = repo.tagToColor(tag);
 
@@ -94,7 +84,7 @@ repo.addMerger()
 			document.getElementById("tags").appendChild(add);
 		}
 
-		drawIssueStatus();
+		drawObjectStatus("issue", "issue", "issue", "issue", issue.open ? (issue.reopened ? "reopened" : "open") : "closed", issue.open ? "close issue" : "reopen issue");
 
 		return repo.getIssueActions(id, json);
 	})
@@ -151,7 +141,7 @@ repo.addMerger()
 							issue.open = true;
 							issue.reopened = true;
 						}
-						drawIssueStatus();
+						drawObjectStatus("issue", "issue", "issue", "issue", issue.open ? (issue.reopened ? "reopened" : "open") : "closed", issue.open ? "close issue" : "reopen issue");
 
 						contentNode.value = "";
 						contentNode.disabled = false;
