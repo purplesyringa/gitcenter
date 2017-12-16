@@ -1,84 +1,101 @@
-FOLLOW_QUERIES = {
-	issues: "SELECT 'issue' AS type, issues.date_added AS date_added, issues.title AS title, issues.body AS body, 'repo/issues/view/?' || json.site || '/' || issues.id || '@' || REPLACE(json.directory, 'data/users/', '') AS url FROM issues, json WHERE issues.json_id = json.json_id AND json.site IN (:params)",
-	pullRequests: "SELECT 'pull_request' AS type, pull_requests.date_added AS date_added, pull_requests.title AS title, pull_requests.body AS body, 'repo/pull-requests/view/?' || json.site || '/' || pull_requests.id || '@' || REPLACE(json.directory, 'data/users/', '') AS url FROM pull_requests, json WHERE pull_requests.json_id = json.json_id AND json.site IN (:params)",
-	issueComments: "\
+INITIAL_FOLLOW_QUERIES = {
+	"{object}s": "\
 		SELECT\
-			'comment' AS type, issue_comments.date_added AS date_added, issues_json.title AS title, '@' || REPLACE(cert_user_id, '@zeroid.bit', '') || ': ' || issue_comments.body AS body, 'repo/issues/view/?' || issues_json.site || '/' || issues_json.id || '@' || REPLACE(issues_json.directory, 'data/users/', '') AS url\
+			'{object}' AS type,\
+			{object}s.date_added AS date_added,\
+			{object}s.title AS title,\
+			{object}s.body AS body,\
+			'repo/{url_object}s/view/?' || json.site || '/' || {object}s.id || '@' || REPLACE(json.directory, 'data/users/', '') AS url\
+		FROM {object}s, json\
+		WHERE {object}s.json_id = json.json_id AND json.site IN (:params)\
+	",
+	"{object}Comments": "\
+		SELECT\
+			'comment' AS type,\
+			{object}_comments.date_added AS date_added,\
+			{object}s_json.title AS title,\
+			'@' || REPLACE(cert_user_id, '@zeroid.bit', '') || ': ' || {object}_comments.body AS body,\
+			'repo/{url_object}s/view/?' || {object}s_json.site || '/' || {object}s_json.id || '@' || REPLACE({object}s_json.directory, 'data/users/', '') AS url\
 		FROM\
-			issue_comments\
+			{object}_comments\
 		LEFT JOIN\
-			(SELECT id, title, body, json_id, site, directory FROM issues LEFT JOIN json USING (json_id)) AS issues_json\
+			(\
+				SELECT id, title, body, json_id, site, directory\
+				FROM {object}s\
+				LEFT JOIN json USING (json_id)\
+			) AS {object}s_json\
 		ON\
-			(issue_comments.issue_id = issues_json.id AND issue_comments.issue_json = issues_json.directory)\
+			(\
+				{object}_comments.{object}_id = {object}s_json.id AND\
+				{object}_comments.{object}_json = {object}s_json.directory\
+			)\
 		LEFT JOIN\
 			(SELECT cert_user_id, json_id AS comment_json_id FROM json) AS comment_json\
 		ON\
-			(comment_json.comment_json_id = issue_comments.json_id)\
+			(comment_json.comment_json_id = {object}_comments.json_id)\
 		WHERE\
-			issues_json.site IN (:params) AND issue_comments.json_id IN (SELECT json_id FROM json WHERE json.site = issues_json.site)\
+			{object}s_json.site IN (:params) AND\
+			{object}_comments.json_id IN (SELECT json_id FROM json WHERE json.site = {object}s_json.site)\
 	",
-	pullRequestComments: "\
+	"{object}Actions": "\
 		SELECT\
-			'comment' AS type, pull_request_comments.date_added AS date_added, pull_requests_json.title AS title, '@' || REPLACE(cert_user_id, '@zeroid.bit', '') || ': ' || pull_request_comments.body AS body, 'repo/pull-requests/view/?' || pull_requests_json.site || '/' || pull_requests_json.id || '@' || REPLACE(pull_requests_json.directory, 'data/users/', '') AS url\
-		FROM\
-			pull_request_comments\
-		LEFT JOIN\
-			(SELECT id, title, body, json_id, site, directory FROM pull_requests LEFT JOIN json USING (json_id)) AS pull_requests_json\
-		ON\
-			(pull_request_comments.pull_request_id = pull_requests_json.id AND pull_request_comments.pull_request_json = pull_requests_json.directory)\
-		LEFT JOIN\
-			(SELECT cert_user_id, json_id AS comment_json_id FROM json) AS comment_json\
-		ON\
-			(comment_json.comment_json_id = pull_request_comments.json_id)\
-		WHERE\
-			pull_requests_json.site IN (:params) AND pull_request_comments.json_id IN (SELECT json_id FROM json WHERE json.site = pull_requests_json.site)\
-	",
-	actions: "\
-		SELECT\
-			'comment' AS type, issue_actions.date_added AS date_added, issues_json.title AS title, issue_actions.param AS param, 'repo/issues/view/?' || issues_json.site || '/' || issues_json.id || '@' || REPLACE(issues_json.directory, 'data/users/', '') AS url,\
+			'comment' AS type,\
+			{object}_actions.date_added AS date_added,\
+			{object}s_json.title AS title,\
+			{object}_actions.param AS param,\
+			'repo/{url_object}s/view/?' || {object}s_json.site || '/' || {object}s_json.id || '@' || REPLACE({object}s_json.directory, 'data/users/', '') AS url,\
 			'@' || REPLACE(cert_user_id, '@zeroid.bit', '') || ': ' || (\
-				CASE WHEN issue_actions.action = 'changeStatus'\
-					THEN (CASE WHEN issue_actions.param = 'reopen' THEN 'Reopened issue' ELSE 'Closed issue' END)\
-					ELSE 'Action ' || issue_actions.action\
+				CASE WHEN {object}_actions.action = 'changeStatus'\
+					THEN (CASE WHEN {object}_actions.param = 'reopen' THEN 'Reopened {text_object}' ELSE 'Closed {text_object}' END)\
+					ELSE 'Action ' || {object}_actions.action\
 				END\
 			) AS body\
 		FROM\
-			issue_actions\
+			{object}_actions\
 		LEFT JOIN\
-			(SELECT id, title, body, json_id, site, directory FROM issues LEFT JOIN json USING (json_id)) AS issues_json\
+			(\
+				SELECT id, title, body, json_id, site, directory\
+				FROM {object}s\
+				LEFT JOIN json USING (json_id)\
+			) AS {object}s_json\
 		ON\
-			(issue_actions.issue_id = issues_json.id AND issue_actions.issue_json = issues_json.directory)\
-		LEFT JOIN\
-			(SELECT cert_user_id, json_id AS action_json_id FROM json) AS action_json\
-		ON\
-			(action_json.action_json_id = issue_actions.json_id)\
-		WHERE\
-			issues_json.site IN (:params) AND issue_actions.json_id IN (SELECT json_id FROM json WHERE json.site = issues_json.site)\
-		\
-		UNION\
-		\
-		SELECT\
-			'comment' AS type, pull_request_actions.date_added AS date_added, pull_requests_json.title AS title, pull_request_actions.param AS param, 'repo/pull-requests/view/?' || pull_requests_json.site || '/' || pull_requests_json.id || '@' || REPLACE(pull_requests_json.directory, 'data/users/', '') AS url,\
-			'@' || REPLACE(cert_user_id, '@zeroid.bit', '') || ': ' || (\
-				CASE WHEN pull_request_actions.action = 'changeStatus'\
-					THEN (CASE WHEN pull_request_actions.param = 'reopen' THEN 'Reopened pull request' ELSE 'Closed pull request' END)\
-					ELSE 'Action ' || pull_request_actions.action\
-				END\
-			) AS body\
-		FROM\
-			pull_request_actions\
-		LEFT JOIN\
-			(SELECT id, title, body, json_id, site, directory FROM pull_requests LEFT JOIN json USING (json_id)) AS pull_requests_json\
-		ON\
-			(pull_request_actions.pull_request_id = pull_requests_json.id AND pull_request_actions.pull_request_json = pull_requests_json.directory)\
+			(\
+				{object}_actions.{object}_id = {object}s_json.id AND\
+				{object}_actions.{object}_json = {object}s_json.directory\
+			)\
 		LEFT JOIN\
 			(SELECT cert_user_id, json_id AS action_json_id FROM json) AS action_json\
 		ON\
-			(action_json.action_json_id = pull_request_actions.json_id)\
+			(action_json.action_json_id = {object}_actions.json_id)\
 		WHERE\
-			pull_requests_json.site IN (:params) AND pull_request_actions.json_id IN (SELECT json_id FROM json WHERE json.site = pull_requests_json.site)\
+			{object}s_json.site IN (:params) AND\
+			{object}_actions.json_id IN (SELECT json_id FROM json WHERE json.site = {object}s_json.site)\
 	"
 };
+
+FOLLOW_QUERIES = adjustFollowQueries(INITIAL_FOLLOW_QUERIES, [
+	{object: "issue", url_object: "issue", text_object: "issue", follow: "issue"},
+	{object: "pull_request", url_object: "pull-request", text_object: "pull request", follow: "pullRequest"}
+]);
+function adjustFollowQueries(queries, objects) {
+	return objects
+		.map(object => {
+			return Object.keys(queries)
+				.map(key => {
+					let value = queries[key]
+						.replace(/{object}/g, object.object)
+						.replace(/{url_object}/g, object.url_object)
+						.replace(/{text_object}/g, object.text_object);
+
+					key = key.replace(/{object}/g, object.follow);
+
+					return {[key]: value};
+				});
+		})
+		.reduce((arr, val) => arr.concat(val), []) // flatten
+		.reduce((obj, val) => Object.assign(obj, val), {}); // to object
+}
+console.log(FOLLOW_QUERIES);
 
 class Repository {
 	constructor(address, zeroPage) {
@@ -1960,7 +1977,7 @@ class Repository {
 		return this.zeroPage.cmd("feedListFollow")
 			.then(feedList => {
 				if(!feedList["Issues"]) {
-					feedList["Issues"] = [FOLLOW_QUERIES.issues, []];
+					feedList["Issues"] = [FOLLOW_QUERIES.objects, []];
 				}
 				if(!feedList["Pull requests"]) {
 					feedList["Pull requests"] = [FOLLOW_QUERIES.pullRequests, []];
