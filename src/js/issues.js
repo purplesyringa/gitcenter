@@ -36,36 +36,16 @@ class RepositoryIssues {
 			});
 	}
 	changeObject(object, id, json, content) {
-		return this.zeroDB.changeRow(
-			"merged-GitCenter/" + this.address + "/" + json + "/data.json",
-			"merged-GitCenter/" + this.address + "/" + json + "/content.json",
-			object + "s",
-			object => {
-				if(object.id != id) {
-					return object;
-				}
-
-				object.body = content;
-
-				return object;
-			}
-		);
+		return this.runObject(object, id, json, obj => {
+			obj.body = content;
+			return obj;
+		}, null);
 	}
 	changeObjectTags(object, id, json, tags) {
-		return this.zeroDB.changeRow(
-			"merged-GitCenter/" + this.address + "/" + json + "/data.json",
-			"merged-GitCenter/" + this.address + "/" + json + "/content.json",
-			object + "s",
-			object => {
-				if(object.id != id) {
-					return object;
-				}
-
-				object.tags = tags.join(",");
-
-				return object;
-			}
-		);
+		return this.runObject(object, id, json, obj => {
+			obj.tags = tags.join(",");
+			return obj;
+		}, null);
 	}
 	removeObject(object, id, json) {
 		return this.zeroDB.removeRow(
