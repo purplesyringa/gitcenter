@@ -15,6 +15,8 @@ repo.addMerger()
 			location.href = "../install/?" + address;
 		}
 
+		setTitle(content.title);
+
 		showTitle(content.title);
 		showHeader(0, content.git);
 		showBranches();

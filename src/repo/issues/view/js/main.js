@@ -14,15 +14,19 @@ if(isNaN(id) || json == "data/users/") {
 }
 
 
-let issue;
+let issue, content;
 repo.addMerger()
 	.then(() => {
 		return repo.getContent();
 	})
-	.then(content => {
+	.then(c => {
+		content = c;
+
 		if(!content.installed) {
 			location.href = "../../../install/?" + address;
 		}
+
+		setTitle("Issue - " + content.title);
 
 		showTitle(content.title);
 		showHeader(2, content.git);
@@ -36,6 +40,8 @@ repo.addMerger()
 		document.getElementById("issue_title").textContent = issue.title;
 		document.getElementById("issue_id").textContent = id;
 		document.getElementById("issue_json_id").textContent = json.replace("data/users/", "");
+
+		setTitle(issue.title + " - " + content.title);
 
 		showTags("issue", "issue", issue);
 		drawObjectStatus("issue", "issue", "issue", "issue", issue.open ? (issue.reopened ? "reopened" : "open") : "closed", issue.open ? "close issue" : "reopen issue");

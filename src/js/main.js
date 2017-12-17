@@ -35,3 +35,7 @@ zeroPage.getSiteInfo()
 			Repository.createRepo(zeroPage);
 		};
 	});
+
+window.addEventListener("load", () => {
+	setTitle("");
+});
