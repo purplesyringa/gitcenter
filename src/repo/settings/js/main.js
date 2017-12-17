@@ -22,6 +22,8 @@ repo.addMerger()
 			location.href = "../../install/?" + address;
 		}
 
+		setTitle("Settings - " + content.title);
+
 		showTitle(content.title);
 		showHeader(1, content.git);
 		showTabs(1);

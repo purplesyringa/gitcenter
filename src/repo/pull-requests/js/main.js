@@ -13,6 +13,8 @@ repo.addMerger()
 			location.href = "../../install/?" + address;
 		}
 
+		setTitle("Pull requests - " + content.title);
+
 		showTitle(content.title);
 		showHeader(1, content.git);
 		showTabs(1);

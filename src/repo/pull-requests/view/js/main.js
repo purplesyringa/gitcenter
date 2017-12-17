@@ -14,15 +14,19 @@ if(isNaN(id) || json == "data/users/") {
 }
 
 
-let pullRequest;
+let pullRequest, content;
 repo.addMerger()
 	.then(() => {
 		return repo.getContent();
 	})
-	.then(content => {
+	.then(c => {
+		content = c;
+
 		if(!content.installed) {
 			location.href = "../../../install/?" + address;
 		}
+
+		setTitle("Pull request - " + content.title);
 
 		showTitle(content.title);
 		showHeader(2, content.git);
@@ -38,6 +42,8 @@ repo.addMerger()
 		document.getElementById("pull_request_json_id").textContent = json.replace("data/users/", "");
 		document.getElementById("pull_request_fork_address").textContent = pullRequest.fork_address;
 		document.getElementById("pull_request_fork_branch").textContent = pullRequest.fork_branch;
+
+		setTitle(pullRequest.title + " - " + content.title);
 
 		showTags("pull_request", "pull request", pullRequest);
 		drawObjectStatus("pull_request", "pull-request", "pr", "pull request", pullRequest.merged ? "merged" : "opened", pullRequest.merged ? "reopen pull request" : "mark pull request as merged");
