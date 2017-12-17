@@ -1231,6 +1231,46 @@ class Repository {
 	parseAction(action, context) {
 		if(action.action == "changeStatus") {
 			return action.cert_user_id + " " + (action.param == "close" ? "closed" : "reopened") + " " + context + " " + this.translateDate(action.date_added);
+		} else if(action.action == "changeTags") {
+			return action.cert_user_id + " changed tags: " + action.param + " " + this.translateDate(action.date_added);
+		} else if(action.action == "addTags" || action.action == "removeTags") {
+			let tags = "tag" + (action.param.indexOf(",") == -1 ? "" : "s") + " ";
+			tags += (
+				action.param
+					.split(",")
+					.map(tag => tag.trim())
+					.filter(tag => tag.length)
+					.map((tag, i) => {
+						let color = repo.tagToColor(tag);
+						let map = {
+							"&": "&amp;",
+							"<": "&lt;",
+							">": "&gt;",
+							"\"": "&quot;",
+							"'": "&#039;"
+						};
+						let tagHTML = tag.replace(/[&<>"']/g, m => map[m]);
+
+						return "\
+							<div\
+								class='tag'\
+								style='\
+									background-color: " + color.background + ";\
+									color: " + color.foreground + ";" +
+									(i == 0 ? "margin-left: 0;" : "") +
+								"'\
+							>" +
+								tagHTML +
+							"</div>";
+					})
+					.join("")
+			);
+
+			let text = {
+				addTags: "added",
+				removeTags: "removed"
+			}[action.action];
+			return action.cert_user_id + " " + text + " " + tags + " " + this.translateDate(action.date_added);
 		}
 	}
 

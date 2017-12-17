@@ -39,7 +39,7 @@ repo.addMerger()
 		document.getElementById("pull_request_fork_address").textContent = pullRequest.fork_address;
 		document.getElementById("pull_request_fork_branch").textContent = pullRequest.fork_branch;
 
-		showTags("pull_request", pullRequest);
+		showTags("pull_request", "pull request", pullRequest);
 		drawObjectStatus("pull_request", "pull-request", "pr", "pull request", pullRequest.merged ? "merged" : "opened", pullRequest.merged ? "reopen pull request" : "mark pull request as merged");
 		showCommentButtons("pull_request", "pull request", pullRequest, id, json, () => {
 			pullRequest.merged = !pullRequest.merged;

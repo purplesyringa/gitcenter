@@ -7,7 +7,7 @@ function drawObjectStatus(context, cssContext, imgContext, textContext, statusTe
 }
 
 
-function addTag(context, object, tag) {
+function addTag(context, textContext, object, tag) {
 	let color = repo.tagToColor(tag);
 
 	let node = document.createElement("div");
@@ -25,14 +25,15 @@ function addTag(context, object, tag) {
 			node.parentNode.removeChild(node);
 			object.tags.splice(object.tags.indexOf(tag), 1);
 
-			repo.issues.changeObjectTags(context, id, json, object.tags);
+			repo.issues.changeObjectTags(context, id, json, object.tags)
+				.then(action => showAction(action, textContext));
 		};
 		node.appendChild(remove);
 	}
 }
 
-function showTags(context, object) {
-	object.tags.forEach(tag => addTag(context, object, tag));
+function showTags(context, textContext, object) {
+	object.tags.forEach(tag => addTag(context, textContext, object, tag));
 
 	if(object.owned) {
 		let add = document.createElement("div");
@@ -46,12 +47,13 @@ function showTags(context, object) {
 						.map(tag => tag.trim())
 						.filter(tag => tag);
 
-					tags.forEach(tag => addTag(context, object, tag));
+					tags.forEach(tag => addTag(context, textContext, object, tag));
 					add.parentNode.appendChild(add); // Move to end of container
 
 					object.tags = object.tags.concat(tags);
-					repo.issues.changeObjectTags(context, id, json, object.tags);
-				});
+					return repo.issues.changeObjectTags(context, id, json, object.tags);
+				})
+				.then(action => showAction(action, textContext));
 		};
 		document.getElementById("tags").appendChild(add);
 	}
