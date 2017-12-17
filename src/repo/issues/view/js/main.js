@@ -37,7 +37,7 @@ repo.addMerger()
 		document.getElementById("issue_id").textContent = id;
 		document.getElementById("issue_json_id").textContent = json.replace("data/users/", "");
 
-		showTags("issue", issue);
+		showTags("issue", "issue", issue);
 		drawObjectStatus("issue", "issue", "issue", "issue", issue.open ? (issue.reopened ? "reopened" : "open") : "closed", issue.open ? "close issue" : "reopen issue");
 		showCommentButtons("issue", "issue", issue, id, json, () => {
 			if(issue.open) {

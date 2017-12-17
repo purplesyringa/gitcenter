@@ -41,11 +41,35 @@ class RepositoryIssues {
 			return obj;
 		}, null);
 	}
-	changeObjectTags(object, id, json, tags) {
-		return this.runObject(object, id, json, obj => {
-			obj.tags = tags.join(",");
-			return obj;
-		}, null);
+	changeObjectTags(context, id, json, tags) {
+		let action = null;
+
+		return this.getObject(context, id, json)
+			.then(object => {
+				let added = tags.filter(tag => object.tags.indexOf(tag) == -1);
+				let removed = object.tags.filter(tag => tags.indexOf(tag) == -1);
+				if(added.length && removed.length) {
+					action = {
+						action: "changeTags",
+						param: "added " + added.join(", ") + ", removed " + removed.join(", ")
+					};
+				} else if(added.length) {
+					action = {
+						action: "addTags",
+						param: added.join(",")
+					};
+				} else if(removed.length) {
+					action = {
+						action: "removeTags",
+						param: removed.join(",")
+					};
+				}
+
+				return this.runObject(context, id, json, obj => {
+					obj.tags = tags.join(",");
+					return obj;
+				}, action);
+			});
 	}
 	removeObject(object, id, json) {
 		return this.zeroDB.removeRow(

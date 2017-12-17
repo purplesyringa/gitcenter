@@ -45,8 +45,15 @@ INITIAL_FOLLOW_QUERIES = {
 			{object}_actions.param AS param,\
 			'repo/{url_object}s/view/?' || {object}s_json.site || '/' || {object}s_json.id || '@' || REPLACE({object}s_json.directory, 'data/users/', '') AS url,\
 			'@' || REPLACE(cert_user_id, '@zeroid.bit', '') || ': ' || (\
-				CASE WHEN {object}_actions.action = 'changeStatus'\
-					THEN (CASE WHEN {object}_actions.param = 'reopen' THEN 'Reopened {text_object}' ELSE 'Closed {text_object}' END)\
+				CASE\
+					WHEN {object}_actions.action = 'changeStatus'\
+						THEN (CASE WHEN {object}_actions.param = 'reopen' THEN 'Reopened {text_object}' ELSE 'Closed {text_object}' END)\
+					WHEN {object}_actions.action = 'changeTags'\
+						THEN 'Changed tags: ' || {object}_actions.param\
+					WHEN {object}_actions.action = 'addTags'\
+						THEN 'Added tags ' || REPLACE({object}_actions.param, ',', ', ')\
+					WHEN {object}_actions.action = 'removeTags'\
+						THEN 'Removed tags ' || REPLACE({object}_actions.param, ',', ', ')\
 					ELSE 'Action ' || {object}_actions.action\
 				END\
 			) AS body\
@@ -1224,6 +1231,46 @@ class Repository {
 	parseAction(action, context) {
 		if(action.action == "changeStatus") {
 			return action.cert_user_id + " " + (action.param == "close" ? "closed" : "reopened") + " " + context + " " + this.translateDate(action.date_added);
+		} else if(action.action == "changeTags") {
+			return action.cert_user_id + " changed tags: " + action.param + " " + this.translateDate(action.date_added);
+		} else if(action.action == "addTags" || action.action == "removeTags") {
+			let tags = "tag" + (action.param.indexOf(",") == -1 ? "" : "s") + " ";
+			tags += (
+				action.param
+					.split(",")
+					.map(tag => tag.trim())
+					.filter(tag => tag.length)
+					.map((tag, i) => {
+						let color = repo.tagToColor(tag);
+						let map = {
+							"&": "&amp;",
+							"<": "&lt;",
+							">": "&gt;",
+							"\"": "&quot;",
+							"'": "&#039;"
+						};
+						let tagHTML = tag.replace(/[&<>"']/g, m => map[m]);
+
+						return "\
+							<div\
+								class='tag'\
+								style='\
+									background-color: " + color.background + ";\
+									color: " + color.foreground + ";" +
+									(i == 0 ? "margin-left: 0;" : "") +
+								"'\
+							>" +
+								tagHTML +
+							"</div>";
+					})
+					.join("")
+			);
+
+			let text = {
+				addTags: "added",
+				removeTags: "removed"
+			}[action.action];
+			return action.cert_user_id + " " + text + " " + tags + " " + this.translateDate(action.date_added);
 		}
 	}
 
