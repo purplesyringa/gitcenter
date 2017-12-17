@@ -4,10 +4,12 @@ if(!window.zeroPage) {
 }
 
 ((self) => {
-	let currentTitle = "";
+	let currentTitle = null;
 
 	function setTitle(title) {
-		if(currentTitle == title) {
+		title = title ? title + " - Git Center" : "Git Center";
+
+		if(currentTitle === title) {
 			return;
 		}
 
@@ -17,7 +19,7 @@ if(!window.zeroPage) {
 	}
 
 	function updateTitle(title) {
-		if(currentTitle == title) {
+		if(currentTitle === title) {
 			zeroPage.cmd("wrapperSetTitle", [title]);
 			setTimeout(() => updateTitle(title), 1000);
 		}
