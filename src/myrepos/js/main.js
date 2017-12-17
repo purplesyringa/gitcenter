@@ -53,3 +53,7 @@ zeroPage.cmd("mergerSiteList", [true])
 			document.getElementById("repos").appendChild(node);
 		});
 	});
+
+window.addEventListener("load", () => {
+	setTitle("My Repos");
+});

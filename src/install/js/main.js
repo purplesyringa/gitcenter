@@ -37,3 +37,7 @@ repo.addMerger()
 				});
 		};
 	});
+
+window.addEventListener("load", () => {
+	setTitle("Create new repository");
+});

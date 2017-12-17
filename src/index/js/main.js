@@ -99,3 +99,7 @@ link.promise.then(() => {
 		zeroPage.cmd("wrapperReplaceState", [null, "Search - Git Center", "?q=" + document.getElementById("search").value]);
 	};
 });
+
+window.addEventListener("load", () => {
+	setTitle("Repository Index");
+});
