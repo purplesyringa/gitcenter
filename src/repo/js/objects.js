@@ -44,11 +44,12 @@ function showObjects(context, objects) {
 		object.tags.forEach(tag => {
 			let color = repo.tagToColor(tag);
 
-			let node = document.createElement("div");
+			let node = document.createElement("a");
 			node.className = "tag";
 			node.textContent = tag;
 			node.style.backgroundColor = color.background;
 			node.style.color = color.foreground;
+			node.href = "../filter/?" + address + "/tag:" + tag;
 			tags.appendChild(node);
 		});
 		content.appendChild(tags);
