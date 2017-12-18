@@ -45,16 +45,16 @@ repo.addMerger()
 
 		setTitle(pullRequest.title + " - " + content.title);
 
-		showTags("pull_request", "pull request", pullRequest);
-		drawObjectStatus("pull_request", "pull-request", "pr", "pull request", pullRequest.merged ? "merged" : "opened", pullRequest.merged ? "reopen pull request" : "mark pull request as merged");
-		showCommentButtons("pull_request", "pull request", pullRequest, id, json, () => {
+		showTags("pull_request", pullRequest);
+		drawObjectStatus("pull_request", pullRequest.merged ? "merged" : "opened", pullRequest.merged ? "reopen pull request" : "mark pull request as merged");
+		showCommentButtons("pull_request", pullRequest, id, json, () => {
 			pullRequest.merged = !pullRequest.merged;
-			drawObjectStatus("pull_request", "pull-request", "pr", "pull request", pullRequest.merged ? "merged" : "opened", pullRequest.merged ? "reopen pull request" : "mark pull request as merged");
+			drawObjectStatus("pull_request", pullRequest.merged ? "merged" : "opened", pullRequest.merged ? "reopen pull request" : "mark pull request as merged");
 
 			return repo.issues.changePullRequestStatus(id, json, pullRequest.merged);
 		});
 
-		return showActions("pull_request", "pull request", id, json);
+		return showActions("pull_request", id, json);
 	})
 	.then(() => {
 		if(pullRequest.owned) {

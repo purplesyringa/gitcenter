@@ -34,5 +34,5 @@ repo.addMerger()
 		showTabs(1);
 		document.getElementById("new_pull_request").href = "new/?" + address;
 
-		loadObjects("pull_request", "pull-request", currentPage, status);
+		loadObjects("pull_request", currentPage, status);
 	});
