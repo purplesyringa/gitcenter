@@ -47,8 +47,8 @@ function showObjects(context, objects) {
 			let node = document.createElement("a");
 			node.className = "tag";
 			node.textContent = tag;
-			node.style.backgroundColor = color.background;
-			node.style.color = color.foreground;
+			node.style.setProperty("background-color", color.background, "important");
+			node.style.setProperty("color", color.foreground, "important");
 			node.href = "../filter/?" + address + "/tag:" + tag;
 			tags.appendChild(node);
 		});

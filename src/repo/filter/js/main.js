@@ -43,8 +43,8 @@ if(filter.type == "tag") {
 	document.getElementById("filter").innerHTML = "\
 		You are searching issues and pull requests for tag\
 		<div class='tag' id='tag' style='\
-			background-color: " + color.background + ";\
-			color: " + color.foreground + ";\
+			background-color: " + color.background + " !important;\
+			color: " + color.foreground + " !important;\
 		'>" + tagHTML + "</div>\
 	";
 }

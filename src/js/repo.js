@@ -1255,8 +1255,8 @@ class Repository {
 							<a\
 								class='tag'\
 								style='\
-									background-color: " + color.background + ";\
-									color: " + color.foreground + ";" +
+									background-color: " + color.background + " !important;\
+									color: " + color.foreground + " !important;" +
 									(i == 0 ? "margin-left: 0;" : "") +
 								"'\
 								href='../../filter/?" + this.address + "/tag:" + tag + "'\
