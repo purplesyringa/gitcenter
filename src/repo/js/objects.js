@@ -15,15 +15,17 @@ function loadObjects(context, page, status) {
 
 function showObjects(context, objects) {
 	objects.objects.forEach(object => {
+		let curContext = context == "object" ? object.context : context;
+
 		let status = {
 			issue: (object.open ? (object.reopened ? "reopened" : "open") : "closed"),
 			pull_request: object.merged ? "merged" : "opened"
-		}[context == "object" ? object.context : context];
+		}[curContext];
 		let cssContext = repo.issues.contexts[context].css;
 
 		let tr = document.createElement("tr");
 		tr.onclick = () => {
-			location.href = "view/?" + address + "/" + object.id + "@" + object.json.replace("data/users/", "");
+			location.href = "../" + repo.issues.contexts[curContext].css + "s/view/?" + address + "/" + object.id + "@" + object.json.replace("data/users/", "");
 		};
 
 		let content = document.createElement("td");
@@ -52,7 +54,7 @@ function showObjects(context, objects) {
 		content.appendChild(tags);
 
 		let info = document.createElement("div");
-		let char = (context == "object" ? object.context : context) == "pull_request" ? "P" : "";
+		let char = curContext == "pull_request" ? "P" : "";
 		info.textContent = "#" + char + object.id + "@" + object.json.replace("data/users/", "") + " opened " + repo.translateDate(object.date_added) + " by " + object.cert_user_id;
 		info.className = cssContext + "s-bottom";
 		content.appendChild(info);
