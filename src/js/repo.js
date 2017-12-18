@@ -1823,7 +1823,7 @@ class Repository {
 	translateDate(date) {
 		date = new Date(date);
 
-		let delta = (+new Date - date) / 1000;
+		let delta = Math.floor((+new Date - date) / 1000);
 
 		if(delta < 30) {
 			return "just now";
