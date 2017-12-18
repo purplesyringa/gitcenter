@@ -2,7 +2,21 @@ if(address == "1RepoXU8bQE9m7ssNwL4nnxBnZVejHCc6") {
 	location.href = "../../default/";
 }
 
-let currentPage = Number.isSafeInteger(+additional) ? +additional : 0;
+let currentPage, status;
+
+additional = additional.split("/");
+if(additional.length == 1) {
+	if(Number.isSafeInteger(+additional[0])) {
+		currentPage = +additional[0];
+		status = "open";
+	} else {
+		currentPage = 0;
+		status = additional[0];
+	}
+} else {
+	currentPage = Number.isSafeInteger(+additional[1]) ? +additional[1] : 0;
+	status = additional[0];
+}
 
 repo.addMerger()
 	.then(() => {
@@ -20,5 +34,5 @@ repo.addMerger()
 		showTabs(1);
 		document.getElementById("new_pull_request").href = "new/?" + address;
 
-		loadObjects("pull_request", "pull-request", currentPage);
+		loadObjects("pull_request", "pull-request", currentPage, status);
 	});

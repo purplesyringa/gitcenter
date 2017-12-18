@@ -1,8 +1,13 @@
-function loadObjects(context, cssContext, page) {
-	return repo.issues.getObjects(context, page)
+function loadObjects(context, cssContext, page, status) {
+	let query = {
+		issue: "{object}s.open = " + (status == "open" ? 1 : 0),
+		pull_request: "{object}s.merged = " + (status == "open" ? 0 : 1)
+	}[context];
+
+	return repo.issues.getObjects(context, page, query)
 		.then(objects => {
 			showObjects(context, cssContext, objects);
-			showNavigation(objects, currentPage);
+			showNavigation(context, objects, page, status);
 			showFollowing();
 		});
 }
@@ -55,18 +60,23 @@ function showObjects(context, cssContext, objects) {
 	});
 }
 
-function showNavigation(objects, currentPage) {
+function showNavigation(context, objects, currentPage, status) {
 	if(currentPage > 0) {
 		let button = document.getElementById("navigation_back");
 		button.classList.remove("button-disabled");
-		button.href = "?" + address + "/" + (currentPage - 1);
+		button.href = "?" + address + "/" + status + "/" + + (currentPage - 1);
 	}
 
 	if(objects.nextPage) {
 		let button = document.getElementById("navigation_next");
 		button.classList.remove("button-disabled");
-		button.href = "?" + address + "/" + (currentPage + 1);
+		button.href = "?" + address + "/" + status + "/" + (currentPage + 1);
 	}
+
+	document.getElementById(context + "s_" + status).classList.add("current");
+
+	document.getElementById(context + "s_open").href = "?" + address + "/open";
+	document.getElementById(context + "s_closed").href = "?" + address + "/closed";
 }
 
 function showFollowing() {

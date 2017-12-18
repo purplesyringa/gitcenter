@@ -81,7 +81,7 @@ class RepositoryIssues {
 			}
 		);
 	}
-	getObjects(object, page) {
+	getObjects(object, page, query) {
 		return this.zeroDB.query(("\
 			SELECT\
 				{object}s.*,\
@@ -90,7 +90,9 @@ class RepositoryIssues {
 			FROM {object}s, json\
 			WHERE\
 				{object}s.json_id = json.json_id AND\
-				json.site = :address\
+				json.site = :address AND (" +
+			(query || "1 = 1") +
+			")\
 			ORDER BY {object}s.date_added DESC\
 			LIMIT " + (page * 10) + ", 11\
 		").replace(/{object}/g, object), {
@@ -373,8 +375,8 @@ class RepositoryIssues {
 	removeIssue(id, json) {
 		return this.removeObject("issue", id, json);
 	}
-	getIssues(page) {
-		return this.getObjects("issue", page);
+	getIssues(page, status) {
+		return this.getObjects("issue", page, "{object}s.open = " + (status == "open" ? 1 : 0));
 	}
 	getIssue(id, json) {
 		return this.getObject("issue", id, json);
@@ -431,8 +433,8 @@ class RepositoryIssues {
 	removePullRequest(id, json) {
 		return this.removeObject("pull_request", id, json);
 	}
-	getPullRequests(page) {
-		return this.getObjects("pull_request", page);
+	getPullRequests(page, status) {
+		return this.getObjects("pull_request", page, "{object}s.merged = " + (status == "open" ? 0 : 1));
 	}
 	getPullRequest(id, json) {
 		return this.getObject("pull_request", id, json);
