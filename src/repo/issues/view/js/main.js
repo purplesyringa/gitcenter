@@ -43,9 +43,9 @@ repo.addMerger()
 
 		setTitle(issue.title + " - " + content.title);
 
-		showTags("issue", "issue", issue);
-		drawObjectStatus("issue", "issue", "issue", "issue", issue.open ? (issue.reopened ? "reopened" : "open") : "closed", issue.open ? "close issue" : "reopen issue");
-		showCommentButtons("issue", "issue", issue, id, json, () => {
+		showTags("issue", issue);
+		drawObjectStatus("issue", issue.open ? (issue.reopened ? "reopened" : "open") : "closed", issue.open ? "close issue" : "reopen issue");
+		showCommentButtons("issue", issue, id, json, () => {
 			if(issue.open) {
 				issue.open = false;
 			} else {
@@ -53,10 +53,10 @@ repo.addMerger()
 				issue.reopened = true;
 			}
 
-			drawObjectStatus("issue", "issue", "issue", "issue", issue.open ? (issue.reopened ? "reopened" : "open") : "closed", issue.open ? "close issue" : "reopen issue");
+			drawObjectStatus("issue", issue.open ? (issue.reopened ? "reopened" : "open") : "closed", issue.open ? "close issue" : "reopen issue");
 
 			return repo.issues.changeIssueStatus(id, json, issue.open);
 		});
 
-		return showActions("issue", "issue", id, json);
+		return showActions("issue", id, json);
 	});

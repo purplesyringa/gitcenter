@@ -1,4 +1,4 @@
-function loadObjects(context, cssContext, page, status) {
+function loadObjects(context, page, status) {
 	let query = {
 		issue: "{object}s.open = " + (status == "open" ? 1 : 0),
 		pull_request: "{object}s.merged = " + (status == "open" ? 0 : 1)
@@ -6,14 +6,16 @@ function loadObjects(context, cssContext, page, status) {
 
 	return repo.issues.getObjects(context, page, query)
 		.then(objects => {
-			showObjects(context, cssContext, objects);
+			showObjects(context, objects);
 			showNavigation(context, objects, page, status);
 			showFollowing();
 		});
 }
 
 
-function showObjects(context, cssContext, objects) {
+function showObjects(context, objects) {
+	let cssContext = repo.issues.contexts[context].css;
+
 	objects.objects.forEach(object => {
 		let status = {
 			issue: (object.open ? (object.reopened ? "reopened" : "open") : "closed"),

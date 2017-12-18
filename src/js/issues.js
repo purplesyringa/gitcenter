@@ -8,6 +8,19 @@ class RepositoryIssues {
 		this.zeroAuth = repo.zeroAuth;
 		this.zeroDB = repo.zeroDB;
 		this.repo = repo;
+
+		this.contexts = {
+			issue: {
+				css: "issue",
+				text: "issue",
+				img: "issue"
+			},
+			pull_request: {
+				css: "pull-request",
+				text: "pull request",
+				img: "pr"
+			}
+		};
 	}
 
 	/*********************************** Objects **********************************/

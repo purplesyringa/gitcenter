@@ -34,5 +34,5 @@ repo.addMerger()
 		showTabs(1);
 		document.getElementById("new_issue").href = "new/?" + address;
 
-		loadObjects("issue", "issue", currentPage, status);
+		loadObjects("issue", currentPage, status);
 	});

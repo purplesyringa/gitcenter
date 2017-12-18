@@ -1,4 +1,8 @@
-function drawObjectStatus(context, cssContext, imgContext, textContext, statusText, statusUpdate) {
+function drawObjectStatus(context, statusText, statusUpdate) {
+	let cssContext = repo.issues.contexts[context].css;
+	let imgContext = repo.issues.contexts[context].img;
+	let textContext = repo.issues.contexts[context].text;
+
 	document.getElementById(context + "_status").className = cssContext + "-status " + cssContext + "-status-" + statusText;
 	document.getElementById(context + "_status_img").src = "../../../img/" + imgContext + "-" + statusText + "-white.svg";
 	document.getElementById(context + "_status_text").innerHTML = statusText[0].toUpperCase() + statusText.substr(1);
@@ -7,7 +11,7 @@ function drawObjectStatus(context, cssContext, imgContext, textContext, statusTe
 }
 
 
-function addTag(context, textContext, object, tag) {
+function addTag(context, object, tag) {
 	let color = repo.tagToColor(tag);
 
 	let node = document.createElement("div");
@@ -26,14 +30,14 @@ function addTag(context, textContext, object, tag) {
 			object.tags.splice(object.tags.indexOf(tag), 1);
 
 			repo.issues.changeObjectTags(context, id, json, object.tags)
-				.then(action => showAction(action, textContext));
+				.then(action => showAction(action, context));
 		};
 		node.appendChild(remove);
 	}
 }
 
-function showTags(context, textContext, object) {
-	object.tags.forEach(tag => addTag(context, textContext, object, tag));
+function showTags(context, object) {
+	object.tags.forEach(tag => addTag(context, object, tag));
 
 	if(object.owned) {
 		let add = document.createElement("div");
@@ -47,13 +51,13 @@ function showTags(context, textContext, object) {
 						.map(tag => tag.trim())
 						.filter(tag => tag);
 
-					tags.forEach(tag => addTag(context, textContext, object, tag));
+					tags.forEach(tag => addTag(context, object, tag));
 					add.parentNode.appendChild(add); // Move to end of container
 
 					object.tags = object.tags.concat(tags);
 					return repo.issues.changeObjectTags(context, id, json, object.tags);
 				})
-				.then(action => showAction(action, textContext));
+				.then(action => showAction(action, context));
 		};
 		document.getElementById("tags").appendChild(add);
 	}
@@ -61,10 +65,12 @@ function showTags(context, textContext, object) {
 
 /*********************************** Actions **********************************/
 function showAction(action, context) {
+	let textContext = repo.issues.contexts[context].text;
+
 	if(action.action) {
 		let node = document.createElement("div");
 		node.className = "action";
-		node.innerHTML = repo.parseAction(action, context);
+		node.innerHTML = repo.parseAction(action, textContext);
 
 		document.getElementById("comments").appendChild(node);
 	} else {
@@ -75,7 +81,7 @@ function showAction(action, context) {
 
 		let header = document.createElement("div");
 		header.className = "comment-header";
-		header.textContent = comment.cert_user_id + " " + (comment.id == -1 ? "posted " + context : "commented") + " " + repo.translateDate(comment.date_added);
+		header.textContent = comment.cert_user_id + " " + (comment.id == -1 ? "posted " + textContext : "commented") + " " + repo.translateDate(comment.date_added);
 		node.appendChild(header);
 
 		if(comment.owned) {
@@ -103,18 +109,18 @@ function showAction(action, context) {
 			let remove = document.createElement("div");
 			remove.className = "comment-remove";
 			remove.onclick = () => {
-				zeroPage.confirm("Remove " + context + (comment.id == -1 ? "" : " comment") + "?")
+				zeroPage.confirm("Remove " + textContext + (comment.id == -1 ? "" : " comment") + "?")
 					.then(() => {
 						node.disabled = true;
 
 						let funcName = {
 							"issue": "removeIssue",
-							"pull request": "removePullRequest"
+							"pull_request": "removePullRequest"
 						}[context];
 
 						let parentId = {
 							"issue": comment.issue_id,
-							"pull request": comment.pull_request_id
+							"pull_request": comment.pull_request_id
 						}[context];
 
 						return repo[funcName + (comment.id == -1 ? "" : "Comment")](comment.id == -1 ? parentId : comment.id, comment.json);
@@ -137,12 +143,12 @@ function showAction(action, context) {
 
 				let funcName = {
 					"issue": "changeIssue",
-					"pull request": "changePullRequest"
+					"pull_request": "changePullRequest"
 				}[context];
 
 				let parentId = {
 					"issue": comment.issue_id,
-					"pull request": comment.pull_request_id
+					"pull_request": comment.pull_request_id
 				}[context];
 
 				repo[funcName + (comment.id == -1 ? "" : "Comment")](comment.id == -1 ? parentId : comment.id, comment.json, textarea.value)
@@ -165,7 +171,7 @@ function showAction(action, context) {
 			cancel.className = "comment-cancel";
 			cancel.style.display = "none";
 			cancel.onclick = () => {
-				zeroPage.confirm("Cancel editing " + context + (comment.id == -1 ? "" : " comment") + "?")
+				zeroPage.confirm("Cancel editing " + textContext + (comment.id == -1 ? "" : " comment") + "?")
 					.then(() => {
 						content.style.display = "";
 						edit.style.display = "";
@@ -187,15 +193,15 @@ function showAction(action, context) {
 		document.getElementById("comments").appendChild(node);
 	}
 }
-function showActions(context, textContext, id, json) {
+function showActions(context, id, json) {
 	return repo.issues.getObjectActions(context, id, json)
 		.then(actions => {
-			actions.forEach(action => showAction(action, textContext));
+			actions.forEach(action => showAction(action, context));
 		});
 }
 
 
-function showCommentButtons(context, textContext, object, id, json, closeHandler) {
+function showCommentButtons(context, object, id, json, closeHandler) {
 	document.getElementById("comment_submit").onclick = () => {
 		let contentNode = document.getElementById("comment_content");
 		if(contentNode.disabled || contentNode.value == "") {
@@ -206,7 +212,7 @@ function showCommentButtons(context, textContext, object, id, json, closeHandler
 
 		repo.issues.addObjectComment(context, id, json, contentNode.value)
 			.then(comment => {
-				showAction(repo.highlightComment(comment), textContext);
+				showAction(repo.highlightComment(comment), context);
 
 				contentNode.value = "";
 				contentNode.disabled = false;
@@ -229,7 +235,7 @@ function showCommentButtons(context, textContext, object, id, json, closeHandler
 			} else {
 				promise = repo.issues.addObjectComment(context, id, json, contentNode.value)
 					.then(comment => {
-						showAction(repo.highlightComment(comment), textContext);
+						showAction(repo.highlightComment(comment), context);
 					});
 			}
 
@@ -238,7 +244,7 @@ function showCommentButtons(context, textContext, object, id, json, closeHandler
 					return closeHandler();
 				})
 				.then(action => {
-					showAction(action, textContext);
+					showAction(action, context);
 
 					contentNode.value = "";
 					contentNode.disabled = false;
