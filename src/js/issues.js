@@ -321,9 +321,14 @@ class RepositoryIssues {
 		)
 			.then(() => {
 				if(action) {
+					let auth = this.zeroAuth.getAuth();
+					if(!auth) {
+						return Promise.reject("RunObject: Cannot add action: logged out");
+					}
+
 					return this.zeroDB.insertRow(
-						"merged-GitCenter/" + this.address + "/" + json + "/data.json",
-						"merged-GitCenter/" + this.address + "/" + json + "/content.json",
+						"merged-GitCenter/" + this.address + "/data/users/" + auth.address + "/data.json",
+						"merged-GitCenter/" + this.address + "/data/users/" + auth.address + "/content.json",
 						object + "_actions",
 						{
 							[object + "_id"]: id,
