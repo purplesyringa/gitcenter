@@ -86,7 +86,7 @@ repo.addMerger()
 							// hosting/author/repository
 
 							let match = file.submodule.url.match(/^git@(.*):(.*)\/(.*)$/);
-							parent.location.href = "http://" + match[0] + "/" + match[1] + "/" + match[2].replace(/\.git$/, "");
+							parent.location.href = "http://" + match[1] + "/" + match[2] + "/" + match[3].replace(/\.git$/, "");
 						} else if(/^(.*)@[^:]*$/.test(file.submodule.url)) {
 							// SSH
 
@@ -95,7 +95,7 @@ repo.addMerger()
 							// hosting/author/repository
 
 							let match = file.submodule.url.match(/^(.*)@(.*)\/(.*)$/);
-							parent.location.href = "http://" + match[1] + "/" + match[0] + "/" + match[2].replace(/\.git$/, "");
+							parent.location.href = "http://" + match[2] + "/" + match[1] + "/" + match[3].replace(/\.git$/, "");
 						} else {
 							// HTTP/HTTPS URL
 							parent.location.href = file.submodule.url.replace(/\.git$/, "");
