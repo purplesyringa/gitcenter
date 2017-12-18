@@ -85,6 +85,15 @@
 	margin-right: 16px;
 }
 
+.comment code {
+	display: inline;
+	background-color: #EEE;
+	border: 8px solid #EEE;
+	border-top-width: 4px;
+	border-bottom-width: 4px;
+	border-radius: 4px;
+}
+
 .comment pre {
 	display: block;
 	background-color: #EEE;
@@ -94,6 +103,12 @@
 	border-radius: 4px;
 
 	overflow: auto;
+}
+.comment pre code {
+	display: block;
+	background: none;
+	border: none;
+	border-radius: 0;
 }
 
 
