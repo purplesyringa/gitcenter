@@ -64,13 +64,13 @@ function showNavigation(context, objects, currentPage, status) {
 	if(currentPage > 0) {
 		let button = document.getElementById("navigation_back");
 		button.classList.remove("button-disabled");
-		button.href = "?" + address + "/" + (currentPage - 1);
+		button.href = "?" + address + "/" + status + "/" + + (currentPage - 1);
 	}
 
 	if(objects.nextPage) {
 		let button = document.getElementById("navigation_next");
 		button.classList.remove("button-disabled");
-		button.href = "?" + address + "/" + (currentPage + 1);
+		button.href = "?" + address + "/" + status + "/" + (currentPage + 1);
 	}
 
 	document.getElementById(context + "s_" + status).classList.add("current");
