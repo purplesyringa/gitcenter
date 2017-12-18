@@ -14,13 +14,12 @@ function loadObjects(context, page, status) {
 
 
 function showObjects(context, objects) {
-	let cssContext = repo.issues.contexts[context].css;
-
 	objects.objects.forEach(object => {
 		let status = {
 			issue: (object.open ? (object.reopened ? "reopened" : "open") : "closed"),
 			pull_request: object.merged ? "merged" : "opened"
-		}[context];
+		}[context == "object" ? object.context : context];
+		let cssContext = repo.issues.contexts[context].css;
 
 		let tr = document.createElement("tr");
 		tr.onclick = () => {
@@ -75,10 +74,13 @@ function showNavigation(context, objects, currentPage, status) {
 		button.href = "?" + address + "/" + status + "/" + (currentPage + 1);
 	}
 
-	document.getElementById(context + "s_" + status).classList.add("current");
+	let node = document.getElementById(context + "s_" + status);
+	if(node) {
+		node.classList.add("current");
 
-	document.getElementById(context + "s_open").href = "?" + address + "/open";
-	document.getElementById(context + "s_closed").href = "?" + address + "/closed";
+		document.getElementById(context + "s_open").href = "?" + address + "/open";
+		document.getElementById(context + "s_closed").href = "?" + address + "/closed";
+	}
 }
 
 function showFollowing() {

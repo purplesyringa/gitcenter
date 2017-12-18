@@ -1,0 +1,83 @@
+.objects {
+	width: 896px;
+	margin: 0 auto 16px;
+	border-spacing: 0;
+
+	border: 1px solid #DDF;
+	border-radius: 4px;
+}
+
+.objects td {
+	width: auto;
+	margin: 0;
+	padding: 8px;
+	vertical-align: top;
+	font-family: Helvetica, Arial, sans-serif;
+	font-size: 16px;
+}
+.objects tr {
+	cursor: pointer;
+}
+.objects tr:hover {
+	background-color: #EEF;
+}
+
+.objects tr td {
+	border-top: 1px solid #DDF;
+}
+.objects tr:first-child td {
+	border-top: none;
+}
+
+.objects-bottom {
+	display: block;
+	color: #888;
+	font-size: 14px;
+}
+
+.objects-right {
+	width: 256px !important;
+	max-width: 256px;
+	word-wrap: break-word;
+}
+
+.object-icon {
+	display: inline-block;
+	width: 16px;
+	height: 16px;
+	margin-right: 8px;
+	vertical-align: middle;
+	margin-top: -2px;
+	border-radius: 50%;
+}
+.object-status-open {
+	background-color: #2B3;
+}
+.object-status-closed {
+	background-color: #B23;
+}
+.object-status-reopened {
+	background-color: #B2E;
+}
+.object-status-opened {
+	background-color: #2B3;
+}
+.object-status-merged {
+	background-color: #B2E;
+}
+
+.object-title {
+	display: inline;
+}
+
+
+.navigation {
+	width: 896px;
+	margin: 16px auto;
+}
+.navigation > * {
+	margin-left: 8px;
+}
+.navigation > *:first-child {
+	margin-left: 0;
+}
