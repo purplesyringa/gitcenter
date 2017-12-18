@@ -118,7 +118,7 @@ repo.addMerger()
 		if(readme && readme.type == "file") {
 			return repo.getFile(head, (path ? path + "/" : "") + readme.name)
 				.then(readme => {
-					readme = repo.git.arrayToString(readme);
+					readme = repo.git.decodeUTF8(readme);
 					document.getElementById("readme").innerHTML = repo.renderMarked(readme);
 				});
 		} else {
