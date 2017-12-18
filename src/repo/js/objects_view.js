@@ -14,10 +14,11 @@ function drawObjectStatus(context, statusText, statusUpdate) {
 function addTag(context, object, tag) {
 	let color = repo.tagToColor(tag);
 
-	let node = document.createElement("div");
+	let node = document.createElement("a");
 	node.className = "tag";
-	node.style.backgroundColor = color.background;
-	node.style.color = color.foreground;
+	node.style.setProperty("background-color", color.background, "important");
+	node.style.setProperty("color", color.foreground, "important");
+	node.href = "../../filter/?" + address + "/tag:" + tag;
 	node.textContent = tag;
 	document.getElementById("tags").appendChild(node);
 

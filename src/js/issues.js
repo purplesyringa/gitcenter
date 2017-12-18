@@ -19,6 +19,11 @@ class RepositoryIssues {
 				css: "pull-request",
 				text: "pull request",
 				img: "pr"
+			},
+			object: {
+				css: "object",
+				text: "object",
+				img: "object"
 			}
 		};
 	}
@@ -365,6 +370,64 @@ class RepositoryIssues {
 					row.cert_user_id = auth ? auth.user : "You";
 					return row;
 				}
+			});
+	}
+
+	/********************************** Filtering *********************************/
+	filterObjects(page, query) {
+		let sql = context => {
+			let notExistingColumns = {
+				issue: ["merged"],
+				pull_request: ["open", "reopened"]
+			}[context];
+
+			let column = column => {
+				return notExistingColumns.indexOf(column) > -1 ? "NULL AS " + column + "," : "{object}s." + column + ",";
+			};
+
+			return ("\
+				SELECT\
+					'{object}' AS context," +
+					column("id") +
+					column("title") +
+					column("body") +
+					column("date_added") +
+					column("open") +
+					column("reopened") +
+					column("merged") +
+					column("tags") +
+					column("json_id") +
+					"json.directory AS json,\
+					json.cert_user_id\
+				FROM {object}s, json\
+				WHERE\
+					{object}s.json_id = json.json_id AND\
+					json.site = :address\
+			").replace(/{object}/g, context);
+		};
+
+		return this.zeroDB.query("\
+			SELECT * FROM (" +
+				sql("issue") +
+				"UNION" +
+				sql("pull_request") +
+			")\
+			WHERE (" + (query || "1 = 1") + ")\
+			ORDER BY date_added DESC\
+			LIMIT " + (page * 10) + ", 11\
+		", {
+			address: this.address
+		})
+			.then(objects => {
+				console.log(objects);
+				return {
+					objects: objects.slice(0, 10)
+						.map(object => {
+							object.tags = object.tags ? object.tags.split(",") : [];
+							return object;
+						}),
+					nextPage: objects.length > 10
+				};
 			});
 	}
 
