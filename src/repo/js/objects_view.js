@@ -156,6 +156,7 @@ function showAction(action, context) {
 					.then(() => {
 						textarea.disabled = false;
 						content.innerHTML = repo.renderMarked(textarea.value);
+						comment.originalBody = textarea.value;
 
 						content.style.display = "";
 						edit.style.display = "";
