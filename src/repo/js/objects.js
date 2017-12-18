@@ -52,7 +52,8 @@ function showObjects(context, objects) {
 		content.appendChild(tags);
 
 		let info = document.createElement("div");
-		info.textContent = "#" + object.id + "@" + object.json.replace("data/users/", "") + " opened " + repo.translateDate(object.date_added) + " by " + object.cert_user_id;
+		let char = (context == "object" ? object.context : context) == "pull_request" ? "P" : "";
+		info.textContent = "#" + char + object.id + "@" + object.json.replace("data/users/", "") + " opened " + repo.translateDate(object.date_added) + " by " + object.cert_user_id;
 		info.className = cssContext + "s-bottom";
 		content.appendChild(info);
 
