@@ -19,6 +19,11 @@ class RepositoryIssues {
 				css: "pull-request",
 				text: "pull request",
 				img: "pr"
+			},
+			object: {
+				css: "object",
+				text: "object",
+				img: "object"
 			}
 		};
 	}
