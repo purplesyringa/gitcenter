@@ -21,11 +21,31 @@ function sqlEscape(str) {
 }
 
 if(filter.type == "tag") {
+	let tag = filter.value;
+
 	query = "\
-		(tags LIKE '%," + sqlEscape(filter.value) + ",%' ESCAPE '^') OR\
-		(tags LIKE '" + sqlEscape(filter.value) + ",%' ESCAPE '^') OR\
-		(tags LIKE '%," + sqlEscape(filter.value) + "' ESCAPE '^') OR\
-		(tags LIKE '" + sqlEscape(filter.value) + "' ESCAPE '^')\
+		(tags LIKE '%," + sqlEscape(tag) + ",%' ESCAPE '^') OR\
+		(tags LIKE '" + sqlEscape(tag) + ",%' ESCAPE '^') OR\
+		(tags LIKE '%," + sqlEscape(tag) + "' ESCAPE '^') OR\
+		(tags LIKE '" + sqlEscape(tag) + "' ESCAPE '^')\
+	";
+
+	let color = repo.tagToColor(tag);
+	let map = {
+		"&": "&amp;",
+		"<": "&lt;",
+		">": "&gt;",
+		"\"": "&quot;",
+		"'": "&#039;"
+	};
+	let tagHTML = tag.replace(/[&<>"']/g, m => map[m]);
+
+	document.getElementById("filter").innerHTML = "\
+		You are searching issues and pull requests for tag\
+		<div class='tag' id='tag' style='\
+			background-color: " + color.background + ";\
+			color: " + color.foreground + ";\
+		'>" + tagHTML + "</div>\
 	";
 }
 
