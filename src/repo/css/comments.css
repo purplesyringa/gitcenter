@@ -124,7 +124,7 @@
 }
 
 
-.comment-edit, .comment-save, .comment-remove {
+.comment-edit, .comment-save, .comment-remove, .comment-cancel {
 	display: inline-block;
 	width: 16px;
 	height: 16px;
@@ -144,4 +144,7 @@
 }
 .comment-remove {
 	background-image: url(../../img/remove.svg);
+}
+.comment-cancel {
+	background-image: url(../../img/back.svg);
 }

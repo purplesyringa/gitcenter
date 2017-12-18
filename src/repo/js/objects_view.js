@@ -93,6 +93,7 @@ function showAction(action, context) {
 
 				textarea.style.display = "";
 				save.style.display = "";
+				cancel.style.display = "";
 
 				textarea.value = comment.originalBody;
 				textarea.focus();
@@ -155,9 +156,27 @@ function showAction(action, context) {
 
 						textarea.style.display = "none";
 						save.style.display = "none";
+						cancel.style.display = "none";
 					});
 			};
 			header.appendChild(save);
+
+			let cancel = document.createElement("div");
+			cancel.className = "comment-cancel";
+			cancel.style.display = "none";
+			cancel.onclick = () => {
+				zeroPage.confirm("Cancel editing " + context + (comment.id == -1 ? "" : " comment") + "?")
+					.then(() => {
+						content.style.display = "";
+						edit.style.display = "";
+						remove.style.display = "";
+
+						textarea.style.display = "none";
+						save.style.display = "none";
+						cancel.style.display = "none";
+					});
+			};
+			header.appendChild(cancel);
 		}
 
 		let content = document.createElement("div");
