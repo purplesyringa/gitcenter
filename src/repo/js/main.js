@@ -78,7 +78,26 @@ repo.addMerger()
 						if(url) {
 							// Likely Git Center URL
 							location.href = "?" + url[1];
+						} else if(/^git@.*:.*$/.test(file.submodule.url)) {
+							// SSH
+
+							// git@hosting:author/repository.git
+							// ->
+							// hosting/author/repository
+
+							let match = file.submodule.url.match(/^git@(.*):(.*)\/(.*)$/);
+							parent.location.href = "http://" + match[0] + "/" + match[1] + "/" + match[2].replace(/\.git$/, "");
+						} else if(/^(.*)@[^:]*$/.test(file.submodule.url)) {
+							// SSH
+
+							// author@hosting/repository.git
+							// ->
+							// hosting/author/repository
+
+							let match = file.submodule.url.match(/^(.*)@(.*)\/(.*)$/);
+							parent.location.href = "http://" + match[1] + "/" + match[0] + "/" + match[2].replace(/\.git$/, "");
 						} else {
+							// HTTP/HTTPS URL
 							parent.location.href = file.submodule.url.replace(/\.git$/, "");
 						}
 					} else {
