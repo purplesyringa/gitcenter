@@ -1909,9 +1909,8 @@ class Repository {
 
 		let utcDate = (parseInt(timestamp[0]) + (tz.substr(1, 2) * 3600 + tz.substr(3, 2) * 60) * (tz[0] == "+" ? 1 : -1)) * 1000;
 		let relativeDate = utcDate - offset * 60000;
-		let offsetString = offset == 0 ? "UTC" : "GMT " + (offset < 0 ? "-" : "+") + (Math.abs(offset) / 60) + ":" + (Math.abs(offset) % 60 >= 10 ? "" : "0") + (Math.abs(offset) % 60);
 
-		return name + " commited " + this.translateDate(relativeDate) + " " + this.translateTime(relativeDate) + " " + offsetString;
+		return name + " commited " + this.translateDate(relativeDate);
 	}
 
 	// Downloads data as octet-stream
