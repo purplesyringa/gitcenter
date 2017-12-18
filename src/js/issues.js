@@ -90,9 +90,9 @@ class RepositoryIssues {
 			FROM {object}s, json\
 			WHERE\
 				{object}s.json_id = json.json_id AND\
-				json.site = :address AND" +
+				json.site = :address AND (" +
 			(query || "1 = 1") +
-			"\
+			")\
 			ORDER BY {object}s.date_added DESC\
 			LIMIT " + (page * 10) + ", 11\
 		").replace(/{object}/g, object), {
