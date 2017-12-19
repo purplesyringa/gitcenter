@@ -14,6 +14,10 @@ function loadObjects(context, page, status) {
 
 
 function showObjects(context, objects) {
+	if(objects.objects.length == 0) {
+		document.getElementById("nothing_here_yet").style.display = "unset";
+	}
+
 	objects.objects.forEach(object => {
 		let curContext = context == "object" ? object.context : context;
 
