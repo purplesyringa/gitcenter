@@ -95,3 +95,9 @@ p, ul, ol {
 	height: 16px;
 	vertical-align: top;
 }
+
+/* Nothing here yet :( */
+.nothing-here-yet.nothing-here-yet {
+	display: none;
+	cursor: default;
+}
