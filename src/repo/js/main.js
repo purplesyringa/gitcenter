@@ -41,7 +41,7 @@ repo.addMerger()
 	.then(commit => {
 		document.getElementById("commit_title").textContent = commit.content.message;
 
-		repo.git.getBranchCommit(head)
+		repo.vcs.getBranchCommit(head)
 			.then(c => {
 				let diff = document.createElement("a");
 				diff.textContent = "[diff]";
@@ -137,7 +137,7 @@ repo.addMerger()
 		if(readme && readme.type == "file") {
 			return repo.getFile(head, (path ? path + "/" : "") + readme.name)
 				.then(readme => {
-					readme = repo.git.decodeUTF8(readme);
+					readme = repo.vcs.decodeUTF8(readme);
 					document.getElementById("readme").innerHTML = repo.renderMarked(readme);
 				});
 		} else {
