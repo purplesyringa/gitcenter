@@ -711,7 +711,7 @@ class Repository {
 	// Returns diff between commit and its parent (on merge commits uses 1st parent)
 	diff(branch) {
 		let commit;
-		return this.git.readBranchCommit(branch)
+		return this.vcs.readBranchCommit(branch)
 			.then(c => {
 				commit = c;
 
@@ -723,7 +723,7 @@ class Repository {
 						}
 					};
 				}
-				return this.git.readBranchCommit(commit.content.parents[0]);
+				return this.vcs.readBranchCommit(commit.content.parents[0]);
 			})
 			.then(base => {
 				return this.diffTree(commit.content.tree, base.content.tree, "");
@@ -772,8 +772,8 @@ class Repository {
 	diffTree(tree, base, root) {
 		return Promise.all(
 			[
-				this.git.readUnknownObject(tree),
-				this.git.readUnknownObject(base)
+				this.vcs.readUnknownObject(tree),
+				this.vcs.readUnknownObject(base)
 			]
 		)
 			.then(([tree, base]) => {
@@ -964,21 +964,21 @@ class Repository {
 	// Diffs two blobs using jsdifflib
 	diffBlob(blob, base) {
 		let blobContent;
-		return (blob ? this.git.readUnknownObject(blob) : Promise.resolve({content: []}))
+		return (blob ? this.vcs.readUnknownObject(blob) : Promise.resolve({content: []}))
 			.then(b => {
 				if(b.content.length == 0) {
 					blobContent = [];
 				} else {
-					blobContent = difflib.stringAsLines(this.git.decodeUTF8(b.content));
+					blobContent = difflib.stringAsLines(this.vcs.decodeUTF8(b.content));
 				}
 
-				return base ? this.git.readUnknownObject(base) : {content: []};
+				return base ? this.vcs.readUnknownObject(base) : {content: []};
 			})
 			.then(baseContent => {
 				if(baseContent.content.length == 0) {
 					baseContent = [];
 				} else {
-					baseContent = difflib.stringAsLines(this.git.decodeUTF8(baseContent.content));
+					baseContent = difflib.stringAsLines(this.vcs.decodeUTF8(baseContent.content));
 				}
 
 				let blobHasNewLine = blobContent.slice(-1)[0] == "";

@@ -245,6 +245,10 @@ class Hg {
 	}
 
 	// Read objects
+	readUnknownObject(sha) {
+		return this.readCommit(sha)
+			.catch(sha => this.readManifest(sha));
+	}
 	readCommit(sha) {
 		let index, rev, metaData;
 
@@ -301,7 +305,10 @@ class Hg {
 					items.pop();
 				}
 
-				return items;
+				return {
+					type: "tree",
+					content: items
+				};
 			});
 	}
 	readTreeItem(sha, path) {
@@ -311,7 +318,7 @@ class Hg {
 
 		return this.readManifest(sha)
 			.then(manifest => {
-				return manifest
+				return manifest.content
 					.filter(item => item.name.indexOf(path) == 0)
 					.map(item => {
 						let name = item.name.replace(path, "");
