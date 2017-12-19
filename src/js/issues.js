@@ -233,6 +233,10 @@ class RepositoryIssues {
 			.then(c => {
 				comments = c;
 
+				return this.repo.getOwnerAddress()
+					.catch(() => "");
+			})
+			.then(owner => {
 				return this.zeroDB.query("\
 					SELECT\
 						{object}_actions.id AS id,\
@@ -248,13 +252,15 @@ class RepositoryIssues {
 						{object}_actions.json_id = json.json_id AND\
 						{object}_actions.{object}_json = :json AND\
 						{object}_actions.{object}_id = :id AND\
-						json.site = :address\
+						json.site = :address AND\
+						(json.directory == :json OR json.directory == :owner)\
 					\
 					ORDER BY date_added ASC\
 				".replace(/{object}/g, object), {
 					json: json,
 					id: id,
-					address: this.address
+					address: this.address,
+					owner: "data/users/" + owner
 				});
 			})
 			.then(actions => {
