@@ -335,10 +335,8 @@ class Repository {
 			});
 	}
 
-	// Returns name of repository owner
-	getOwner() {
-		let address;
-
+	// Returns repository owner auth_address
+	getOwnerAddress() {
 		return this.getLocalCache()
 			.then(cache => {
 				if(cache.owner) {
@@ -364,7 +362,14 @@ class Repository {
 					.then(() => {
 						return cache.owner;
 					});
-			})
+			});
+	}
+
+	// Returns name of repository owner
+	getOwner() {
+		let address;
+
+		return this.getOwnerAddress()
 			.then(a => {
 				address = a;
 				return this.zeroFS.readFile("data/users/" + address + "/data.json");
