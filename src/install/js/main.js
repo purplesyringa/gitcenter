@@ -56,3 +56,7 @@ repo.addMerger()
 			showGitAddress();
 		};
 	});
+
+window.addEventListener("load", () => {
+	setTitle("Create new repository");
+});

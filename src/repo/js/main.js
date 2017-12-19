@@ -4,12 +4,6 @@ if(address == "1RepoXU8bQE9m7ssNwL4nnxBnZVejHCc6") {
 
 let content, head;
 
-marked.setOptions({
-	highlight: (code, lang) => {
-		return lang ? hljs.highlight(lang, code).value : hljs.highlightAuto(code).value;
-	}
-});
-
 repo.addMerger()
 	.then(() => {
 		return repo.getContent();
@@ -20,6 +14,8 @@ repo.addMerger()
 		if(!content.installed) {
 			location.href = "../install/?" + address;
 		}
+
+		setTitle(content.title);
 
 		showTitle(content.title);
 		showHeader(0, content.git);
@@ -82,7 +78,26 @@ repo.addMerger()
 						if(url) {
 							// Likely Git Center URL
 							location.href = "?" + url[1];
+						} else if(/^git@.*:.*$/.test(file.submodule.url)) {
+							// SSH
+
+							// git@hosting:author/repository.git
+							// ->
+							// hosting/author/repository
+
+							let match = file.submodule.url.match(/^git@(.*):(.*)\/(.*)$/);
+							parent.location.href = "http://" + match[1] + "/" + match[2] + "/" + match[3].replace(/\.git$/, "");
+						} else if(/^(.*)@[^:]*$/.test(file.submodule.url)) {
+							// SSH
+
+							// author@hosting/repository.git
+							// ->
+							// hosting/author/repository
+
+							let match = file.submodule.url.match(/^(.*)@(.*)\/(.*)$/);
+							parent.location.href = "http://" + match[2] + "/" + match[1] + "/" + match[3].replace(/\.git$/, "");
 						} else {
+							// HTTP/HTTPS URL
 							parent.location.href = file.submodule.url.replace(/\.git$/, "");
 						}
 					} else {
@@ -122,10 +137,10 @@ repo.addMerger()
 		if(readme && readme.type == "file") {
 			return repo.getFile(head, (path ? path + "/" : "") + readme.name)
 				.then(readme => {
-					readme = repo.git.arrayToString(readme);
-					document.getElementById("readme").innerHTML = marked(readme);
+					readme = repo.git.decodeUTF8(readme);
+					document.getElementById("readme").innerHTML = repo.renderMarked(readme);
 				});
 		} else {
-			document.getElementById("readme").innerHTML = marked("# " + content.title + "\n" + content.description);
+			document.getElementById("readme").innerHTML = repo.renderMarked("# " + content.title + "\n" + content.description);
 		}
 	});

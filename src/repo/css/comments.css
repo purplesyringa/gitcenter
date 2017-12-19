@@ -35,6 +35,20 @@
 	background-color: #FFC;
 }
 
+.comment-textarea {
+	display: block;
+	width: calc(100% - 32px);
+	padding: 20px 16px; /* Additional 8px due to <p> */
+	background-color: #FFF;
+	border-radius: 0 0 4px 4px;
+	resize: none;
+	border: none;
+	height: 128px;
+
+	font-size: 16px;
+	font-family: Helvetica, Arial, sans-serif;
+}
+
 
 .comment-title-edit, .comment-content-edit, .comment-info-edit {
 	display: block;
@@ -45,9 +59,6 @@
 
 	border: 1px solid #888;
 	border-radius: 4px;
-
-	background-color: #FBFBFB;
-	box-shadow: inset 0 0 4px #DDD;
 
 	font-size: 16px;
 	font-family: Helvetica, Arial, sans-serif;
@@ -70,4 +81,70 @@
 	display: none;
 	float: right;
 	margin-right: 16px;
+}
+
+.comment code {
+	display: inline;
+	background-color: #EEE;
+	border: 8px solid #EEE;
+	border-top-width: 4px;
+	border-bottom-width: 4px;
+	border-radius: 4px;
+}
+
+.comment pre {
+	display: block;
+	background-color: #EEE;
+	border: 16px solid #EEE;
+	border-top-width: 8px;
+	border-bottom-width: 8px;
+	border-radius: 4px;
+
+	overflow: auto;
+}
+.comment pre code {
+	display: block;
+	background: none;
+	border: none;
+	border-radius: 0;
+}
+
+
+.action {
+	display: block;
+	margin-left: 16px;
+	margin-top: -14px;
+	margin-bottom: 2px;
+	padding: 14px 0;
+	padding-left: 16px;
+	border-left: 1px solid #888;
+
+	font-size: 16px;
+	color: #444;
+}
+
+
+.comment-edit, .comment-save, .comment-remove, .comment-cancel {
+	display: inline-block;
+	width: 16px;
+	height: 16px;
+	float: right;
+	margin-left: 16px;
+	cursor: pointer;
+
+	background-repeat: no-repeat;
+	background-size: contain;
+	background-position: center;
+}
+.comment-edit {
+	background-image: url(../../img/edit.svg);
+}
+.comment-save {
+	background-image: url(../../img/tick.svg);
+}
+.comment-remove {
+	background-image: url(../../img/remove.svg);
+}
+.comment-cancel {
+	background-image: url(../../img/back.svg);
 }

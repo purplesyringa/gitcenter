@@ -4,3 +4,6 @@
 [submodule "src/jsdifflib"]
 	path = src/jsdifflib
 	url = https://github.com/cemerick/jsdifflib.git
+[submodule "src/ZeroLib"]
+	path = src/ZeroLib
+	url = git@github.com:imachug/ZeroLib.git

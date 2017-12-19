@@ -29,6 +29,12 @@
 	border-top: none;
 }
 
+.issues-bottom {
+	display: block;
+	color: #888;
+	font-size: 14px;
+}
+
 .issues-right {
 	width: 256px !important;
 	max-width: 256px;
@@ -41,6 +47,7 @@
 	height: 16px;
 	margin-right: 8px;
 	vertical-align: middle;
+	margin-top: -2px;
 	border-radius: 50%;
 }
 .issue-status-open {
@@ -51,6 +58,10 @@
 }
 .issue-status-reopened {
 	background-color: #B2E;
+}
+
+.issue-title {
+	display: inline;
 }
 
 

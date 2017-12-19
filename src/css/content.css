@@ -26,7 +26,7 @@
 
 h1 {
 	margin: 10px 0;
-	font-size: 28px;
+	font-size: 32px;
 }
 h2 {
 	margin: 6px 0;
@@ -64,4 +64,40 @@ p, ul, ol {
 	padding-left: calc(50% - 448px);
 	margin-top: 16px;
 	margin-left: -144px;
+}
+
+/* Open / Closed */
+.objects-header {
+	background-color: #EEE;
+}
+.objects-header.objects-header td { /* Notice: No !important here! */
+	padding: 0;
+}
+.objects-header:hover {
+	cursor: default;
+}
+.objects-menu {
+	display: inline-block;
+	height: 100%;
+	padding: 12px 16px;
+
+	cursor: pointer;
+	opacity: 0.6;
+
+	color: #000;
+	text-decoration: none;
+}
+.objects-menu.current {
+	opacity: 1;
+	font-weight: bold;
+}
+.objects-menu img {
+	height: 16px;
+	vertical-align: top;
+}
+
+/* Nothing here yet :( */
+.nothing-here-yet.nothing-here-yet {
+	display: none;
+	cursor: default;
 }

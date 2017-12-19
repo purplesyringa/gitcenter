@@ -1,4 +1,4 @@
-.pull-requests {
+.objects {
 	width: 896px;
 	margin: 0 auto 16px;
 	border-spacing: 0;
@@ -7,7 +7,7 @@
 	border-radius: 4px;
 }
 
-.pull-requests td {
+.objects td {
 	width: auto;
 	margin: 0;
 	padding: 8px;
@@ -15,27 +15,33 @@
 	font-family: Helvetica, Arial, sans-serif;
 	font-size: 16px;
 }
-.pull-requests tr {
+.objects tr {
 	cursor: pointer;
 }
-.pull-requests tr:hover {
+.objects tr:hover {
 	background-color: #EEF;
 }
 
-.pull-requests tr td {
+.objects tr td {
 	border-top: 1px solid #DDF;
 }
-.pull-requests tr:first-child td {
+.objects tr:first-child td {
 	border-top: none;
 }
 
-.pull-requests-bottom {
+.objects-bottom {
 	display: block;
 	color: #888;
 	font-size: 14px;
 }
 
-.pull-request-icon {
+.objects-right {
+	width: 256px !important;
+	max-width: 256px;
+	word-wrap: break-word;
+}
+
+.object-icon {
 	display: inline-block;
 	width: 16px;
 	height: 16px;
@@ -44,14 +50,23 @@
 	margin-top: -2px;
 	border-radius: 50%;
 }
-.pull-request-status-opened {
+.object-status-open {
 	background-color: #2B3;
 }
-.pull-request-status-merged {
+.object-status-closed {
+	background-color: #B23;
+}
+.object-status-reopened {
+	background-color: #B2E;
+}
+.object-status-opened {
+	background-color: #2B3;
+}
+.object-status-merged {
 	background-color: #B2E;
 }
 
-.pull-request-title {
+.object-title {
 	display: inline;
 }
 

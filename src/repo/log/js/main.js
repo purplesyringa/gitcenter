@@ -22,6 +22,8 @@ repo.addMerger()
 		}
 	})
 	.then(() => {
+		setTitle("Log - " + content.title);
+
 		showTitle(content.title);
 		showHeader(1, content.git);
 		showTabs(1);

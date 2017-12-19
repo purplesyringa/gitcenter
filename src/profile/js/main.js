@@ -61,3 +61,7 @@ zeroPage.getSiteInfo()
 				});
 		};
 	});
+
+window.addEventListener("load", () => {
+	setTitle("Profile");
+});

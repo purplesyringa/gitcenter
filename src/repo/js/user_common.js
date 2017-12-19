@@ -9,10 +9,10 @@ if(!address) {
 
 let additional = "";
 if(address.indexOf("/") > -1) {
-	additional = address.substr(address.indexOf("/") + 1);
+	additional = decodeURIComponent(address.substr(address.indexOf("/") + 1));
 	address = address.substr(0, address.indexOf("/"));
 } else if(address.indexOf("@") > -1) {
-	additional = address.substr(address.indexOf("@"));
+	additional = decodeURIComponent(address.substr(address.indexOf("@")));
 	address = address.substr(0, address.indexOf("@"));
 }
 

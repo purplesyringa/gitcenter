@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>View file - Git Center</title>
+		<title>Issues - Git Center</title>
 		<meta charset="utf-8">
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<base href="" target="_top" id="base">
@@ -11,11 +11,10 @@
 		<link rel="stylesheet" type="text/css" href="../../css/buttons.css">
 		<link rel="stylesheet" type="text/css" href="../../css/header.css">
 		<link rel="stylesheet" type="text/css" href="../../css/content.css">
-		<link rel="stylesheet" type="text/css" href="../../hljs/default.min.css">
 		<link rel="stylesheet" type="text/css" href="../css/tabs.css">
 		<link rel="stylesheet" type="text/css" href="../css/info.css">
-		<link rel="stylesheet" type="text/css" href="css/file.css">
-		<link rel="stylesheet" type="text/css" href="../log/css/network.css">
+		<link rel="stylesheet" type="text/css" href="../css/tags.css">
+		<link rel="stylesheet" type="text/css" href="css/filter.css">
 	</head>
 	<body>
 		<header class="header">
@@ -48,7 +47,7 @@
 				<a class="middle-button-margin button button-blue publish" id="publish" title="Use this option after pushing if you didn't enable hooks">Sign &amp; Publish changes</a>
 			</div>
 
-			<a id="code_link" class="tab tab-current">
+			<a id="code_link" class="tab">
 				<img src="../../img/code.svg" width="16">
 				Code
 			</a>
@@ -74,33 +73,15 @@
 			</a>
 		</main>
 
-		<div class="sidebar">
-			<div class="branches" id="branches"></div>
-		</div>
-
-		<div class="commits">
-			<div class="commit">
-				<div class="commit-title" id="commit_title"></div>
-				<div class="commit-description" id="commit_description">
-					<a href="#" id="permanent_link">Copy permanent link</a><br>
-				</div>
-			</div>
-		</div>
-
-		<table id="files" class="files">
-			<tr class="files-header">
-				<td id="files_path">
-					<span><a id="files_root">Root</a> › </span>
-				</td>
-			</tr>
-			<tr>
-				<td class="file-content" id="file_content"></td>
-			</tr>
-		</table>
-
 		<div class="info">
-			<a class="button download" id="download">Download</a>
-			<a class="button edit info-link" id="edit">Edit</a>
+			<div class="info-link-nomargin" id="filter"></div>
+		</div>
+
+		<table id="objects" class="objects"></table>
+
+		<div class="navigation">
+			<a class="button button-disabled" id="navigation_back">&#8592; Back</a>
+			<a class="button button-disabled" id="navigation_next">Next &#8594;</a>
 		</div>
 
 		<script type="text/javascript" src="../../ZeroLib/ZeroFrame.js"></script>
@@ -112,12 +93,11 @@
 		<script type="text/javascript" src="../../js/sha.js"></script>
 		<script type="text/javascript" src="../../js/git.js"></script>
 		<script type="text/javascript" src="../../workerout/workerout.js"></script>
-		<script type="text/javascript" src="../../js/hg.js"></script>
 		<script type="text/javascript" src="../../js/repo.js"></script>
 		<script type="text/javascript" src="../../js/issues.js"></script>
-		<script type="text/javascript" src="../js/path_common.js"></script>
 		<script type="text/javascript" src="../js/common.js"></script>
-		<script type="text/javascript" src="../../hljs/highlight.min.js"></script>
+		<script type="text/javascript" src="../js/user_common.js"></script>
+		<script type="text/javascript" src="../js/objects.js"></script>
 		<script type="text/javascript" src="js/main.js"></script>
 		<script type="text/javascript" src="../../js/root.js"></script>
 	</body>

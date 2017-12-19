@@ -28,3 +28,30 @@
 .repo-address {
 	color: #888;
 }
+
+.repo-stars {
+	display: inline-block;
+	height: 24px;
+	float: right;
+	margin-top: 4px;
+	margin-left: 8px;
+	padding-left: 28px;
+	border-radius: 8px;
+	color: black;
+
+	background-image: url(../../img/star.svg);
+	background-size: auto 16px;
+	background-repeat: no-repeat;
+	background-position: 8px 4px;
+}
+
+
+.search {
+	display: block;
+	width: calc(100% - 16px);
+	padding: 4px 8px;
+	border-radius: 4px;
+	border: 1px solid black;
+
+	font-size: 16px;
+}

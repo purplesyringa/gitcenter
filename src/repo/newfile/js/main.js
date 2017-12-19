@@ -11,6 +11,8 @@ repo.addMerger()
 			location.href = "../../install/?" + address;
 		}
 
+		setTitle("New file - " + content.title);
+
 		showTitle(content.title);
 		showHeader(1, content.git);
 		showBranches();
@@ -33,7 +35,7 @@ repo.addMerger()
 
 			saveButton.classList.add("button-disabled");
 
-			repo.saveFile((path ? path + "/" : "") + fileName.value, repo.git.stringToArray(fileContent.value), branch, commitMessage.value)
+			repo.saveFile((path ? path + "/" : "") + fileName.value, repo.git.encodeUTF8(fileContent.value), branch, commitMessage.value)
 				.then(commit => {
 					location.href = "../?" + address + "/" + path.replace(/@/g, "@@") + "@" + (repo.git.isSha(branch) ? commit : branch).replace(/@/g, "@@");
 				});

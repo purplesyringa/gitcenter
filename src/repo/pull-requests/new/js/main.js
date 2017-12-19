@@ -11,6 +11,8 @@ repo.addMerger()
 			location.href = "../../../install/?" + address;
 		}
 
+		setTitle("New pull request - " + content.title);
+
 		showTitle(content.title);
 		showHeader(2, content.git);
 		showTabs(2);

@@ -13,6 +13,8 @@ repo.addMerger()
 			location.href = "../../install/?" + address;
 		}
 
+		setTitle("Releases - " + content.title);
+
 		showTitle(content.title);
 		showHeader(1, content.git);
 		showTabs(1);
@@ -57,7 +59,7 @@ repo.addMerger()
 
 			let description = document.createElement("div");
 			description.className = "release-description";
-			description.textContent = "Tagged at " + release.dateString + "\n" + release.description;
+			description.textContent = "Tagged " + release.dateString + "\n" + release.description;
 			node.appendChild(description);
 
 			document.getElementById("releases").appendChild(node);

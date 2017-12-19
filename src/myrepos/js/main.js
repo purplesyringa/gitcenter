@@ -3,6 +3,10 @@ zeroPage = new ZeroPage(zeroFrame);
 zeroFS = new ZeroFS(zeroPage);
 zeroDB = new ZeroDB(zeroPage);
 
+document.getElementById("create_repository").onclick = () => {
+	Repository.createRepo(zeroPage);
+};
+
 zeroPage.cmd("mergerSiteList", [true])
 	.then(repos => {
 		repos = Object.keys(repos)
@@ -49,3 +53,7 @@ zeroPage.cmd("mergerSiteList", [true])
 			document.getElementById("repos").appendChild(node);
 		});
 	});
+
+window.addEventListener("load", () => {
+	setTitle("My Repos");
+});
