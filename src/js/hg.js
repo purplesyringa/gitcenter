@@ -224,7 +224,7 @@ class Hg {
 	}
 	getBranchCommit(branch) {
 		if(this.isSha(branch)) {
-			return branch;
+			return Promise.resolve(branch);
 		}
 
 		if(branch == "") {
