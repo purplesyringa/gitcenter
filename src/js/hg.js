@@ -227,11 +227,17 @@ class Hg {
 			return branch;
 		}
 
+		if(branch == "") {
+			return this.getHead()
+				.then(head => this.getBranchCommit(head));
+		}
+
 		return this.findInBranchList("cache/branch2-visible", branch, true)
 			.catch(() => this.findInBranchList("cache/branch2-served", branch, true))
 			.catch(() => this.findInBranchList("cache/branch2-immutable", branch, true))
 			.catch(() => this.findInBranchList("cache/branch2-base", branch, true))
-			.catch(() => this.findInBranchList("bookmarks", branch, false));
+			.catch(() => this.findInBranchList("bookmarks", branch, false))
+			.catch(() => Promise.reject("Cannot find branch " + branch));
 	}
 	readBranchCommit(branch) {
 		return this.getBranchCommit(branch)
