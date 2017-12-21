@@ -605,9 +605,9 @@ class Repository {
 
 	// Returns file content
 	getFile(branch, path) {
-		return this.git.readBranchCommit(branch)
+		return this.vcs.readBranchCommit(branch)
 			.then(commit => {
-				return this.git.readTreeItem(commit.content.tree, path);
+				return this.vcs.readTreeItem(commit.content.tree, path);
 			})
 			.then(blob => {
 				if(blob.type != "blob") {
