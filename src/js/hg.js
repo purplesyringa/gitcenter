@@ -257,7 +257,6 @@ class Hg {
 			.catch(() => {
 				if(sha.indexOf("/") > -1) {
 					// sha/file.name
-					console.log(sha.substr(0, sha.indexOf("/")), sha.substr(sha.indexOf("/") + 1));
 					return this.readHgFile(sha.substr(sha.indexOf("/") + 1), sha.substr(0, sha.indexOf("/")))
 						.catch(() => {
 							// Maybe a directory
@@ -639,6 +638,8 @@ class HgFileName {
 		if(name[0] == ".") {
 			return "~2e" + name.substr(1);
 		}
+
+		return name;
 	}
 
 	decode(name) {
