@@ -565,43 +565,38 @@ class Repository {
 
 	// Returns list of files in directory and submodules
 	getTree(tree, dir) {
-		if(this.git) {
-			let submodules;
+		let submodules;
 
-			return this.git.getSubmodules(tree)
-				.then(s => {
-					submodules = s;
+		return (this.git ? this.git.getSubmodules(tree) : Promise.resolve([]))
+			.then(s => {
+				submodules = s;
 
-					return this.git.readTreeItem(tree, dir);
-				})
-				.then(tree => {
-					if(tree.type != "tree") {
-						return Promise.reject("Commit tree must be a tree");
-					}
+				return this.vcs.readTreeItem(tree, dir);
+			})
+			.then(tree => {
+				if(tree.type != "tree") {
+					return Promise.reject("Commit tree must be a tree");
+				}
 
-					tree.content.forEach(file => {
-						file.type = {
-							blob: "file",
-							tree: "directory",
-							submodule: "submodule"
-						}[file.type] || "unknown";
+				tree.content.forEach(file => {
+					file.type = {
+						blob: "file",
+						tree: "directory",
+						submodule: "submodule"
+					}[file.type] || "unknown";
 
-						if(file.type == "submodule") {
-							let submodule = submodules.find(submodule => submodule.path == (dir ? dir + "/" + file.name : file.name));
-							if(submodule) {
-								file.submodule = submodule;
-							} else {
-								file.type = "error";
-							}
+					if(file.type == "submodule") {
+						let submodule = submodules.find(submodule => submodule.path == (dir ? dir + "/" + file.name : file.name));
+						if(submodule) {
+							file.submodule = submodule;
+						} else {
+							file.type = "error";
 						}
-					});
-
-					return tree.content;
+					}
 				});
-		} else if(this.hg) {
-			return this.hg.readTreeItem(tree, dir)
-				.then(tree => tree.content);
-		}
+
+				return tree.content;
+			});
 	}
 
 	// Returns file content
