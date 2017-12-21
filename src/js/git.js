@@ -374,7 +374,7 @@ class Git {
 		let roots = [];
 
 		let handled = {};
-		let toAncestors = (leaf, depth) => {
+		let toChildren = (leaf, depth) => {
 			if(handled[leaf]) {
 				return;
 			}
@@ -394,8 +394,8 @@ class Git {
 						return;
 					}
 
-					if(!leafObject.content.ancestors) {
-						leafObject.content.ancestors = [];
+					if(!leafObject.content.children) {
+						leafObject.content.children = [];
 					}
 
 					if(leafObject.content.parents.length == 0) {
@@ -408,19 +408,19 @@ class Git {
 						leafObject.content.parents.map((parent, i) => {
 							return read(parent)
 								.then(parentObject => {
-									if(!parentObject.content.ancestors) {
-										parentObject.content.ancestors = [];
+									if(!parentObject.content.children) {
+										parentObject.content.children = [];
 									}
 
-									if(parentObject.content.ancestors.indexOf(leafObject) > -1) {
+									if(parentObject.content.children.indexOf(leafObject) > -1) {
 										return;
 									}
 
-									parentObject.content.ancestors.push(leafObject);
+									parentObject.content.children.push(leafObject);
 
 									leafObject.content.parents[i] = parentObject;
 
-									return toAncestors(parent, depth - 1);
+									return toChildren(parent, depth - 1);
 								});
 						})
 					);
@@ -428,7 +428,7 @@ class Git {
 				.then(() => leafObject);
 		};
 
-		return Promise.all(leaves.map(leaf => toAncestors(leaf, depth)))
+		return Promise.all(leaves.map(leaf => toChildren(leaf, depth)))
 			.then(leaves => {
 				return {
 					leaves: leaves,
