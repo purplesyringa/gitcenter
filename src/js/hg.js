@@ -284,7 +284,8 @@ class Hg {
 						committer: this.toGitAuthor(author, date),
 						message: message,
 						parents: parent2 ? [parent1, parent2] : parent1 ? [parent1] : []
-					}
+					},
+					id: sha
 				};
 			});
 	}
@@ -293,7 +294,8 @@ class Hg {
 			// Empty tree from Git. How did it appear here?
 			return Promise.resolve({
 				type: "tree",
-				content: []
+				content: [],
+				id: sha
 			});
 		}
 
@@ -322,7 +324,8 @@ class Hg {
 
 				return {
 					type: "tree",
-					content: items
+					content: items,
+					id: sha
 				};
 			});
 	}
@@ -339,25 +342,29 @@ class Hg {
 					path += "/";
 				}
 
-				return manifest.content
-					.filter(item => item.name.indexOf(path) == 0)
-					.map(item => {
-						let name = item.name.replace(path, "");
-						let type = "file";
-						if(name.indexOf("/") > -1) {
-							name = item.name.substr(0, item.name.indexOf("/"));
-							type = "directory";
-						}
+				return {
+					type: "tree",
+					content: manifest.content
+						.filter(item => item.name.indexOf(path) == 0)
+						.map(item => {
+							let name = item.name.replace(path, "");
+							let type = "file";
+							if(name.indexOf("/") > -1) {
+								name = item.name.substr(0, item.name.indexOf("/"));
+								type = "directory";
+							}
 
-						return {
-							name: name,
-							id: item.id,
-							type: type
-						};
-					})
-					.filter((val, i, arr) => {
-						return arr.map(val2 => val2.name).indexOf(val.name) == i;
-					});
+							return {
+								name: name,
+								id: item.id,
+								type: type
+							};
+						})
+						.filter((val, i, arr) => {
+							return arr.map(val2 => val2.name).indexOf(val.name) == i;
+						}),
+					id: sha
+				};
 			})
 	}
 
@@ -377,7 +384,7 @@ class Hg {
 				return {
 					type: "blob",
 					content: data,
-					sha: sha
+					id: sha
 				};
 			});
 	}
