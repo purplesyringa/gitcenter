@@ -272,7 +272,7 @@ class Hg {
 				let manifest = data[0];
 				let author = data[1];
 				let date = data[2];
-				let message = data.slice(4).join("\n").trim();
+				let message = data.slice(data.indexOf("")).join("\n").trim(); // After first empty line
 				let parent1 = metaData.parent1Rev == -1 ? null : index.getMetaData(metaData.parent1Rev).nodeId;
 				let parent2 = metaData.parent2Rev == -1 ? null : index.getMetaData(metaData.parent2Rev).nodeId;
 
