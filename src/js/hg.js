@@ -254,7 +254,7 @@ class Hg {
 	// Read objects
 	readUnknownObject(sha) {
 		return this.readCommit(sha)
-			.catch(() => this.readManifest(sha));
+			.catch(() => this.readTreeItem(sha, ""));
 	}
 	readCommit(sha) {
 		let index, rev, metaData;

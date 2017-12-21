@@ -599,7 +599,8 @@ class Repository {
 					return tree.content;
 				});
 		} else if(this.hg) {
-			return this.hg.readTreeItem(tree, dir);
+			return this.hg.readTreeItem(tree, dir)
+				.then(tree => tree.content);
 		}
 	}
 
