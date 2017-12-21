@@ -1929,10 +1929,10 @@ class Repository {
 		let heads = [];
 		let commits = [];
 
-		return this.git.getBranchCommit(leaf)
+		return this.vcs.getBranchCommit(leaf)
 			.then(l => {
 				leaf = l;
-				return this.git.toBidirectional([leaf], count);
+				return this.toBidirectional([leaf], count);
 			})
 			.then(bidirectional => {
 				let action = leaf => {
@@ -1960,6 +1960,82 @@ class Repository {
 				return action(bidirectional.leaves[0]);
 			})
 			.then(() => commits);
+	}
+
+	toBidirectional(leaves, depth) {
+		let cache = {};
+		let read = id => {
+			if(cache[id]) {
+				return cache[id];
+			}
+
+			return cache[id] = this.vcs.readUnknownObject(id);
+		};
+
+		let roots = [];
+
+		let handled = {};
+		let toAncestors = (leaf, depth) => {
+			if(handled[leaf]) {
+				return;
+			}
+
+			handled[leaf] = true;
+
+			let leafObject;
+			return read(leaf)
+				.then(l => {
+					leafObject = l;
+
+					if(depth <= 0) {
+						leafObject.content.parents = [];
+						if(roots.indexOf(leafObject) == -1) {
+							roots.push(leafObject);
+						}
+						return;
+					}
+
+					if(!leafObject.content.ancestors) {
+						leafObject.content.ancestors = [];
+					}
+
+					if(leafObject.content.parents.length == 0) {
+						if(roots.indexOf(leafObject) == -1) {
+							roots.push(leafObject);
+						}
+					}
+
+					return Promise.all(
+						leafObject.content.parents.map((parent, i) => {
+							return read(parent)
+								.then(parentObject => {
+									if(!parentObject.content.ancestors) {
+										parentObject.content.ancestors = [];
+									}
+
+									if(parentObject.content.ancestors.indexOf(leafObject) > -1) {
+										return;
+									}
+
+									parentObject.content.ancestors.push(leafObject);
+
+									leafObject.content.parents[i] = parentObject;
+
+									return toAncestors(parent, depth - 1);
+								});
+						})
+					);
+				})
+				.then(() => leafObject);
+		};
+
+		return Promise.all(leaves.map(leaf => toAncestors(leaf, depth)))
+			.then(leaves => {
+				return {
+					leaves: leaves,
+					roots: roots
+				};
+			});
 	}
 
 	// Converts author (like "Name <email> timestamp") to text
