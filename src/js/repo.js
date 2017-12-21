@@ -732,11 +732,11 @@ class Repository {
 
 							let promise;
 							if(item.action == "modified") {
-								promise = this.diffBlob(item.id, item.baseId);
+								promise = this.diffBlob(item.id, item.baseId, item.name);
 							} else if(item.action == "add") {
-								promise = this.diffBlob(item.id, null);
+								promise = this.diffBlob(item.id, null, item.name);
 							} else if(item.action == "remove") {
-								promise = this.diffBlob(null, item.id);
+								promise = this.diffBlob(null, item.id, item.name);
 							}
 
 							return promise
@@ -748,11 +748,11 @@ class Repository {
 							// Diff all submodules
 
 							if(item.action == "modified") {
-								item.content = this.diffSubmodule(item.id, item.baseId);
+								item.content = this.diffSubmodule(item.id, item.baseId, item.name);
 							} else if(item.action == "add") {
-								item.content = this.diffSubmodule(item.id, null);
+								item.content = this.diffSubmodule(item.id, null, item.name);
 							} else if(item.action == "remove") {
-								item.content = this.diffSubmodule(null, item.id);
+								item.content = this.diffSubmodule(null, item.id, item.name);
 							}
 
 							return Promise.resolve(item);
@@ -958,7 +958,16 @@ class Repository {
 	}
 
 	// Diffs two blobs using jsdifflib
-	diffBlob(blob, base) {
+	diffBlob(blob, base, name) {
+		if(this.hg) {
+			if(blob) {
+				blob += "/" + name;
+			}
+			if(base) {
+				base += "/" + name;
+			}
+		}
+
 		let blobContent;
 		return (blob ? this.vcs.readUnknownObject(blob) : Promise.resolve({content: []}))
 			.then(b => {

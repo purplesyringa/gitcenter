@@ -254,7 +254,21 @@ class Hg {
 	// Read objects
 	readUnknownObject(sha) {
 		return this.readCommit(sha)
-			.catch(() => this.readTreeItem(sha, ""));
+			.catch(() => {
+				if(sha.indexOf("/") > -1) {
+					// sha/file.name
+					console.log(sha.substr(0, sha.indexOf("/")), sha.substr(sha.indexOf("/") + 1));
+					return this.readHgFile(sha.substr(sha.indexOf("/") + 1), sha.substr(0, sha.indexOf("/")))
+						.catch(() => {
+							// Maybe a directory
+							return this.readTreeItem(sha.substr(0, sha.indexOf("/")), sha.substr(sha.indexOf("/") + 1))
+						});
+				}
+
+				return Promise.reject();
+			})
+			.catch(() => this.readTreeItem(sha, ""))
+			.catch(() => Promise.reject("Could not read object " + sha));
 	}
 	readCommit(sha) {
 		let index, rev, metaData;
