@@ -348,10 +348,10 @@ class Hg {
 						.filter(item => item.name.indexOf(path) == 0)
 						.map(item => {
 							let name = item.name.replace(path, "");
-							let type = "file";
+							let type = "blob";
 							if(name.indexOf("/") > -1) {
 								name = item.name.substr(0, item.name.indexOf("/"));
-								type = "directory";
+								type = "tree";
 							}
 
 							return {
