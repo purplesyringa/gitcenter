@@ -4,6 +4,7 @@ class Hg {
 		this.zeroPage = zeroPage;
 		this.zeroFS = new ZeroFS(zeroPage);
 		this.indexCache = {};
+		this.hgFileName = new HgFileName;
 	}
 	init() {
 		return Promise.resolve();
@@ -102,6 +103,12 @@ class Hg {
 				);
 			})
 		);
+	}
+	decodeUTF8(bytes) {
+		return decodeURIComponent(escape(this.arrayToString(bytes)));
+	}
+	encodeUTF8(str) {
+		return this.stringToArray(unescape(encodeURIComponent(str)));
 	}
 
 	// Compression
@@ -247,7 +254,7 @@ class Hg {
 	// Read objects
 	readUnknownObject(sha) {
 		return this.readCommit(sha)
-			.catch(sha => this.readManifest(sha));
+			.catch(() => this.readManifest(sha));
 	}
 	readCommit(sha) {
 		let index, rev, metaData;
@@ -312,12 +319,18 @@ class Hg {
 			});
 	}
 	readTreeItem(sha, path) {
-		if(path) {
-			path += "/";
-		}
-
 		return this.readManifest(sha)
 			.then(manifest => {
+				let file = manifest.content.find(item => item.name == path);
+				if(file) {
+					// File
+					return this.readHgFile(path, file.id);
+				}
+
+				if(path) {
+					path += "/";
+				}
+
 				return manifest.content
 					.filter(item => item.name.indexOf(path) == 0)
 					.map(item => {
@@ -338,6 +351,27 @@ class Hg {
 						return arr.map(val2 => val2.name).indexOf(val.name) == i;
 					});
 			})
+	}
+
+	readHgFile(path, sha) {
+		let encodedPath = this.hgFileName.encode(path);
+
+		let index, rev, metaData;
+
+		return this.loadIndex("store/data/" + encodedPath)
+			.then(i => {
+				index = i;
+				rev = index.getRev(sha);
+				metaData = index.getMetaData(rev);
+				return index.getData(rev);
+			})
+			.then(data => {
+				return {
+					type: "blob",
+					content: data,
+					sha: sha
+				};
+			});
 	}
 
 	toGitAuthor(author, date) {
@@ -517,6 +551,85 @@ class HgIndex {
 		}
 
 		return dst;
+	}
+};
+
+class HgFileName {
+	constructor() {
+		// Encode map
+		let capitals = Array.from("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+			.map(char => char.charCodeAt(0));
+
+		let cmap = {};
+		for(let i = 0; i < 32; i++) {
+			let hex = i.toString(16);
+			hex = "0".repeat(2 - hex.length) + hex;
+			cmap[i] = "~" + hex;
+		}
+		for(let i = 32; i < 126; i++) {
+			cmap[i] = String.fromCharCode(i);
+		}
+		for(let i = 126; i < 256; i++) {
+			let hex = i.toString(16);
+			hex = "0".repeat(2 - hex.length) + hex;
+			cmap[i] = "~" + hex;
+		}
+
+		Array.from("\\:*?\"<>|").forEach(char => {
+			let ord = char.charCodeAt(0);
+			let hex = ord.toString(16);
+			hex = "0".repeat(2 - hex.length) + hex;
+			cmap[ord] = "~" + hex;
+		});
+
+		for(let i = "A".charCodeAt(0); i <= "Z".charCodeAt(0); i++) {
+			cmap[i] = "_" + String.fromCharCode(i).toLowerCase();
+		}
+		cmap["_".charCodeAt(0)] = "__";
+
+		// Decode map
+		let dmap = {};
+		Object.keys(cmap).forEach(key => {
+			dmap[cmap[key]] = key;
+		});
+
+		this.cmap = cmap;
+		this.dmap = dmap;
+	}
+
+	encode(name) {
+		name = Array.from(name)
+			.map(char => char.charCodeAt(0))
+			.map(ord => this.cmap[ord])
+			.join("")
+
+			.replace(/\.hg\//, ".hg.hg/")
+			.replace(/\.i\//, ".i.hg/")
+			.replace(/\.d\//, ".d.hg/");
+
+		if(name[0] == ".") {
+			return "~2e" + name.substr(1);
+		}
+	}
+
+	decode(name) {
+		let orig = "";
+		let pos = 0;
+		while(pos < name.length) {
+			let found = false;
+			for(let i = 1; i < 4; i++) {
+				if(this.dmap[name.substr(pos, i)]) {
+					orig += this.dmap[name.substr(pos, i)];
+					pos += i;
+					found = true;
+					break;
+				}
+			}
+			if(!found) {
+				throw new TypeError("Invalid name " + name);
+			}
+		}
+		return orig;
 	}
 };
 
