@@ -17,6 +17,7 @@ function updateIndex(search) {
 	let required = [];
 	let maybe = [];
 	let state = "";
+	let sort = "stars";
 	search.split(/\s+/)
 		.filter(word => word.length)
 		.forEach(word => {
@@ -24,7 +25,9 @@ function updateIndex(search) {
 				.replace(/\*/g, "%")
 				.replace(/\?/g, "_");
 
-			if(word[0] == "+" && word.length > 1) {
+			if(word.indexOf("sort:") > -1) {
+				sort = word.substr(5);
+			} else if(word[0] == "+" && word.length > 1) {
 				required.push("\
 					repo_index.description LIKE " + escapeString("%" + word.substr(1) + "%") + "\
 					OR\
@@ -39,6 +42,14 @@ function updateIndex(search) {
 			}
 		});
 
+	if(sort == "stars") {
+		sort = "stars";
+	} else if(sort == "date") {
+		sort = "date_added";
+	} else {
+		sort = "stars";
+	}
+
 	link.promise = zeroDB.query("\
 		SELECT repo_index.*, json.cert_user_id, COUNT(repo_stars.address) AS stars\
 		FROM repo_index, json\
@@ -50,7 +61,7 @@ function updateIndex(search) {
 			(maybe.length ? "(" + maybe.join(") OR (") + ")" : "1 = 1") + "\
 		)\
 		GROUP BY repo_index.address\
-		ORDER BY stars DESC\
+		ORDER BY " + sort + " DESC\
 	")
 		.then(index => {
 			if(link.stop) {
