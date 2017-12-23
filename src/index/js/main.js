@@ -43,16 +43,16 @@ function updateIndex(search) {
 		});
 
 	if(sort == "stars") {
-		sort = "stars";
+		sort = "stars DESC";
 	} else if(sort == "date") {
 		sort = "\
 			CASE WHEN date_added IS NULL\
 				THEN 0\
 				ELSE date_added\
-			END\
+			END DESC\
 		";
 	} else {
-		sort = "stars";
+		sort = "stars DESC";
 	}
 
 	link.promise = zeroDB.query("\
@@ -66,7 +66,7 @@ function updateIndex(search) {
 			(maybe.length ? "(" + maybe.join(") OR (") + ")" : "1 = 1") + "\
 		)\
 		GROUP BY repo_index.address\
-		ORDER BY " + sort + " DESC\
+		ORDER BY " + sort + "\
 	")
 		.then(index => {
 			if(link.stop) {
