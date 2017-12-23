@@ -1687,7 +1687,8 @@ class Repository {
 
 				data.repo_index[this.address] = {
 					title: content.title,
-					description: content.description
+					description: content.description,
+					date_added: Date.now()
 				};
 
 				data = JSON.stringify(data, null, "\t");
