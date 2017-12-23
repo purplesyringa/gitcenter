@@ -51,6 +51,8 @@ function updateIndex(search) {
 				ELSE date_added\
 			END DESC\
 		";
+	} else if(sort == "random") {
+		sort = "RANDOM() ASC";
 	} else {
 		sort = "stars DESC";
 	}
