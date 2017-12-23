@@ -120,10 +120,11 @@
 				["address", "TEXT"],
 				["title", "TEXT"],
 				["description", "TEXT"],
+				["date_added", "INTEGER"],
 				["json_id", "INTEGER REFERENCES json (json_id)"]
 			],
 			"indexes": ["CREATE INDEX repo_index_address ON repo_index(address)"],
-			"schema_changed": 3
+			"schema_changed": 4
 		},
 		"repo_stars": {
 			"cols": [
