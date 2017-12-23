@@ -45,7 +45,12 @@ function updateIndex(search) {
 	if(sort == "stars") {
 		sort = "stars";
 	} else if(sort == "date") {
-		sort = "date_added";
+		sort = "\
+			CASE WHEN date_added IS NULL\
+				THEN 0\
+				ELSE date_added\
+			END\
+		";
 	} else {
 		sort = "stars";
 	}
