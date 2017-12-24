@@ -1749,7 +1749,8 @@ class Repository {
 
 				data.repo_index[this.address] = {
 					title: content.title,
-					description: content.description
+					description: content.description,
+					date_added: Date.now()
 				};
 
 				data = JSON.stringify(data, null, "\t");
@@ -1948,7 +1949,7 @@ class Repository {
 					commits.push(leaf);
 					for(let i = leaf.content.parents.length - 1; i >= 0; i--) {
 						let parent = leaf.content.parents[i];
-						if(parent.content.ancestors.indexOf(leaf) > 0) {
+						if(parent.content.children.indexOf(leaf) > 0) {
 							// Branch delivered
 							if(!leaf.content.delivered) {
 								leaf.content.delivered = [];

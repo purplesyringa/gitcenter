@@ -71,7 +71,7 @@
 
 			<h2>git clone</h2>
 			<p>
-				To clone your repo, simply copy <code>git clone ...</code> link from repository home page (next to <a class="button button-blue">Sign &amp; Publish changes</a> button) and replace <code>$path_to_zeronet</code> with ZeroNet's home directory. This works like cloning a local repo.
+				To clone your repo, simply copy <code>git clone ...</code> link from repository home page (click <a class="button">Clone</a> button) and replace <code>$path_to_data</code> with ZeroNet's <code>data</code> directory. This works like cloning a local repo.
 			</p>
 
 			<hr>
@@ -92,12 +92,9 @@
 						<li><code>zeronet.home</code> git variable must be set to absolute path.</li>
 						<li>You must have python installed and available in PATH.</li>
 					</ol>
-					You can disable signing and publishing via <code>git push -o nosign</code>, publishing via <code>git push -o no-publish</code> and fetching via <code>git push -o no-fetch</code>.
+					You can disable signing and publishing via <code>git push -o no-sign</code>, publishing via <code>git push -o no-publish</code> and fetching via <code>git push -o no-fetch</code>. Join these arguments by using <code>git push -o no-sign -o no-publish -o no-fetch</code>.
 				</li>
 			</ul>
-			<p>
-				Note that sometimes <code>git push</code> hangs after <code>Fetching ZeroNet...</code> Cancel pushing and run <code>git push -o no-fetch</code> then.
-			</p>
 
 			<hr>
 
