@@ -268,28 +268,29 @@ class Hg {
 			});
 	}
 	getRef(ref) {
-		if(ref.indexOf("refs/tags/") == 0) {
+		if(this.isSha(ref)) {
+			return Promise.resolve(branch);
+		} else if(ref.indexOf("refs/tags/") == 0) {
 			return this.getTag("default", ref.replace("refs/tags/", ""));
 		} else if(ref.indexOf("refs/heads/") == 0) {
-			return this.getBranchCommit(ref.replace("refs/heads/", 0));
+			let branch = ref.replace("refs/heads/", "");
+
+			return this.findInBranchList("cache/branch2-visible", branch, true)
+				.catch(() => this.findInBranchList("cache/branch2-served", branch, true))
+				.catch(() => this.findInBranchList("cache/branch2-immutable", branch, true))
+				.catch(() => this.findInBranchList("cache/branch2-base", branch, true))
+				.catch(() => this.findInBranchList("bookmarks", branch, false))
+				.catch(() => Promise.reject("Cannot find branch " + branch));
 		}
 	}
 	getBranchCommit(branch) {
-		if(this.isSha(branch)) {
-			return Promise.resolve(branch);
-		}
-
 		if(branch == "") {
 			return this.getHead()
 				.then(head => this.getBranchCommit(head));
 		}
 
-		return this.findInBranchList("cache/branch2-visible", branch, true)
-			.catch(() => this.findInBranchList("cache/branch2-served", branch, true))
-			.catch(() => this.findInBranchList("cache/branch2-immutable", branch, true))
-			.catch(() => this.findInBranchList("cache/branch2-base", branch, true))
-			.catch(() => this.findInBranchList("bookmarks", branch, false))
-			.catch(() => Promise.reject("Cannot find branch " + branch));
+		return this.getRef("refs/heads/" + branch)
+			.catch(() => this.getRef("refs/tags/" + branch));
 	}
 	readBranchCommit(branch) {
 		return this.getBranchCommit(branch)
