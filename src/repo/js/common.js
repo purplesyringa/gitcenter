@@ -112,7 +112,14 @@ function showHeader(level, gitAddress) {
 }
 
 function showBranches(noPath) {
-	return repo.getBranches()
+	let promise = Promise.resolve();
+	if(branch == "") {
+		promise = repo.vcs.getHead()
+			.then(head => branch = head);
+	}
+
+	return promise
+		.then(() => repo.getBranches())
 		.then(list => {
 			// Show branch list
 			let branches = document.getElementById("branches");
