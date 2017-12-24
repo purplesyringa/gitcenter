@@ -961,11 +961,19 @@ class Repository {
 			});
 	}
 	diffCd(prev, newTree, newBase, newName) {
-		return {
-			tree: newTree,
-			base: newBase,
-			root: prev.root ? prev.root + "/" + newName : newName
-		};
+		if(this.git) {
+			return {
+				tree: newTree,
+				base: newBase,
+				root: prev.root ? prev.root + "/" + newName : newName
+			};
+		} else if(this.hg) {
+			return {
+				tree: prev.tree + "/" + newName,
+				base: prev.base + "/" + newName,
+				root: prev.root ? prev.root + "/" + newName : newName
+			}
+		}
 	}
 
 	// Diffs two blobs using jsdifflib
