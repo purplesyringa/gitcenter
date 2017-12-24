@@ -649,17 +649,17 @@ class Repository {
 				author += " " + Math.floor(+date / 1000);
 				author += " " + tz;
 
-				return this.git.getBranchCommit(base);
+				return this.vcs.getBranchCommit(base);
 			})
 			.then(commitId => {
 				parent = commitId;
-				return this.git.readUnknownObject(commitId);
+				return this.vcs.readUnknownObject(commitId);
 			})
 			.then(commit => {
-				return this.git.readUnknownObject(commit.content.tree);
+				return this.vcs.readUnknownObject(commit.content.tree);
 			})
 			.then(base => {
-				return this.git.makeTreeDeltaPath(base.content, [
+				return this.vcs.makeTreeDeltaPath(base.content, [
 					{
 						path: path,
 						type: "blob",
@@ -668,7 +668,7 @@ class Repository {
 				]);
 			})
 			.then(delta => {
-				return this.git.writeCommit({
+				return this.vcs.writeCommit({
 					tree: delta,
 					parents: [parent],
 					author: author,
@@ -678,8 +678,8 @@ class Repository {
 			})
 			.then(c => {
 				commit = c;
-				if(!this.git.isSha(base)) {
-					return this.git.setRef("refs/heads/" + base, commit);
+				if(!this.vcs.isSha(base)) {
+					return this.vcs.setRef("refs/heads/" + base, commit);
 				}
 			})
 			.then(() => commit);
