@@ -216,9 +216,43 @@ class Hg {
 			.then(bookmarks => bookmarks.sort())
 			.catch(() => []);
 	}
+	getTagList(branch) {
+		return this.readBranchCommit(branch)
+			.then(commit => {
+				return this.readTreeItem(commit.content.tree, ".hgtags")
+					.catch(() => []);
+			})
+			.then(hgTags => {
+				return this.arrayToString(hgTags.content)
+					.split("\n")
+					.filter(line => line)
+					.map(line => {
+						return line.split(" ")[1];
+					});
+			});
+	}
+	getTag(branch, tag) {
+		return this.readBranchCommit(branch)
+			.then(commit => {
+				return this.readTreeItem(commit.content.tree, ".hgtags")
+					.catch(() => Promise.reject("Unknown tag " + tag));
+			})
+			.then(hgTags => {
+				let item = this.arrayToString(hgTags.content)
+					.split("\n")
+					.map(line => line.split(" "))
+					.find(line => line[1] == tag);
+
+				if(!item) {
+					return Promise.reject("Unknown tag " + tag);
+				}
+
+				return item[0];
+			})
+	}
 	getRefList() {
 		// For compatibility with Git
-		let branches, bookmarks;
+		let branches, bookmarks, tags;
 		return this.getBranchList()
 			.then(b => {
 				branches = b.map(branch => "refs/heads/" + branch);
@@ -226,8 +260,19 @@ class Hg {
 			})
 			.then(b => {
 				bookmarks = b.map(bookmark => "refs/heads/" + bookmark);
-				return branches.concat(bookmarks);
+				return this.getTagList("default");
+			})
+			.then(t => {
+				tags = t.map(tag => "refs/tags/" + tag);
+				return [].concat(branches).concat(bookmarks).concat(tags);
 			});
+	}
+	getRef(ref) {
+		if(ref.indexOf("refs/tags/") == 0) {
+			return this.getTag("default", ref.replace("refs/tags/", ""));
+		} else if(ref.indexOf("refs/heads/") == 0) {
+			return this.getBranchCommit(ref.replace("refs/heads/", 0));
+		}
 	}
 	getBranchCommit(branch) {
 		if(this.isSha(branch)) {

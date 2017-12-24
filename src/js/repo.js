@@ -1071,7 +1071,7 @@ class Repository {
 	getReleases() {
 		let tags, releases;
 
-		return this.git.getRefList()
+		return this.vcs.getRefList()
 			.then(refs => {
 				return refs
 					.filter(ref => ref.indexOf("refs/tags/") == 0)
@@ -1080,8 +1080,8 @@ class Repository {
 			.then(tags => {
 				return Promise.all(
 					tags.map(tag => {
-						return this.git.getRef("refs/tags/" + tag)
-							.then(commit => this.git.readUnknownObject(commit))
+						return this.vcs.getRef("refs/tags/" + tag)
+							.then(commit => this.vcs.readUnknownObject(commit))
 							.then(commit => {
 								let author = commit.content.committer || commit.content.tagger;
 								let name = author.substr(0, author.indexOf("<")).trim();
