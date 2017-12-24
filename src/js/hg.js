@@ -363,7 +363,7 @@ class Hg {
 							let name = item.name.replace(path, "");
 							let type = "blob";
 							if(name.indexOf("/") > -1) {
-								name = item.name.substr(0, item.name.indexOf("/"));
+								name = name.substr(0, name.indexOf("/"));
 								type = "tree";
 							}
 
