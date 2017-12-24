@@ -722,7 +722,11 @@ class Repository {
 				return this.vcs.readBranchCommit(commit.content.parents[0]);
 			})
 			.then(base => {
-				return this.diffTree(commit.content.tree, base.content.tree, "");
+				return this.diffTree({
+					tree: commit.content.tree,
+					base: base.content.tree,
+					root: ""
+				});
 			})
 			.then(diff => {
 				return Promise.all(
@@ -765,11 +769,11 @@ class Repository {
 	}
 
 	// Diff tree against `base`. `root` is current path (empty string usually)
-	diffTree(tree, base, root) {
+	diffTree(args) {
 		return Promise.all(
 			[
-				this.vcs.readUnknownObject(tree),
-				this.vcs.readUnknownObject(base)
+				this.vcs.readUnknownObject(args.tree),
+				this.vcs.readUnknownObject(args.base)
 			]
 		)
 			.then(([tree, base]) => {
@@ -789,7 +793,7 @@ class Repository {
 							return Promise.resolve();
 						} else if(item.type == "tree") {
 							// Tree was added
-							return this.diffTree(item.id, "4b825dc642cb6eb9a060e54bf8d69288fbee4904", root ? root + "/" + item.name : item.name)
+							return this.diffTree(this.diffCd(args, item.id, "4b825dc642cb6eb9a060e54bf8d69288fbee4904", item.name))
 								.then(diff => {
 									result = result.concat(diff);
 								});
@@ -816,7 +820,7 @@ class Repository {
 							return Promise.resolve();
 						} else if(item.type == "tree") {
 							// Tree was modified
-							return this.diffTree(item.id, baseItem.id, root ? root + "/" + item.name : item.name)
+							return this.diffTree(this.diffCd(args, item.id, baseItem.id, item.name))
 								.then(diff => {
 									result = result.concat(diff);
 								});
@@ -835,7 +839,7 @@ class Repository {
 						if(item.type == "blob") {
 							if(baseItem.type == "tree") {
 								// Tree -> Blob
-								return this.diffTree("4b825dc642cb6eb9a060e54bf8d69288fbee4904", baseItem.id, root ? root + "/" + item.name : item.name)
+								return this.diffTree(this.diffCd(args, "4b825dc642cb6eb9a060e54bf8d69288fbee4904", baseItem.id, item.name))
 									.then(diff => {
 										result = result.concat(diff);
 
@@ -862,7 +866,7 @@ class Repository {
 								});
 							}
 						} else if(item.type == "tree") {
-							return this.diffTree(item.id, "4b825dc642cb6eb9a060e54bf8d69288fbee4904", root ? root + "/" + item.name : item.name)
+							return this.diffTree(this.diffCd(args, item.id, "4b825dc642cb6eb9a060e54bf8d69288fbee4904", item.name))
 								.then(diff => {
 									if(baseItem.type == "blob") {
 										// Blob -> Tree
@@ -887,7 +891,7 @@ class Repository {
 						} else if(item.type == "submodule") {
 							if(baseItem.type == "tree") {
 								// Tree -> Submodule
-								return this.diffTree("4b825dc642cb6eb9a060e54bf8d69288fbee4904", baseItem.id, root ? root + "/" + item.name : item.name)
+								return this.diffTree(this.diffCd(args, "4b825dc642cb6eb9a060e54bf8d69288fbee4904", baseItem.id, item.name))
 									.then(diff => {
 										result = result.concat(diff);
 
@@ -933,7 +937,7 @@ class Repository {
 						return Promise.resolve();
 					} else if(baseItem.type == "tree") {
 						// Removed tree
-						return this.diffTree("4b825dc642cb6eb9a060e54bf8d69288fbee4904", baseItem.id, root ? root + "/" + baseItem.name : baseItem.name)
+						return this.diffTree(this.diffCd(args, "4b825dc642cb6eb9a060e54bf8d69288fbee4904", baseItem.id, baseItem.name))
 							.then(diff => {
 								result = result.concat(diff);
 							});
@@ -951,10 +955,17 @@ class Repository {
 
 				return Promise.all(promises.concat(promises2))
 					.then(() => result.map(item => {
-						item.name = root ? root + "/" + item.name : item.name;
+						item.name = args.root ? args.root + "/" + item.name : item.name;
 						return item;
 					}));
 			});
+	}
+	diffCd(prev, newTree, newBase, newName) {
+		return {
+			tree: newTree,
+			base: newBase,
+			root: prev.root ? prev.root + "/" + newName : newName
+		};
 	}
 
 	// Diffs two blobs using jsdifflib
