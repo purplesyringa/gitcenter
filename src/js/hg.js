@@ -505,6 +505,81 @@ class Hg {
 			});
 	}
 
+	// Write
+	writeTree(linkRev, changes) {
+		return Promise.all(changes.map(change => {
+			let encodedPath = this.hgFileName.encode(change.name);
+
+			return this.loadIndex("store/data/" + encodedPath)
+				.then(index => {
+					return index.writeRev({
+						data: change.content,
+						linkRev: linkRev,
+						base: "00000000000000000000",
+						parents: change.parents
+					});
+				})
+				.then(rev => {
+					return index.getMetaData(rev).nodeId;
+				});
+		}));
+	}
+	writeCommit(commit) {
+		let index, linkRev;
+		return this.loadIndex("store/00changelog")
+			.then(i => {
+				index = i;
+				linkRev = index.chunks.length;
+
+				return Promise.all(
+					commit.parents.map(parent => {
+						return this.readCommit(parent)
+							.then(commit => {
+								return this.readManifest(commit.content.tree);
+							});
+					})
+				);
+			})
+			.then(parents => {
+				let changes = commit.changes.map(change => {
+					change.parents = parents
+						.map(parent => {
+							let file = parent.content.find(file => file.name == change.name);
+							return file ? file.id : null;
+						})
+						.filter(parent => parent);
+				});
+
+				return this.writeTree(linkRev, changes);
+			})
+			.then(tree => {
+				commit.tree = tree;
+				commit.changes = commit.changes.map(change => change.name);
+				return this.writePlainCommit(commit);
+			});
+	}
+	writePlainCommit(commit) {
+		let data = this.stringToArray(
+			commit.tree + "\n" +
+			commit.author + "\n" +
+			commit.date + " " + (new Date).getTimezoneOffset() + "\n" +
+			commit.changes.join("\n") + "\n" +
+			"\n" +
+			commit.message
+		);
+
+		let index;
+		return this.loadIndex("store/00changelog")
+			.then(index => {
+				return index.writeRev({
+					data: data,
+					linkRev: -1,
+					base: "00000000000000000000",
+					parents: commit.parents
+				});
+			});
+	}
+
 	toGitAuthor(author, date) {
 		// Author
 		let email = "hg";
