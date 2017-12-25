@@ -598,12 +598,14 @@ class Hg {
 					let rev = manifest.getRev(parent);
 					let data = manifest.getData(rev);
 					data = this.arrayToString(data).split("\n");
-					return data.map(line => {
-						return {
-							name: line.split("\0")[0],
-							id: line.split("\0")[1]
-						};
-					});
+					return data
+						.filter(line => line)
+						.map(line => {
+							return {
+								name: line.split("\0")[0],
+								id: line.split("\0")[1]
+							};
+						});
 				});
 
 				let data = Array.from(parentManifests[0]);
