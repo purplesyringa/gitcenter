@@ -573,7 +573,7 @@ class Hg {
 					return index.writeRev({
 						data: change.content,
 						linkRev: linkRev,
-						base: "00000000000000000000",
+						base: "self",
 						parents: change.parents
 					});
 				})
@@ -621,7 +621,7 @@ class Hg {
 		let data = this.stringToArray(
 			commit.tree + "\n" +
 			commit.author + "\n" +
-			commit.date + " " + (new Date).getTimezoneOffset() + "\n" +
+			commit.date + " " + ((new Date).getTimezoneOffset() * 60) + "\n" +
 			commit.changes.join("\n") + "\n" +
 			"\n" +
 			commit.message
@@ -632,8 +632,8 @@ class Hg {
 			.then(index => {
 				return index.writeRev({
 					data: data,
-					linkRev: -1,
-					base: "00000000000000000000",
+					linkRev: "self",
+					base: "self",
 					parents: commit.parents
 				});
 			});
@@ -834,8 +834,8 @@ class HgIndex {
 		let flags = 0;
 		let compressedLength = info.data.length + 1;
 		let uncompressedLength = info.data.length;
-		let baseRev = this.getRev(info.base);
-		let linkRev = info.linkRev;
+		let baseRev = info.base == "self" ? rev : this.getRev(info.base);
+		let linkRev = info.linkRev == "self" ? rev : info.linkRev;
 		let parent1Rev = info.parents[0] ? this.getRev(info.parents[0]) : -1;
 		let parent2Rev = info.parents[1] ? this.getRev(info.parents[1]) : -1;
 		let nodeId = this.hash(info.data, info.parents);
@@ -849,7 +849,8 @@ class HgIndex {
 			this.hg.packInt32(linkRev),
 			this.hg.packInt32(parent1Rev),
 			this.hg.packInt32(parent2Rev),
-			this.hg.packSha(nodeId)
+			this.hg.packSha(nodeId),
+			[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 		);
 
 		let chunk = {
@@ -883,16 +884,18 @@ class HgIndex {
 		}
 	}
 	hash(data, parents) {
+		let nullId = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+
 		if(parents[0] && parents[1]) {
 			if(parents[0] < parents[1]) {
-				return this.hg.sha(this.hg.concat(this.hg.stringToArray(parents[0] + parents[1]), data));
+				return this.hg.sha(this.hg.concat(this.hg.packSha(parents[0]), this.hg.packSha(parents[1]), data));
 			} else {
-				return this.hg.sha(this.hg.concat(this.hg.stringToArray(parents[1] + parents[0]), data));
+				return this.hg.sha(this.hg.concat(this.hg.packSha(parents[1]), this.hg.packSha(parents[0]), data));
 			}
 		} else if(parents[0]) {
-			return this.hg.sha(this.hg.concat(this.hg.stringToArray("00000000000000000000" + parents[0]), data));
+			return this.hg.sha(this.hg.concat(nullId, this.hg.packSha(parents[0]), data));
 		} else {
-			return this.hg.sha(this.hg.concat(this.hg.stringToArray("0000000000000000000000000000000000000000"), data));
+			return this.hg.sha(this.hg.concat(nullId, nullId, data));
 		}
 	}
 };
