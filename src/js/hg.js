@@ -170,6 +170,8 @@ class Hg {
 	sha(string) {
 		if(string instanceof Array) {
 			string = new Uint8Array(string);
+		} else if(typeof string == "string") {
+			string = this.stringToArray(string);
 		}
 
 		let sha = new jsSHA("SHA-1", "ARRAYBUFFER");
