@@ -11,40 +11,49 @@ class Hg {
 	}
 
 	// Helper functions
+	shift(num, val) {
+		if(val >= 0 && val < 32) {
+			return num << val;
+		} else if(val < 0 && val > -32) {
+			return num >> (-val);
+		} else {
+			return num * Math.pow(2, val);
+		}
+	}
 	unpackInt16(str) {
 		return (
-			(str[0] << 8) +
-			(str[1] << 0)
+			this.shift(str[0], 8) +
+			this.shift(str[1], 0)
 		);
 	}
 	unpackInt32(str) {
 		return (
-			(str[0] << 24) +
-			(str[1] << 16) +
-			(str[2] << 8) +
-			(str[3] << 0)
+			this.shift(str[0], 24) +
+			this.shift(str[1], 16) +
+			this.shift(str[2], 8) +
+			this.shift(str[3], 0)
 		);
 	}
 	unpackInt48(str) {
 		return (
-			(str[0] << 40) +
-			(str[1] << 32) +
-			(str[2] << 24) +
-			(str[3] << 16) +
-			(str[4] << 8) +
-			(str[5] << 0)
+			this.shift(str[0], 40) +
+			this.shift(str[1], 32) +
+			this.shift(str[2], 24) +
+			this.shift(str[3], 16) +
+			this.shift(str[4], 8) +
+			this.shift(str[5], 0)
 		);
 	}
 	unpackInt64(str) {
 		return (
-			(str[0] << 56) +
-			(str[1] << 48) +
-			(str[2] << 40) +
-			(str[3] << 32) +
-			(str[4] << 24) +
-			(str[5] << 16) +
-			(str[6] << 8) +
-			(str[7] << 0)
+			this.shift(str[0], 56) +
+			this.shift(str[1], 48) +
+			this.shift(str[2], 40) +
+			this.shift(str[3], 32) +
+			this.shift(str[4], 24) +
+			this.shift(str[5], 16) +
+			this.shift(str[6], 8) +
+			this.shift(str[7], 0)
 		);
 	}
 	unpackSha(str) {
@@ -59,7 +68,7 @@ class Hg {
 			return [0xFF, 0xFF];
 		}
 		return [
-			(num >> 8) & 0xFF,
+			this.shift(num, -8) & 0xFF,
 			num & 0xFF
 		];
 	}
@@ -68,9 +77,9 @@ class Hg {
 			return [0xFF, 0xFF, 0xFF, 0xFF];
 		}
 		return [
-			(num >> 24) & 0xFF,
-			(num >> 16) & 0xFF,
-			(num >> 8) & 0xFF,
+			this.shift(num, -24) & 0xFF,
+			this.shift(num, -16) & 0xFF,
+			this.shift(num, -8) & 0xFF,
 			num & 0xFF
 		];
 	}
@@ -79,11 +88,11 @@ class Hg {
 			return [0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF];
 		}
 		return [
-			(num >> 40) & 0xFF,
-			(num >> 32) & 0xFF,
-			(num >> 24) & 0xFF,
-			(num >> 16) & 0xFF,
-			(num >> 8) & 0xFF,
+			this.shift(num, -40) & 0xFF,
+			this.shift(num, -32) & 0xFF,
+			this.shift(num, -24) & 0xFF,
+			this.shift(num, -16) & 0xFF,
+			this.shift(num, -8) & 0xFF,
 			num & 0xFF
 		];
 	}
@@ -92,13 +101,13 @@ class Hg {
 			return [0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF];
 		}
 		return [
-			(num >> 56) & 0xFF,
-			(num >> 48) & 0xFF,
-			(num >> 40) & 0xFF,
-			(num >> 32) & 0xFF,
-			(num >> 24) & 0xFF,
-			(num >> 16) & 0xFF,
-			(num >> 8) & 0xFF,
+			this.shift(num, -56) & 0xFF,
+			this.shift(num, -48) & 0xFF,
+			this.shift(num, -40) & 0xFF,
+			this.shift(num, -32) & 0xFF,
+			this.shift(num, -24) & 0xFF,
+			this.shift(num, -16) & 0xFF,
+			this.shift(num, -8) & 0xFF,
 			num & 0xFF
 		];
 	}
