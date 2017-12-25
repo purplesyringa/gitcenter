@@ -562,7 +562,12 @@ class Hg {
 	}
 
 	// Write
-	writeTree(linkRev, changes) {
+	writeTree(linkRev, changes, parents) {
+		if(parents.length > 1) {
+			return Promise.reject("No more than 1 parent is allowed for writeTree()");
+		}
+
+		let changesIds, manifest;
 		return Promise.all(changes.map(change => {
 			let encodedPath = this.hgFileName.encode(change.name);
 
@@ -580,7 +585,50 @@ class Hg {
 				.then(rev => {
 					return index.getMetaData(rev).nodeId;
 				});
-		}));
+		}))
+			.then(c => {
+				changesIds = c;
+
+				return this.loadIndex("store/00manifest");
+			})
+			.then(m => {
+				manifest = m;
+
+				let parentManifests = parents.map(parent => {
+					let rev = manifest.getRev(parent);
+					let data = manifest.getData(rev);
+					data = this.arrayToString(data).split("\n");
+					return data.map(line => {
+						return {
+							name: line.split("\0")[0],
+							id: line.split("\0")[1]
+						};
+					});
+				});
+
+				let data = Array.from(parentManifests[0]);
+				changes.forEach((change, i) => {
+					data.push({
+						name: change.name,
+						id: changesIds[i]
+					});
+				});
+
+				// I am not sure if the following line is needed, but better more than less, right?
+				data.sort((a, b) => a.name.localeCompare(b.name));
+
+				data = this.stringToArray(data.map(file => file.name + "\0" + file.id).join("\n"));
+
+				return manifest.writeRev({
+					data: data,
+					linkRev: "self",
+					base: "self",
+					parents: parents
+				});
+			})
+			.then(rev => {
+				return manifest.getMetaData(rev).nodeId;
+			});
 	}
 	writeCommit(commit) {
 		let index, linkRev;
@@ -609,7 +657,9 @@ class Hg {
 					return change;
 				});
 
-				return this.writeTree(linkRev, changes);
+				let parentManifests = parents.map(parent => parent.id);
+
+				return this.writeTree(linkRev, changes, parentManifests);
 			})
 			.then(tree => {
 				commit.tree = tree;
