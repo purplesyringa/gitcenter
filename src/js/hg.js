@@ -158,6 +158,15 @@ class Hg {
 	encodeUTF8(str) {
 		return this.stringToArray(unescape(encodeURIComponent(str)));
 	}
+	sha(string) {
+		if(string instanceof Array) {
+			string = new Uint8Array(string);
+		}
+
+		let sha = new jsSHA("SHA-1", "ARRAYBUFFER");
+		sha.update(string);
+		return sha.getHash("HEX");
+	}
 
 	// Compression
 	decompress(data) {
