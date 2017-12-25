@@ -54,6 +54,54 @@ class Hg {
 			return char;
 		}).join("");
 	}
+	packInt16(num) {
+		if(num == -1) {
+			return [0xFF, 0xFF];
+		}
+		return [
+			(num >> 8) & 0xFF,
+			num & 0xFF
+		];
+	}
+	packInt32(num) {
+		if(num == -1) {
+			return [0xFF, 0xFF, 0xFF, 0xFF];
+		}
+		return [
+			(num >> 24) & 0xFF,
+			(num >> 16) & 0xFF,
+			(num >> 8) & 0xFF,
+			num & 0xFF
+		];
+	}
+	packInt48(num) {
+		if(num == -1) {
+			return [0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF];
+		}
+		return [
+			(num >> 40) & 0xFF,
+			(num >> 32) & 0xFF,
+			(num >> 24) & 0xFF,
+			(num >> 16) & 0xFF,
+			(num >> 8) & 0xFF,
+			num & 0xFF
+		];
+	}
+	packInt64(num) {
+		if(num == -1) {
+			return [0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF];
+		}
+		return [
+			(num >> 56) & 0xFF,
+			(num >> 48) & 0xFF,
+			(num >> 40) & 0xFF,
+			(num >> 32) & 0xFF,
+			(num >> 24) & 0xFF,
+			(num >> 16) & 0xFF,
+			(num >> 8) & 0xFF,
+			num & 0xFF
+		];
+	}
 	packSha(str) {
 		let items = str.split("").map(char => {
 			if(char >= "0" && char <= "9") {
