@@ -610,7 +610,9 @@ class HgIndex {
 	}
 
 	getRev(sha) {
-		if(this.nodeIds[sha] === undefined) {
+		if(sha == "00000000000000000000") {
+			return -1;
+		} else if(this.nodeIds[sha] === undefined) {
 			throw new Error("Unknown changeset " + sha + ": not found in " + this.name);
 		}
 
