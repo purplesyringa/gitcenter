@@ -648,7 +648,11 @@ class HgIndex {
 				let offset = 0;
 				let rev = 0;
 				while(offset < index.length) {
-					let chunk = this.parseChunk(this.hg.subArray(index, offset, 64), rev);
+					let chunk = this.hg.subArray(index, offset, 64);
+					if(chunk.length < 64) {
+						break;
+					}
+					chunk = this.parseChunk(chunk, rev);
 					chunk.position = offset;
 					this.nodeIds[chunk.nodeId] = rev;
 					this.chunks.push(chunk);
