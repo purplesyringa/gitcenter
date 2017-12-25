@@ -279,6 +279,37 @@ class Hg {
 					[0];
 			});
 	}
+	changeInBranchList(file, name, commit, shift) {
+		return this.readFile(file)
+			.then(branches => {
+				branches = this.arrayToString(branches);
+				branches = branches.split("\n");
+
+				let shifted;
+				if(shift) {
+					shifted = branches.shift();
+				}
+
+				let line = branches
+					.find(line => {
+						line = line.split(" ");
+						return (line[2] || line[1]) == name;
+					});
+
+				if(!line) {
+					return Promise.reject("Not found");
+				}
+
+				line = line.replace(/^.*? /, commit);
+
+				if(shift) {
+					branches.unshift(shifted);
+				}
+
+				branches = this.stringToArray(branches.join("\n"));
+				return this.writeFile(file, branches);
+			});
+	}
 	getBookmarkList() {
 		return this.loadBranchList("bookmarks", false)
 			.then(bookmarks => bookmarks.sort())
@@ -348,6 +379,20 @@ class Hg {
 				.catch(() => this.findInBranchList("cache/branch2-immutable", branch, true))
 				.catch(() => this.findInBranchList("cache/branch2-base", branch, true))
 				.catch(() => this.findInBranchList("bookmarks", branch, false))
+				.catch(() => Promise.reject("Cannot find branch " + branch));
+		}
+	}
+	setRef(ref, commit) {
+		if(ref.indexOf("refs/tags/") == 0) {
+			throw new Error("Not implemented yet");
+		} else if(ref.indexOf("refs/heads/") == 0) {
+			let branch = ref.replace("refs/heads/", "");
+
+			return this.changeInBranchList("cache/branch2-visible", branch, commit, true)
+				.catch(() => this.changeInBranchList("cache/branch2-served", branch, commit, true))
+				.catch(() => this.changeInBranchList("cache/branch2-immutable", branch, commit, true))
+				.catch(() => this.changeInBranchList("cache/branch2-base", branch, commit, true))
+				.catch(() => this.changeInBranchList("bookmarks", branch, commit, false))
 				.catch(() => Promise.reject("Cannot find branch " + branch));
 		}
 	}
