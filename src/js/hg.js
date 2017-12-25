@@ -510,8 +510,10 @@ class Hg {
 		return Promise.all(changes.map(change => {
 			let encodedPath = this.hgFileName.encode(change.name);
 
+			let index;
 			return this.loadIndex("store/data/" + encodedPath)
-				.then(index => {
+				.then(i => {
+					index = i;
 					return index.writeRev({
 						data: change.content,
 						linkRev: linkRev,
@@ -548,6 +550,7 @@ class Hg {
 							return file ? file.id : null;
 						})
 						.filter(parent => parent);
+					return change;
 				});
 
 				return this.writeTree(linkRev, changes);
@@ -778,10 +781,10 @@ class HgIndex {
 		let nodeId = this.hash(info.data, info.parents);
 
 		let code = this.hg.concat(
-			this.hg.packInt48(offset) +
-			this.hg.packInt16(flags) +
-			this.hg.packInt32(compressedLength) +
-			this.hg.packInt32(uncompressedLength) +
+			this.hg.packInt48(offset),
+			this.hg.packInt16(flags),
+			this.hg.packInt32(compressedLength),
+			this.hg.packInt32(uncompressedLength),
 			this.hg.packInt32(baseRev),
 			this.hg.packInt32(linkRev),
 			this.hg.packInt32(parent1Rev),
@@ -806,12 +809,12 @@ class HgIndex {
 		this.chunks[rev] = chunk;
 
 		if(this.isInline) {
-			this.cachedIndex = this.hg.concat(this.cachedIndex, code, this.stringToArray("u"), info.data);
+			this.cachedIndex = this.hg.concat(this.cachedIndex, code, this.hg.stringToArray("u"), info.data);
 			return this.hg.writeFile(this.name + ".i", this.cachedIndex)
 				.then(() => rev);
 		} else {
 			this.cachedIndex = this.hg.concat(this.cachedIndex, code);
-			this.cachedData = this.hg.concat(this.cachedData, this.stringToArray("u"), info.data);
+			this.cachedData = this.hg.concat(this.cachedData, this.hg.stringToArray("u"), info.data);
 			return Promise.all(
 				this.hg.writeFile(this.name + ".i", this.cachedIndex),
 				this.hg.writeFile(this.name + ".d", this.cachedData)
