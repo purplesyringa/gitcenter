@@ -610,16 +610,22 @@ class Hg {
 
 				let data = Array.from(parentManifests[0]);
 				changes.forEach((change, i) => {
-					data.push({
-						name: change.name,
-						id: changesIds[i]
-					});
+					let existing = data.find(file => file.name == change.name);
+					if(existing) {
+						let existingPos = data.indexOf(existing);
+						data[existingPos].id = changesIds[i];
+					} else {
+						data.push({
+							name: change.name,
+							id: changesIds[i]
+						});
+					}
 				});
 
 				// I am not sure if the following line is needed, but better more than less, right?
-				data.sort((a, b) => a.name.localeCompare(b.name));
+				data.sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0);
 
-				data = this.stringToArray(data.map(file => file.name + "\0" + file.id).join("\n"));
+				data = this.stringToArray(data.map(file => file.name + "\0" + file.id).join("\n") + "\n");
 
 				return manifest.writeRev({
 					data: data,
