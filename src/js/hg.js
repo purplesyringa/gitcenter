@@ -685,6 +685,78 @@ class HgIndex {
 
 		return dst;
 	}
+
+	writeRev(info) {
+		if(info.parents.length > 2) {
+			throw new RangeError("No more than 2 parents are allowed");
+		}
+
+		let rev = this.chunks.length;
+		let offset = this.getEndPos(rev - 1);
+		let flags = 0;
+		let compressedLength = info.data.length + 1;
+		let uncompressedLength = info.data.length;
+		let baseRev = this.getRev(info.base);
+		let linkRev = info.linkRev;
+		let parent1Rev = info.parents[0] ? this.getRev(info.parents[0]) : -1;
+		let parent2Rev = info.parents[1] ? this.getRev(info.parents[1]) : -1;
+		let nodeId = this.hash(info.data, info.parents);
+
+		let code = this.hg.concat(
+			this.hg.packInt48(offset) +
+			this.hg.packInt16(flags) +
+			this.hg.packInt32(compressedLength) +
+			this.hg.packInt32(uncompressedLength) +
+			this.hg.packInt32(baseRev),
+			this.hg.packInt32(linkRev),
+			this.hg.packInt32(parent1Rev),
+			this.hg.packInt32(parent2Rev),
+			this.hg.packSha(nodeId)
+		);
+
+		let chunk = {
+			rev: rev,
+			offset: offset,
+			flags: flags,
+			compressedLength: compressedLength,
+			uncompressedLength: uncompressedLength,
+			baseRev: baseRev,
+			linkRev: linkRev,
+			parent1Rev: parent1Rev,
+			parent2Rev: parent2Rev,
+			nodeId: nodeId,
+			position: offset + (this.isInline ? (rev + 1) * 64 : 0)
+		};
+		this.nodeIds[nodeId] = rev;
+		this.chunks[rev] = chunk;
+
+		if(this.isInline) {
+			this.cachedIndex = this.hg.concat(this.cachedIndex, code, this.stringToArray("u"), info.data);
+			return this.hg.writeFile(this.name + ".i", this.cachedIndex)
+				.then(() => rev);
+		} else {
+			this.cachedIndex = this.hg.concat(this.cachedIndex, code);
+			this.cachedData = this.hg.concat(this.cachedData, this.stringToArray("u"), info.data);
+			return Promise.all(
+				this.hg.writeFile(this.name + ".i", this.cachedIndex),
+				this.hg.writeFile(this.name + ".d", this.cachedData)
+			)
+				.then(() => rev);
+		}
+	}
+	hash(data, parents) {
+		if(parents[0] && parents[1]) {
+			if(parents[0] < parents[1]) {
+				return this.hg.sha(this.hg.concat(this.hg.stringToArray(parents[0] + parents[1]), data));
+			} else {
+				return this.hg.sha(this.hg.concat(this.hg.stringToArray(parents[1] + parents[0]), data));
+			}
+		} else if(parents[0]) {
+			return this.hg.sha(this.hg.concat(this.hg.stringToArray("00000000000000000000" + parents[0]), data));
+		} else {
+			return this.hg.sha(this.hg.concat(this.hg.stringToArray("0000000000000000000000000000000000000000"), data));
+		}
+	}
 };
 
 class HgFileName {
