@@ -659,22 +659,36 @@ class Repository {
 				return this.vcs.readUnknownObject(commit.content.tree);
 			})
 			.then(base => {
-				return this.vcs.makeTreeDeltaPath(base.content, [
-					{
-						path: path,
-						type: "blob",
-						content: content
-					}
-				]);
-			})
-			.then(delta => {
-				return this.vcs.writeCommit({
-					tree: delta,
-					parents: [parent],
-					author: author,
-					committer: author,
-					message: message
-				});
+				if(this.git) {
+					return this.git.makeTreeDeltaPath(base.content, [
+						{
+							path: path,
+							type: "blob",
+							content: content
+						}
+					])
+						.then(delta => {
+							return this.git.writeCommit({
+								tree: delta,
+								parents: [parent],
+								author: author,
+								committer: author,
+								message: message
+							});
+						});
+				} else if(this.hg) {
+					return this.hg.writeCommit({
+						changes: [
+							{
+								name: path,
+								content: content
+							}
+						],
+						parents: [parent],
+						author: author,
+						message: message
+					});
+				}
 			})
 			.then(c => {
 				commit = c;
