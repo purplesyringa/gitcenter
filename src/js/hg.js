@@ -597,20 +597,26 @@ class Hg {
 			.then(m => {
 				manifest = m;
 
-				let parentManifests = parents.map(parent => {
-					let rev = manifest.getRev(parent);
-					let data = manifest.getData(rev);
-					data = this.arrayToString(data).split("\n");
-					return data
-						.filter(line => line)
-						.map(line => {
-							return {
-								name: line.split("\0")[0],
-								id: line.split("\0")[1]
-							};
-						});
-				});
+				return Promise.all(
+					parents.map(parent => {
+						let rev = manifest.getRev(parent);
 
+						return manifest.getData(rev)
+							.then(data => {
+								data = this.arrayToString(data).split("\n");
+								return data
+									.filter(line => line)
+									.map(line => {
+										return {
+											name: line.split("\0")[0],
+											id: line.split("\0")[1]
+										};
+									});
+							});
+					})
+				);
+			})
+			.then(parentManifests => {
 				let data = Array.from(parentManifests[0]);
 				changes.forEach((change, i) => {
 					let existing = data.find(file => file.name == change.name);
@@ -895,7 +901,7 @@ class HgIndex {
 		return this.getChunk(start, end - start);
 	}
 	getChunk(offset, length) {
-		return this.hg.subArray(this.cachedData, offset, length);
+		return Promise.resolve(this.hg.subArray(this.cachedData, offset, length));
 	}
 
 	delta(rev) {
@@ -913,36 +919,44 @@ class HgIndex {
 
 		let data;
 		if(baseRev == -1) {
-			data = [];
+			data = Promise.resolve([]);
 		} else {
-			data = this.hg.decompress(this.getCompressedData(baseRev));
+			data = this.getCompressedData(baseRev)
+				.then(data => {
+					return this.hg.decompress(data);
+				});
 		}
 
-		data = chain.reverse().reduce((source, deltaRev) => this.mpatch(deltaRev, source), data);
+		data = chain.reverse().reduce((source, deltaRev) => {
+			return source.then(source => this.mpatch(deltaRev, source));
+		}, data);
 		return data;
 	}
 	mpatch(deltaRev, source) {
-		let delta = this.hg.decompress(this.getCompressedData(deltaRev));
+		return this.getCompressedData(deltaRev)
+			.then(data => {
+				let delta = this.hg.decompress(data);
 
-		let dst = source;
-		let dstOffset = 0;
+				let dst = source;
+				let dstOffset = 0;
 
-		let pos = 0;
-		while(pos < delta.length) {
-			let start = this.hg.unpackInt32(this.hg.subArray(delta, pos, 4));
-			let end = this.hg.unpackInt32(this.hg.subArray(delta, pos + 4, 4));
-			let length = this.hg.unpackInt32(this.hg.subArray(delta, pos + 8, 4));
-			let data = this.hg.subArray(delta, pos + 12, length);
+				let pos = 0;
+				while(pos < delta.length) {
+					let start = this.hg.unpackInt32(this.hg.subArray(delta, pos, 4));
+					let end = this.hg.unpackInt32(this.hg.subArray(delta, pos + 4, 4));
+					let length = this.hg.unpackInt32(this.hg.subArray(delta, pos + 8, 4));
+					let data = this.hg.subArray(delta, pos + 12, length);
 
-			dst = this.hg.concat(this.hg.subArray(dst, 0, start + dstOffset), data, this.hg.subArray(dst, end + dstOffset));
+					dst = this.hg.concat(this.hg.subArray(dst, 0, start + dstOffset), data, this.hg.subArray(dst, end + dstOffset));
 
-			dstOffset -= end - start;
-			dstOffset += length;
+					dstOffset -= end - start;
+					dstOffset += length;
 
-			pos += 12 + length;
-		}
+					pos += 12 + length;
+				}
 
-		return dst;
+				return dst;
+			});
 	}
 
 	writeRev(info) {
