@@ -26,7 +26,10 @@ function addTag(context, object, tag) {
 		let remove = document.createElement("div");
 		remove.className = "tag-remove";
 		remove.innerHTML = "&times;";
-		remove.onclick = () => {
+		remove.onclick = e => {
+			e.preventDefault();
+			e.stopPropagation();
+
 			node.parentNode.removeChild(node);
 			object.tags.splice(object.tags.indexOf(tag), 1);
 
