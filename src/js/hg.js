@@ -400,6 +400,8 @@ class Hg {
 		if(branch == "") {
 			return this.getHead()
 				.then(head => this.getBranchCommit(head));
+		} else if(this.isSha(branch)) {
+			return Promise.resolve(branch);
 		}
 
 		return this.getRef("refs/heads/" + branch)
