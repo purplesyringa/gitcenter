@@ -793,19 +793,9 @@ class HgIndex {
 						offset += chunk.compressedLength;
 					}
 				}
-
-				if(this.isInline) {
-					this.cachedData = this.cachedIndex;
-				} else {
-					return this.hg.readFile(this.name + ".d")
-						.then(data => {
-							this.cachedData = data;
-						});
-				}
 			}, () => {
 				// Create index
 				this.cachedIndex = [];
-				this.cachedData = [];
 
 				this.isInline = false;
 				this.generalDelta = this.guessGeneralDelta();
@@ -851,14 +841,7 @@ class HgIndex {
 				}
 			})
 			.then(() => {
-				if(this.isInline) {
-					return this.hg.writeFile(this.name + ".i", this.cachedIndex);
-				} else {
-					return Promise.all([
-						this.hg.writeFile(this.name + ".i", this.cachedIndex),
-						this.hg.writeFile(this.name + ".d", this.cachedData)
-					]);
-				}
+				return this.hg.writeFile(this.name + ".i", this.cachedIndex);
 			});
 	}
 
@@ -1004,10 +987,19 @@ class HgIndex {
 			this.cachedIndex = this.hg.concat(this.cachedIndex, code, this.hg.stringToArray("u"), info.data);
 		} else {
 			this.cachedIndex = this.hg.concat(this.cachedIndex, code);
-			this.cachedData = this.hg.concat(this.cachedData, this.hg.stringToArray("u"), info.data);
 		}
 
-		return this.writeIndex()
+		let promise = Promise.resolve();
+		if(!this.isInline) {
+			promise = this.hg.readFile(this.name + ".d")
+				.then(data => {
+					data = this.hg.concat(data, this.hg.stringToArray("u"), info.data);
+					return this.hg.writeFile(this.name + ".d", data);
+				});
+		}
+
+		return promise
+			.then(() => this.writeIndex())
 			.then(() => rev);
 	}
 	hash(data, parents) {
