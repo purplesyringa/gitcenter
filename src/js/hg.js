@@ -761,6 +761,7 @@ class HgIndex {
 				this.chunkCacheSize = 65536; // Should be 65536 on remote repo
 				this.chunks = [];
 				this.nodeIds = {};
+				this.virtual = false;
 
 				let offset = 0;
 				let rev = 0;
@@ -789,8 +790,64 @@ class HgIndex {
 							this.cachedData = data;
 						});
 				}
+			}, () => {
+				// Create index
+				this.cachedIndex = [];
+				this.cachedData = [];
+
+				this.isInline = false;
+				this.generalDelta = this.guessGeneralDelta();
+				this.version = 0;
+				this.version |= (this.isInline ? 1 : 0) << 16;
+				this.version |= (this.generalDelta ? 1 : 0) << 16;
+				this.chunkCacheSize = 65536; // Should be 65536 on remote repo
+				this.chunks = [];
+				this.nodeIds = {};
+				this.virtual = true;
 			})
 			.then(() => this);
+	}
+	guessGeneralDelta() {
+		// Returns if general delta should be used for this index
+		if(this.name == "store/00changelog") {
+			return false;
+		} else if(this.name == "store/00manifest") {
+			return true;
+		} else {
+			return true;
+		}
+	}
+
+	writeIndex() {
+		return Promise.resolve()
+			.then(() => {
+				if(this.virtual) {
+					// Add to fncache
+					return this.hg.readFile("store/fncache")
+						.then(cache => {
+							cache = this.hg.arrayToString(cache).split("\n");
+							cache = cache.filter(line => line);
+
+							cache.push(this.name.replace(/^store\//, "") + ".i");
+							if(!this.isInline) {
+								cache.push(this.name.replace(/^store\//, "") + ".d");
+							}
+
+							cache = this.hg.stringToArray(cache.join("\n") + "\n");
+							return this.hg.writeFile("store/fncache", cache);
+						});
+				}
+			})
+			.then(() => {
+				if(this.isInline) {
+					return this.hg.writeFile(this.name + ".i", this.cachedIndex);
+				} else {
+					return Promise.all([
+						this.hg.writeFile(this.name + ".i", this.cachedIndex),
+						this.hg.writeFile(this.name + ".d", this.cachedData)
+					]);
+				}
+			});
 	}
 
 	parseChunk(chunk, rev) {
@@ -891,7 +948,7 @@ class HgIndex {
 		}
 
 		let rev = this.chunks.length;
-		let offset = this.getEndPos(rev - 1);
+		let offset = rev == 0 ? 0 : this.getEndPos(rev - 1);
 		let flags = 0;
 		let compressedLength = info.data.length + 1;
 		let uncompressedLength = info.data.length;
@@ -900,6 +957,11 @@ class HgIndex {
 		let parent1Rev = info.parents[0] ? this.getRev(info.parents[0]) : -1;
 		let parent2Rev = info.parents[1] ? this.getRev(info.parents[1]) : -1;
 		let nodeId = this.hash(info.data, info.parents);
+
+		if(rev == 0) {
+			// First revision, file was empty until now - let's write header
+			offset = this.version;
+		}
 
 		let code = this.hg.concat(
 			this.hg.packInt48(offset),
@@ -932,17 +994,13 @@ class HgIndex {
 
 		if(this.isInline) {
 			this.cachedIndex = this.hg.concat(this.cachedIndex, code, this.hg.stringToArray("u"), info.data);
-			return this.hg.writeFile(this.name + ".i", this.cachedIndex)
-				.then(() => rev);
 		} else {
 			this.cachedIndex = this.hg.concat(this.cachedIndex, code);
 			this.cachedData = this.hg.concat(this.cachedData, this.hg.stringToArray("u"), info.data);
-			return Promise.all(
-				this.hg.writeFile(this.name + ".i", this.cachedIndex),
-				this.hg.writeFile(this.name + ".d", this.cachedData)
-			)
-				.then(() => rev);
 		}
+
+		return this.writeIndex()
+			.then(() => rev);
 	}
 	hash(data, parents) {
 		let nullId = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
