@@ -16,7 +16,7 @@ repo.addMerger()
 		setTitle("Releases - " + content.title);
 
 		showTitle(content.title);
-		showHeader(1, content.git);
+		showHeader(1, content);
 		showTabs(1);
 
 		return repo.isSignable();

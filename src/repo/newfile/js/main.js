@@ -14,7 +14,7 @@ repo.addMerger()
 		setTitle("New file - " + content.title);
 
 		showTitle(content.title);
-		showHeader(1, content.git);
+		showHeader(1, content);
 		showBranches();
 		showPath(true, true);
 		showTabs(1);

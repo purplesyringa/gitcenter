@@ -14,7 +14,7 @@ repo.addMerger()
 		setTitle("Edit " + path + " - " + content.title);
 
 		showTitle(content.title);
-		showHeader(1, content.git);
+		showHeader(1, content);
 		showBranches();
 		showPath(true);
 		showTabs(1);

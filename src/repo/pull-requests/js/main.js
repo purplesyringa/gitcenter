@@ -30,7 +30,7 @@ repo.addMerger()
 		setTitle("Pull requests - " + content.title);
 
 		showTitle(content.title);
-		showHeader(1, content.git);
+		showHeader(1, content);
 		showTabs(1);
 		document.getElementById("new_pull_request").href = "new/?" + address;
 

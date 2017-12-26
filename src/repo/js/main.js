@@ -18,7 +18,7 @@ repo.addMerger()
 		setTitle(content.title);
 
 		showTitle(content.title);
-		showHeader(0, content.git);
+		showHeader(0, content);
 		showBranches();
 		showPath(false);
 		showLinks();

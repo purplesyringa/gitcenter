@@ -14,7 +14,7 @@ repo.addMerger()
 		setTitle("New issue - " + content.title);
 
 		showTitle(content.title);
-		showHeader(2, content.git);
+		showHeader(2, content);
 		showTabs(2);
 
 		document.getElementById("submit").onclick = () => {

@@ -29,7 +29,7 @@ repo.addMerger()
 		setTitle("Pull request - " + content.title);
 
 		showTitle(content.title);
-		showHeader(2, content.git);
+		showHeader(2, content);
 		showTabs(2);
 
 		return repo.getPullRequest(id, json);

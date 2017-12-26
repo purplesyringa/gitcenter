@@ -16,7 +16,7 @@ repo.addMerger()
 		setTitle(branch + " - " + content.title);
 
 		showTitle(content.title);
-		showHeader(1, content.git);
+		showHeader(1, content);
 		showLinks();
 		showTabs(1);
 

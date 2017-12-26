@@ -52,7 +52,7 @@ function showTitle(title) {
 			name.textContent = owner + " " + arrow + " " + title;
 		});
 }
-function showHeader(level, gitAddress) {
+function showHeader(level, content) {
 	document.getElementById("fork").onclick = () => {
 		repo.fork();
 	};
@@ -102,7 +102,13 @@ function showHeader(level, gitAddress) {
 		.catch(() => {}); // Who cares?
 
 	document.getElementById("git_button").onclick = () => {
-		let command = "git clone $path_to_data/" + address + "/" + gitAddress;
+		let command;
+		if(content.git) {
+			command = "git clone $path_to_data/" + address + "/" + content.git;
+		} else if(content.hg) {
+			command = "hg clone $path_to_data/" + address + "/" + content.hg;
+		}
+
 		if(copy(command)) {
 			zeroPage.alert("<b>" + command + "</b> was copied to the clipboard.<br>Replace <b>$path_to_data</b> with correct path to ZeroNet's data folder.");
 		} else {

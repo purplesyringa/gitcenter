@@ -25,7 +25,7 @@ repo.addMerger()
 		setTitle("Settings - " + content.title);
 
 		showTitle(content.title);
-		showHeader(1, content.git);
+		showHeader(1, content);
 		showTabs(1);
 
 		// Hooks
