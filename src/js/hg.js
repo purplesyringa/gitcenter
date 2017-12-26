@@ -291,16 +291,16 @@ class Hg {
 				}
 
 				let line = branches
-					.find(line => {
+					.findIndex(line => {
 						line = line.split(" ");
 						return (line[2] || line[1]) == name;
 					});
 
-				if(!line) {
+				if(line == -1) {
 					return Promise.reject("Not found");
 				}
 
-				line = line.replace(/^.*? /, commit);
+				branches[line] = branches[line].replace(/^.*? /, commit + " ");
 
 				if(shift) {
 					branches.unshift(shifted);
