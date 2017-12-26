@@ -11,40 +11,49 @@ class Hg {
 	}
 
 	// Helper functions
+	shift(num, val) {
+		if(val >= 0 && val < 32) {
+			return num << val;
+		} else if(val < 0 && val > -32) {
+			return num >> (-val);
+		} else {
+			return num * Math.pow(2, val);
+		}
+	}
 	unpackInt16(str) {
 		return (
-			(str[0] << 8) +
-			(str[1] << 0)
+			this.shift(str[0], 8) +
+			this.shift(str[1], 0)
 		);
 	}
 	unpackInt32(str) {
 		return (
-			(str[0] << 24) +
-			(str[1] << 16) +
-			(str[2] << 8) +
-			(str[3] << 0)
+			this.shift(str[0], 24) +
+			this.shift(str[1], 16) +
+			this.shift(str[2], 8) +
+			this.shift(str[3], 0)
 		);
 	}
 	unpackInt48(str) {
 		return (
-			(str[0] << 40) +
-			(str[1] << 32) +
-			(str[2] << 24) +
-			(str[3] << 16) +
-			(str[4] << 8) +
-			(str[5] << 0)
+			this.shift(str[0], 40) +
+			this.shift(str[1], 32) +
+			this.shift(str[2], 24) +
+			this.shift(str[3], 16) +
+			this.shift(str[4], 8) +
+			this.shift(str[5], 0)
 		);
 	}
 	unpackInt64(str) {
 		return (
-			(str[0] << 56) +
-			(str[1] << 48) +
-			(str[2] << 40) +
-			(str[3] << 32) +
-			(str[4] << 24) +
-			(str[5] << 16) +
-			(str[6] << 8) +
-			(str[7] << 0)
+			this.shift(str[0], 56) +
+			this.shift(str[1], 48) +
+			this.shift(str[2], 40) +
+			this.shift(str[3], 32) +
+			this.shift(str[4], 24) +
+			this.shift(str[5], 16) +
+			this.shift(str[6], 8) +
+			this.shift(str[7], 0)
 		);
 	}
 	unpackSha(str) {
@@ -59,7 +68,7 @@ class Hg {
 			return [0xFF, 0xFF];
 		}
 		return [
-			(num >> 8) & 0xFF,
+			this.shift(num, -8) & 0xFF,
 			num & 0xFF
 		];
 	}
@@ -68,9 +77,9 @@ class Hg {
 			return [0xFF, 0xFF, 0xFF, 0xFF];
 		}
 		return [
-			(num >> 24) & 0xFF,
-			(num >> 16) & 0xFF,
-			(num >> 8) & 0xFF,
+			this.shift(num, -24) & 0xFF,
+			this.shift(num, -16) & 0xFF,
+			this.shift(num, -8) & 0xFF,
 			num & 0xFF
 		];
 	}
@@ -79,11 +88,11 @@ class Hg {
 			return [0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF];
 		}
 		return [
-			(num >> 40) & 0xFF,
-			(num >> 32) & 0xFF,
-			(num >> 24) & 0xFF,
-			(num >> 16) & 0xFF,
-			(num >> 8) & 0xFF,
+			this.shift(num, -40) & 0xFF,
+			this.shift(num, -32) & 0xFF,
+			this.shift(num, -24) & 0xFF,
+			this.shift(num, -16) & 0xFF,
+			this.shift(num, -8) & 0xFF,
 			num & 0xFF
 		];
 	}
@@ -92,13 +101,13 @@ class Hg {
 			return [0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF];
 		}
 		return [
-			(num >> 56) & 0xFF,
-			(num >> 48) & 0xFF,
-			(num >> 40) & 0xFF,
-			(num >> 32) & 0xFF,
-			(num >> 24) & 0xFF,
-			(num >> 16) & 0xFF,
-			(num >> 8) & 0xFF,
+			this.shift(num, -56) & 0xFF,
+			this.shift(num, -48) & 0xFF,
+			this.shift(num, -40) & 0xFF,
+			this.shift(num, -32) & 0xFF,
+			this.shift(num, -24) & 0xFF,
+			this.shift(num, -16) & 0xFF,
+			this.shift(num, -8) & 0xFF,
 			num & 0xFF
 		];
 	}
@@ -161,6 +170,8 @@ class Hg {
 	sha(string) {
 		if(string instanceof Array) {
 			string = new Uint8Array(string);
+		} else if(typeof string == "string") {
+			string = this.stringToArray(string);
 		}
 
 		let sha = new jsSHA("SHA-1", "ARRAYBUFFER");
@@ -268,6 +279,37 @@ class Hg {
 					[0];
 			});
 	}
+	changeInBranchList(file, name, commit, shift) {
+		return this.readFile(file)
+			.then(branches => {
+				branches = this.arrayToString(branches);
+				branches = branches.split("\n");
+
+				let shifted;
+				if(shift) {
+					shifted = branches.shift();
+				}
+
+				let line = branches
+					.findIndex(line => {
+						line = line.split(" ");
+						return (line[2] || line[1]) == name;
+					});
+
+				if(line == -1) {
+					return Promise.reject("Not found");
+				}
+
+				branches[line] = branches[line].replace(/^.*? /, commit + " ");
+
+				if(shift) {
+					branches.unshift(shifted);
+				}
+
+				branches = this.stringToArray(branches.join("\n"));
+				return this.writeFile(file, branches);
+			});
+	}
 	getBookmarkList() {
 		return this.loadBranchList("bookmarks", false)
 			.then(bookmarks => bookmarks.sort())
@@ -337,6 +379,20 @@ class Hg {
 				.catch(() => this.findInBranchList("cache/branch2-immutable", branch, true))
 				.catch(() => this.findInBranchList("cache/branch2-base", branch, true))
 				.catch(() => this.findInBranchList("bookmarks", branch, false))
+				.catch(() => Promise.reject("Cannot find branch " + branch));
+		}
+	}
+	setRef(ref, commit) {
+		if(ref.indexOf("refs/tags/") == 0) {
+			throw new Error("Not implemented yet");
+		} else if(ref.indexOf("refs/heads/") == 0) {
+			let branch = ref.replace("refs/heads/", "");
+
+			return this.changeInBranchList("cache/branch2-visible", branch, commit, true)
+				.catch(() => this.changeInBranchList("cache/branch2-served", branch, commit, true))
+				.catch(() => this.changeInBranchList("cache/branch2-immutable", branch, commit, true))
+				.catch(() => this.changeInBranchList("cache/branch2-base", branch, commit, true))
+				.catch(() => this.changeInBranchList("bookmarks", branch, commit, false))
 				.catch(() => Promise.reject("Cannot find branch " + branch));
 		}
 	}
@@ -506,23 +562,81 @@ class Hg {
 	}
 
 	// Write
-	writeTree(linkRev, changes) {
+	writeTree(linkRev, changes, parents) {
+		if(parents.length > 1) {
+			return Promise.reject("No more than 1 parent is allowed for writeTree()");
+		}
+
+		let changesIds, manifest;
 		return Promise.all(changes.map(change => {
 			let encodedPath = this.hgFileName.encode(change.name);
 
+			let index;
 			return this.loadIndex("store/data/" + encodedPath)
-				.then(index => {
+				.then(i => {
+					index = i;
 					return index.writeRev({
 						data: change.content,
 						linkRev: linkRev,
-						base: "00000000000000000000",
+						base: "self",
 						parents: change.parents
 					});
 				})
 				.then(rev => {
 					return index.getMetaData(rev).nodeId;
 				});
-		}));
+		}))
+			.then(c => {
+				changesIds = c;
+
+				return this.loadIndex("store/00manifest");
+			})
+			.then(m => {
+				manifest = m;
+
+				let parentManifests = parents.map(parent => {
+					let rev = manifest.getRev(parent);
+					let data = manifest.getData(rev);
+					data = this.arrayToString(data).split("\n");
+					return data
+						.filter(line => line)
+						.map(line => {
+							return {
+								name: line.split("\0")[0],
+								id: line.split("\0")[1]
+							};
+						});
+				});
+
+				let data = Array.from(parentManifests[0]);
+				changes.forEach((change, i) => {
+					let existing = data.find(file => file.name == change.name);
+					if(existing) {
+						let existingPos = data.indexOf(existing);
+						data[existingPos].id = changesIds[i];
+					} else {
+						data.push({
+							name: change.name,
+							id: changesIds[i]
+						});
+					}
+				});
+
+				// I am not sure if the following line is needed, but better more than less, right?
+				data.sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0);
+
+				data = this.stringToArray(data.map(file => file.name + "\0" + file.id).join("\n") + "\n");
+
+				return manifest.writeRev({
+					data: data,
+					linkRev: "self",
+					base: "self",
+					parents: parents
+				});
+			})
+			.then(rev => {
+				return manifest.getMetaData(rev).nodeId;
+			});
 	}
 	writeCommit(commit) {
 		let index, linkRev;
@@ -548,9 +662,12 @@ class Hg {
 							return file ? file.id : null;
 						})
 						.filter(parent => parent);
+					return change;
 				});
 
-				return this.writeTree(linkRev, changes);
+				let parentManifests = parents.map(parent => parent.id);
+
+				return this.writeTree(linkRev, changes, parentManifests);
 			})
 			.then(tree => {
 				commit.tree = tree;
@@ -562,7 +679,7 @@ class Hg {
 		let data = this.stringToArray(
 			commit.tree + "\n" +
 			commit.author + "\n" +
-			commit.date + " " + (new Date).getTimezoneOffset() + "\n" +
+			commit.date + " " + ((new Date).getTimezoneOffset() * 60) + "\n" +
 			commit.changes.join("\n") + "\n" +
 			"\n" +
 			commit.message
@@ -570,14 +687,17 @@ class Hg {
 
 		let index;
 		return this.loadIndex("store/00changelog")
-			.then(index => {
+			.then(i => {
+				index = i;
+
 				return index.writeRev({
 					data: data,
-					linkRev: -1,
-					base: "00000000000000000000",
+					linkRev: "self",
+					base: "self",
 					parents: commit.parents
 				});
-			});
+			})
+			.then(rev => index.getMetaData(rev).nodeId);
 	}
 
 	toGitAuthor(author, date) {
@@ -645,7 +765,11 @@ class HgIndex {
 				let offset = 0;
 				let rev = 0;
 				while(offset < index.length) {
-					let chunk = this.parseChunk(this.hg.subArray(index, offset, 64), rev);
+					let chunk = this.hg.subArray(index, offset, 64);
+					if(chunk.length < 64) {
+						break;
+					}
+					chunk = this.parseChunk(chunk, rev);
 					chunk.position = offset;
 					this.nodeIds[chunk.nodeId] = rev;
 					this.chunks.push(chunk);
@@ -685,7 +809,7 @@ class HgIndex {
 	}
 
 	getRev(sha) {
-		if(sha == "00000000000000000000") {
+		if(sha == "0000000000000000000000000000000000000000") {
 			return -1;
 		} else if(this.nodeIds[sha] === undefined) {
 			throw new Error("Unknown changeset " + sha + ": not found in " + this.name);
@@ -771,22 +895,23 @@ class HgIndex {
 		let flags = 0;
 		let compressedLength = info.data.length + 1;
 		let uncompressedLength = info.data.length;
-		let baseRev = this.getRev(info.base);
-		let linkRev = info.linkRev;
+		let baseRev = info.base == "self" ? rev : this.getRev(info.base);
+		let linkRev = info.linkRev == "self" ? rev : info.linkRev;
 		let parent1Rev = info.parents[0] ? this.getRev(info.parents[0]) : -1;
 		let parent2Rev = info.parents[1] ? this.getRev(info.parents[1]) : -1;
 		let nodeId = this.hash(info.data, info.parents);
 
 		let code = this.hg.concat(
-			this.hg.packInt48(offset) +
-			this.hg.packInt16(flags) +
-			this.hg.packInt32(compressedLength) +
-			this.hg.packInt32(uncompressedLength) +
+			this.hg.packInt48(offset),
+			this.hg.packInt16(flags),
+			this.hg.packInt32(compressedLength),
+			this.hg.packInt32(uncompressedLength),
 			this.hg.packInt32(baseRev),
 			this.hg.packInt32(linkRev),
 			this.hg.packInt32(parent1Rev),
 			this.hg.packInt32(parent2Rev),
-			this.hg.packSha(nodeId)
+			this.hg.packSha(nodeId),
+			[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 		);
 
 		let chunk = {
@@ -806,12 +931,12 @@ class HgIndex {
 		this.chunks[rev] = chunk;
 
 		if(this.isInline) {
-			this.cachedIndex = this.hg.concat(this.cachedIndex, code, this.stringToArray("u"), info.data);
+			this.cachedIndex = this.hg.concat(this.cachedIndex, code, this.hg.stringToArray("u"), info.data);
 			return this.hg.writeFile(this.name + ".i", this.cachedIndex)
 				.then(() => rev);
 		} else {
 			this.cachedIndex = this.hg.concat(this.cachedIndex, code);
-			this.cachedData = this.hg.concat(this.cachedData, this.stringToArray("u"), info.data);
+			this.cachedData = this.hg.concat(this.cachedData, this.hg.stringToArray("u"), info.data);
 			return Promise.all(
 				this.hg.writeFile(this.name + ".i", this.cachedIndex),
 				this.hg.writeFile(this.name + ".d", this.cachedData)
@@ -820,16 +945,18 @@ class HgIndex {
 		}
 	}
 	hash(data, parents) {
+		let nullId = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+
 		if(parents[0] && parents[1]) {
 			if(parents[0] < parents[1]) {
-				return this.hg.sha(this.hg.concat(this.hg.stringToArray(parents[0] + parents[1]), data));
+				return this.hg.sha(this.hg.concat(this.hg.packSha(parents[0]), this.hg.packSha(parents[1]), data));
 			} else {
-				return this.hg.sha(this.hg.concat(this.hg.stringToArray(parents[1] + parents[0]), data));
+				return this.hg.sha(this.hg.concat(this.hg.packSha(parents[1]), this.hg.packSha(parents[0]), data));
 			}
 		} else if(parents[0]) {
-			return this.hg.sha(this.hg.concat(this.hg.stringToArray("00000000000000000000" + parents[0]), data));
+			return this.hg.sha(this.hg.concat(nullId, this.hg.packSha(parents[0]), data));
 		} else {
-			return this.hg.sha(this.hg.concat(this.hg.stringToArray("0000000000000000000000000000000000000000"), data));
+			return this.hg.sha(this.hg.concat(nullId, nullId, data));
 		}
 	}
 };

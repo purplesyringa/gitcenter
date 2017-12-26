@@ -628,7 +628,7 @@ class Repository {
 
 	// Changes file content. Commits with message `message` on branch `base`
 	saveFile(path, content, base, message) {
-		let auth, author, commit, parent;
+		let auth, author, commitDate, commit, parent;
 		return this.zeroAuth.requestAuth()
 			.then(a => {
 				auth = a;
@@ -644,10 +644,17 @@ class Repository {
 				let minutes = Math.abs((tz + 60) % 60);
 				tz = (tz > 0 ? "+" : "-") + (hours < 10 ? "0" : "") + hours + (minutes < 10 ? "0" : "") + minutes;
 
-				author = profile.commitName || auth.user[0].toUpperCase() + auth.user.substr(1).replace(/@.*/, "");
-				author += " <" + (profile.commitEmail || auth.user) + ">";
-				author += " " + Math.floor(+date / 1000);
-				author += " " + tz;
+				if(this.git) {
+					author = profile.commitName || auth.user[0].toUpperCase() + auth.user.substr(1).replace(/@.*/, "");
+					author += " <" + (profile.commitEmail || auth.user) + ">";
+					author += " " + Math.floor(+date / 1000);
+					author += " " + tz;
+					date = null;
+				} else if(this.hg) {
+					author = profile.commitName || auth.user[0].toUpperCase() + auth.user.substr(1).replace(/@.*/, "");
+					author += " <" + (profile.commitEmail || auth.user) + ">";
+					commitDate = Math.floor(+date / 1000);
+				}
 
 				return this.vcs.getBranchCommit(base);
 			})
@@ -659,22 +666,37 @@ class Repository {
 				return this.vcs.readUnknownObject(commit.content.tree);
 			})
 			.then(base => {
-				return this.vcs.makeTreeDeltaPath(base.content, [
-					{
-						path: path,
-						type: "blob",
-						content: content
-					}
-				]);
-			})
-			.then(delta => {
-				return this.vcs.writeCommit({
-					tree: delta,
-					parents: [parent],
-					author: author,
-					committer: author,
-					message: message
-				});
+				if(this.git) {
+					return this.git.makeTreeDeltaPath(base.content, [
+						{
+							path: path,
+							type: "blob",
+							content: content
+						}
+					])
+						.then(delta => {
+							return this.git.writeCommit({
+								tree: delta,
+								parents: [parent],
+								author: author,
+								committer: author,
+								message: message
+							});
+						});
+				} else if(this.hg) {
+					return this.hg.writeCommit({
+						changes: [
+							{
+								name: path,
+								content: content
+							}
+						],
+						parents: [parent],
+						author: author,
+						date: commitDate,
+						message: message
+					});
+				}
 			})
 			.then(c => {
 				commit = c;
