@@ -789,8 +789,31 @@ class HgIndex {
 							this.cachedData = data;
 						});
 				}
+			}, () => {
+				// Create index
+				this.cachedIndex = "";
+				this.cachedData = "";
+
+				this.isInline = false;
+				this.generalDelta = this.guessGeneralDelta();
+				this.version = 0;
+				this.version |= (this.isInline ? 1 : 0) << 16;
+				this.version |= (this.generalDelta ? 1 : 0) << 16;
+				this.chunkCacheSize = 65536; // Should be 65536 on remote repo
+				this.chunks = [];
+				this.nodeIds = {};
 			})
 			.then(() => this);
+	}
+	guessGeneralDelta() {
+		// Returns if general delta should be used for this index
+		if(this.name == "store/00changelog") {
+			return false;
+		} else if(this.name == "store/00manifest") {
+			return true;
+		} else {
+			return true;
+		}
 	}
 
 	parseChunk(chunk, rev) {
@@ -900,6 +923,11 @@ class HgIndex {
 		let parent1Rev = info.parents[0] ? this.getRev(info.parents[0]) : -1;
 		let parent2Rev = info.parents[1] ? this.getRev(info.parents[1]) : -1;
 		let nodeId = this.hash(info.data, info.parents);
+
+		if(rev == 0) {
+			// First revision, file was empty until now - let's write header
+			offset = this.version;
+		}
 
 		let code = this.hg.concat(
 			this.hg.packInt48(offset),
