@@ -826,14 +826,15 @@ class HgIndex {
 					return this.hg.readFile("store/fncache")
 						.then(cache => {
 							cache = this.hg.arrayToString(cache).split("\n");
+							cache = cache.filter(line => line);
 
 							cache.push(this.name.replace(/^store\//, "") + ".i");
 							if(!this.isInline) {
 								cache.push(this.name.replace(/^store\//, "") + ".d");
 							}
 
-							cache = this.hg.stringToArray(cache.join("\n"));
-							return this.hg.writeFile(cache);
+							cache = this.hg.stringToArray(cache.join("\n") + "\n");
+							return this.hg.writeFile("store/fncache", cache);
 						});
 				}
 			})
