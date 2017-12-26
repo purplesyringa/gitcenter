@@ -965,10 +965,10 @@ class HgIndex {
 		} else {
 			this.cachedIndex = this.hg.concat(this.cachedIndex, code);
 			this.cachedData = this.hg.concat(this.cachedData, this.hg.stringToArray("u"), info.data);
-			return Promise.all(
+			return Promise.all([
 				this.hg.writeFile(this.name + ".i", this.cachedIndex),
 				this.hg.writeFile(this.name + ".d", this.cachedData)
-			)
+			])
 				.then(() => rev);
 		}
 	}
