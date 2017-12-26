@@ -687,14 +687,17 @@ class Hg {
 
 		let index;
 		return this.loadIndex("store/00changelog")
-			.then(index => {
+			.then(i => {
+				index = i;
+
 				return index.writeRev({
 					data: data,
 					linkRev: "self",
 					base: "self",
 					parents: commit.parents
 				});
-			});
+			})
+			.then(rev => index.getMetaData(rev).nodeId);
 	}
 
 	toGitAuthor(author, date) {
