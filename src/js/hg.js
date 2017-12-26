@@ -761,6 +761,7 @@ class HgIndex {
 				this.chunkCacheSize = 65536; // Should be 65536 on remote repo
 				this.chunks = [];
 				this.nodeIds = {};
+				this.virtual = false;
 
 				let offset = 0;
 				let rev = 0;
@@ -802,6 +803,7 @@ class HgIndex {
 				this.chunkCacheSize = 65536; // Should be 65536 on remote repo
 				this.chunks = [];
 				this.nodeIds = {};
+				this.virtual = true;
 			})
 			.then(() => this);
 	}
@@ -814,6 +816,37 @@ class HgIndex {
 		} else {
 			return true;
 		}
+	}
+
+	writeIndex() {
+		return Promise.resolve()
+			.then(() => {
+				if(this.virtual) {
+					// Add to fncache
+					return this.hg.readFile("store/fncache")
+						.then(cache => {
+							cache = this.hg.arrayToString(cache).split("\n");
+
+							cache.push(this.name.replace(/^store\//, "") + ".i");
+							if(!this.isInline) {
+								cache.push(this.name.replace(/^store\//, "") + ".d");
+							}
+
+							cache = this.hg.stringToArray(cache.join("\n"));
+							return this.hg.writeFile(cache);
+						});
+				}
+			})
+			.then(() => {
+				if(this.isInline) {
+					return this.hg.writeFile(this.name + ".i", this.cachedIndex);
+				} else {
+					return Promise.all([
+						this.hg.writeFile(this.name + ".i", this.cachedIndex),
+						this.hg.writeFile(this.name + ".d", this.cachedData)
+					]);
+				}
+			});
 	}
 
 	parseChunk(chunk, rev) {
@@ -960,17 +993,13 @@ class HgIndex {
 
 		if(this.isInline) {
 			this.cachedIndex = this.hg.concat(this.cachedIndex, code, this.hg.stringToArray("u"), info.data);
-			return this.hg.writeFile(this.name + ".i", this.cachedIndex)
-				.then(() => rev);
 		} else {
 			this.cachedIndex = this.hg.concat(this.cachedIndex, code);
 			this.cachedData = this.hg.concat(this.cachedData, this.hg.stringToArray("u"), info.data);
-			return Promise.all([
-				this.hg.writeFile(this.name + ".i", this.cachedIndex),
-				this.hg.writeFile(this.name + ".d", this.cachedData)
-			])
-				.then(() => rev);
 		}
+
+		return this.writeIndex()
+			.then(() => rev);
 	}
 	hash(data, parents) {
 		let nullId = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
