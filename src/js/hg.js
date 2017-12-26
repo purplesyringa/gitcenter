@@ -791,8 +791,8 @@ class HgIndex {
 				}
 			}, () => {
 				// Create index
-				this.cachedIndex = "";
-				this.cachedData = "";
+				this.cachedIndex = [];
+				this.cachedData = [];
 
 				this.isInline = false;
 				this.generalDelta = this.guessGeneralDelta();
