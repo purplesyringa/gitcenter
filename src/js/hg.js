@@ -199,6 +199,9 @@ class Hg {
 	readFile(path) {
 		return this.zeroFS.readFile(this.root + "/" + path, "arraybuffer");
 	}
+	peekFile(path, offset, length) {
+		return this.zeroFS.peekFile(this.root + "/" + path, offset, length, "arraybuffer");
+	}
 	readDirectory(path, recursive) {
 		return this.zeroFS.readDirectory(this.root + "/" + path, recursive);
 	}
@@ -901,7 +904,9 @@ class HgIndex {
 		return this.getChunk(start, end - start);
 	}
 	getChunk(offset, length) {
-		return Promise.resolve(this.hg.subArray(this.cachedData, offset, length));
+		let path = this.name + (this.isInline ? ".i" : ".d");
+
+		return this.hg.peekFile(path, offset, length);
 	}
 
 	delta(rev) {
