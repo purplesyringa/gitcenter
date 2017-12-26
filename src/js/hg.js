@@ -200,7 +200,32 @@ class Hg {
 		return this.zeroFS.readFile(this.root + "/" + path, "arraybuffer");
 	}
 	peekFile(path, offset, length) {
-		return this.zeroFS.peekFile(this.root + "/" + path, offset, length, "arraybuffer");
+		// Split file by 1 KB
+		let chunkSize = 1024; // 1 KB
+
+		let newOffset = offset - offset % chunkSize;
+		let newLength = Math.ceil((offset + length) / chunkSize) * chunkSize - newOffset;
+
+		if(!this.peekFile.cache) {
+			this.peekFile.cache = {};
+		}
+		if(!this.peekFile.cache[path]) {
+			this.peekFile.cache[path] = {};
+		}
+
+		let promise = Promise.resolve();
+		if(!this.peekFile.cache[path][newOffset + "|" + newLength]) {
+			promise = this.zeroFS.peekFile(this.root + "/" + path, newOffset, newLength, "arraybuffer")
+				.then(res => {
+					this.peekFile.cache[path][newOffset + "|" + newLength] = res;
+				});
+		}
+
+		return promise
+			.then(() => {
+				let cache = this.peekFile.cache[path][newOffset + "|" + newLength];
+				return this.subArray(cache, offset - newOffset, length);
+			});
 	}
 	readDirectory(path, recursive) {
 		return this.zeroFS.readDirectory(this.root + "/" + path, recursive);
