@@ -403,7 +403,8 @@ class Hg {
 		}
 
 		return this.getRef("refs/heads/" + branch)
-			.catch(() => this.getRef("refs/tags/" + branch));
+			.catch(() => this.getRef("refs/tags/" + branch))
+			.catch(() => Promise.reject("Could not find branch " + branch));
 	}
 	readBranchCommit(branch) {
 		return this.getBranchCommit(branch)
