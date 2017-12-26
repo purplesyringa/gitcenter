@@ -914,7 +914,7 @@ class HgIndex {
 		}
 
 		let rev = this.chunks.length;
-		let offset = this.getEndPos(rev - 1);
+		let offset = rev == 0 ? 0 : this.getEndPos(rev - 1);
 		let flags = 0;
 		let compressedLength = info.data.length + 1;
 		let uncompressedLength = info.data.length;
