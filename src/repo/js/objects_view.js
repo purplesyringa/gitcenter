@@ -195,6 +195,25 @@ function showAction(action, context) {
 		content.innerHTML = comment.body;
 		node.appendChild(content);
 
+		let footer = document.createElement("div");
+		footer.className = "comment-footer";
+		["thumbs-up", "thumbs-down", "smile", "heart"].forEach(reaction => {
+			let node = document.createElement("div");
+			node.className = "comment-reaction";
+
+			let icon = document.createElement("div");
+			icon.className = "comment-reaction-icon comment-reaction-icon-" + reaction;
+			node.appendChild(icon);
+
+			let count = document.createElement("div");
+			count.className = "comment-reaction-count";
+			count.innerHTML = "10";
+			node.appendChild(count);
+
+			footer.appendChild(node);
+		});
+		node.appendChild(footer);
+
 		document.getElementById("comments").appendChild(node);
 	}
 }
