@@ -27,7 +27,6 @@
 	display: block;
 	padding: 12px 16px;
 	background-color: #FFF;
-	border-radius: 0 0 4px 4px;
 
 	font-size: 16px;
 }
@@ -40,7 +39,6 @@
 	width: calc(100% - 32px);
 	padding: 20px 16px; /* Additional 8px due to <p> */
 	background-color: #FFF;
-	border-radius: 0 0 4px 4px;
 	resize: none;
 	border: none;
 	height: 128px;
@@ -147,4 +145,65 @@
 }
 .comment-cancel {
 	background-image: url(../../img/back.svg);
+}
+
+
+.comment-footer {
+	display: block;
+	padding: 4px 16px;
+	border-top: 1px solid #888;
+	background-color: #EEE;
+	border-radius: 0 0 4px 4px;
+
+	font-size: 16px;
+}
+
+/* Reactions */
+.comment-reaction {
+	display: inline-block;
+	margin-right: 16px;
+	padding: 8px;
+	padding-bottom: 4px;
+	border-radius: 4px;
+	cursor: pointer;
+}
+.comment-reaction-owned {
+	background-color: #FFC;
+}
+.comment-reaction:hover {
+	background-color: #DDD;
+}
+.comment-reaction:active {
+	background-color: #FFF;
+}
+
+.comment-reaction-icon {
+	display: inline-block;
+	width: 20px;
+	height: 20px;
+
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
+}
+.comment-reaction-icon-thumbs-up {
+	background-image: url(../../img/reactions/thumbs-up.svg);
+}
+.comment-reaction-icon-thumbs-down {
+	background-image: url(../../img/reactions/thumbs-down.svg);
+}
+.comment-reaction-icon-smile {
+	background-image: url(../../img/reactions/smile.svg);
+}
+.comment-reaction-icon-heart {
+	background-image: url(../../img/reactions/heart.svg);
+}
+
+.comment-reaction-count {
+	display: inline-block;
+	margin-top: 2px;
+	margin-left: 4px;
+	vertical-align: top;
+
+	font-size: 16px;
 }
