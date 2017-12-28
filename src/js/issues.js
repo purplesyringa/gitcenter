@@ -161,38 +161,52 @@ class RepositoryIssues {
 
 		return this.zeroDB.query("\
 			SELECT\
-				-1 AS id,\
-				{object}s.body AS body,\
-				{object}s.date_added AS date_added,\
-				json.directory AS json,\
-				json.cert_user_id AS cert_user_id,\
-				{object}s.id AS {object}_id,\
-				json.directory AS {object}_json\
-			FROM {object}s, json\
-			WHERE\
-				{object}s.json_id = json.json_id AND\
-				json.directory = :json AND\
-				{object}s.id = :id AND\
-				json.site = :address\
+				comments.*,\
+				{object}_reactions.reaction AS reaction,\
+				COUNT({object}_reactions.reaction) AS reaction_count\
+			FROM (\
+				SELECT\
+					-1 AS id,\
+					{object}s.body AS body,\
+					{object}s.date_added AS date_added,\
+					json.directory AS json,\
+					json.cert_user_id AS cert_user_id,\
+					{object}s.id AS {object}_id,\
+					json.directory AS {object}_json\
+				FROM {object}s, json\
+				WHERE\
+					{object}s.json_id = json.json_id AND\
+					json.directory = :json AND\
+					{object}s.id = :id AND\
+					json.site = :address\
+				\
+				UNION ALL\
+				\
+				SELECT\
+					{object}_comments.id AS id,\
+					{object}_comments.body AS body,\
+					{object}_comments.date_added AS date_added,\
+					json.directory AS json,\
+					json.cert_user_id AS cert_user_id,\
+					{object}_comments.{object}_id AS {object}_id,\
+					{object}_comments.{object}_json AS {object}_json\
+				FROM {object}_comments, json\
+				WHERE\
+					{object}_comments.json_id = json.json_id AND\
+					{object}_comments.{object}_json = :json AND\
+					{object}_comments.{object}_id = :id AND\
+					json.site = :address\
+			) AS comments\
 			\
-			UNION ALL\
+			LEFT JOIN\
+				{object}_reactions\
+			ON\
+				{object}_reactions.comment_id = comments.id AND\
+				{object}_reactions.comment_json = comments.json AND\
+				{object}_reactions.{object}_id = :id AND\
+				{object}_reactions.{object}_json = :json\
 			\
-			SELECT\
-				{object}_comments.id AS id,\
-				{object}_comments.body AS body,\
-				{object}_comments.date_added AS date_added,\
-				json.directory AS json,\
-				json.cert_user_id AS cert_user_id,\
-				{object}_comments.{object}_id AS {object}_id,\
-				{object}_comments.{object}_json AS {object}_json\
-			FROM {object}_comments, json\
-			WHERE\
-				{object}_comments.json_id = json.json_id AND\
-				{object}_comments.{object}_json = :json AND\
-				{object}_comments.{object}_id = :id AND\
-				json.site = :address\
-			\
-			ORDER BY date_added ASC\
+			GROUP BY {object}_reactions.reaction\
 		".replace(/{object}/g, object), {
 			json: json,
 			id: id,
@@ -201,6 +215,32 @@ class RepositoryIssues {
 			.then(c => {
 				comments = c;
 				comments = comments.map(comment => this.repo.highlightComment(comment));
+
+				let savedIds = {};
+				comments.forEach(comment => {
+					if(savedIds[comment.id + "|" + comment.json]) {
+						if(comment.reaction) {
+							savedIds[comment.id + "|" + comment.json].reactions.push({
+								reaction: comment.reaction,
+								count: comment.reaction_count
+							});
+						}
+					} else {
+						savedIds[comment.id + "|" + comment.json] = comment;
+
+						if(comment.reaction) {
+							comment.reactions = [{
+								reaction: comment.reaction,
+								count: comment.reaction_count
+							}];
+						} else {
+							comment.reactions = [];
+						}
+					}
+				});
+
+				comments = Object.values(savedIds);
+				comments.sort((a, b) => a.date_added - b.date_added);
 
 				return this.repo.isSignable();
 			})
