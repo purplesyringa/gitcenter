@@ -219,7 +219,9 @@ class RepositoryIssues {
 					\
 					GROUP BY\
 						{object}_reactions.reaction,\
-						{object}_reactions.json_id = :my_json_id\
+						{object}_reactions.json_id = :my_json_id,\
+						comments.id,\
+						comments.json\
 				".replace(/{object}/g, object), {
 					json: json,
 					id: id,
