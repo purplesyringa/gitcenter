@@ -159,71 +159,97 @@ class RepositoryIssues {
 	getObjectComments(object, id, json) {
 		let comments;
 
-		return this.zeroDB.query("\
-			SELECT\
-				comments.*,\
-				{object}_reactions.reaction AS reaction,\
-				COUNT({object}_reactions.reaction) AS reaction_count\
-			FROM (\
-				SELECT\
-					-1 AS id,\
-					{object}s.body AS body,\
-					{object}s.date_added AS date_added,\
-					json.directory AS json,\
-					json.cert_user_id AS cert_user_id,\
-					{object}s.id AS {object}_id,\
-					json.directory AS {object}_json\
-				FROM {object}s, json\
-				WHERE\
-					{object}s.json_id = json.json_id AND\
-					json.directory = :json AND\
-					{object}s.id = :id AND\
-					json.site = :address\
-				\
-				UNION ALL\
-				\
-				SELECT\
-					{object}_comments.id AS id,\
-					{object}_comments.body AS body,\
-					{object}_comments.date_added AS date_added,\
-					json.directory AS json,\
-					json.cert_user_id AS cert_user_id,\
-					{object}_comments.{object}_id AS {object}_id,\
-					{object}_comments.{object}_json AS {object}_json\
-				FROM {object}_comments, json\
-				WHERE\
-					{object}_comments.json_id = json.json_id AND\
-					{object}_comments.{object}_json = :json AND\
-					{object}_comments.{object}_id = :id AND\
-					json.site = :address\
-			) AS comments\
-			\
-			LEFT JOIN\
-				{object}_reactions\
-			ON\
-				{object}_reactions.comment_id = comments.id AND\
-				{object}_reactions.comment_json = comments.json AND\
-				{object}_reactions.{object}_id = :id AND\
-				{object}_reactions.{object}_json = :json\
-			\
-			GROUP BY {object}_reactions.reaction\
-		".replace(/{object}/g, object), {
-			json: json,
-			id: id,
-			address: this.address
-		})
+		return Promise.resolve()
+			.then(() => {
+				let auth = this.zeroAuth.getAuth();
+				if(auth) {
+					return this.zeroDB.getJsonID(this.repo.address + "/data/users/" + auth.address + "/data.json", 3);
+				}
+
+				return -1;
+			})
+			.then(jsonId => {
+				return this.zeroDB.query("\
+					SELECT\
+						comments.*,\
+						{object}_reactions.reaction AS reaction,\
+						COUNT({object}_reactions.reaction) AS reaction_count,\
+						{object}_reactions.json_id = :my_json_id AS reaction_owned\
+					FROM (\
+						SELECT\
+							-1 AS id,\
+							{object}s.body AS body,\
+							{object}s.date_added AS date_added,\
+							json.directory AS json,\
+							json.cert_user_id AS cert_user_id,\
+							{object}s.id AS {object}_id,\
+							json.directory AS {object}_json\
+						FROM {object}s, json\
+						WHERE\
+							{object}s.json_id = json.json_id AND\
+							json.directory = :json AND\
+							{object}s.id = :id AND\
+							json.site = :address\
+						\
+						UNION ALL\
+						\
+						SELECT\
+							{object}_comments.id AS id,\
+							{object}_comments.body AS body,\
+							{object}_comments.date_added AS date_added,\
+							json.directory AS json,\
+							json.cert_user_id AS cert_user_id,\
+							{object}_comments.{object}_id AS {object}_id,\
+							{object}_comments.{object}_json AS {object}_json\
+						FROM {object}_comments, json\
+						WHERE\
+							{object}_comments.json_id = json.json_id AND\
+							{object}_comments.{object}_json = :json AND\
+							{object}_comments.{object}_id = :id AND\
+							json.site = :address\
+					) AS comments\
+					\
+					LEFT JOIN\
+						{object}_reactions\
+					ON\
+						{object}_reactions.comment_id = comments.id AND\
+						{object}_reactions.comment_json = comments.json AND\
+						{object}_reactions.{object}_id = :id AND\
+						{object}_reactions.{object}_json = :json\
+					\
+					GROUP BY\
+						{object}_reactions.reaction,\
+						{object}_reactions.json_id = :my_json_id\
+				".replace(/{object}/g, object), {
+					json: json,
+					id: id,
+					address: this.address,
+					my_json_id: jsonId
+				});
+			})
 			.then(c => {
 				comments = c;
 				comments = comments.map(comment => this.repo.highlightComment(comment));
 
 				let savedIds = {};
 				comments.forEach(comment => {
-					if(savedIds[comment.id + "|" + comment.json]) {
+					console.log(comment);
+
+					let saved = savedIds[comment.id + "|" + comment.json];
+
+					if(saved) {
 						if(comment.reaction) {
-							savedIds[comment.id + "|" + comment.json].reactions.push({
-								reaction: comment.reaction,
-								count: comment.reaction_count
-							});
+							let found = saved.reactions.find(reaction => reaction.reaction == comment.reaction);
+							if(found) {
+								found.count += comment.reaction_count;
+								found.owned = found.owned || !!comment.reaction_owned;
+							} else {
+								saved.reactions.push({
+									reaction: comment.reaction,
+									count: comment.reaction_count,
+									owned: !!comment.reaction_owned
+								});
+							}
 						}
 					} else {
 						savedIds[comment.id + "|" + comment.json] = comment;
@@ -231,7 +257,8 @@ class RepositoryIssues {
 						if(comment.reaction) {
 							comment.reactions = [{
 								reaction: comment.reaction,
-								count: comment.reaction_count
+								count: comment.reaction_count,
+								owned: !!comment.reaction_owned
 							}];
 						} else {
 							comment.reactions = [];
