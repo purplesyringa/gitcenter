@@ -213,7 +213,14 @@ function showAction(action, context) {
 				)
 					.then(() => {
 						reactionOwned = !reactionOwned;
+						if(reactionOwned) {
+							reactionCount++;
+						} else {
+							reactionCount--;
+						}
+
 						node.classList.toggle("comment-reaction-owned", reactionOwned);
+						count.innerHTML = reactionCount;
 					});
 			};
 
