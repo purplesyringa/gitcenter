@@ -296,6 +296,41 @@ class RepositoryIssues {
 				}
 			});
 	}
+	toggleObjectReaction(object, id, json, commentId, commentJson, name, value) {
+		return this.zeroAuth.requestAuth()
+			.then(auth => {
+				if(value) {
+					insertRow(dataFile, contentFile, table, row, autoIncrement)
+					return this.zeroDB.insertRow(
+						"merged-GitCenter/" + this.address + "/data/users/" + auth.address + "/data.json",
+						"merged-GitCenter/" + this.address + "/data/users/" + auth.address + "/content.json",
+						object + "_reactions",
+						{
+							comment_id: commentId,
+							comment_json: commentJson,
+							[object + "_id"]: id,
+							[object + "_json"]: json,
+							reaction: name
+						}
+					);
+				} else {
+					return this.zeroDB.removeRow(
+						"merged-GitCenter/" + this.address + "/data/users/" + auth.address + "/data.json",
+						"merged-GitCenter/" + this.address + "/data/users/" + auth.address + "/content.json",
+						object + "_reactions",
+						reaction => {
+							return (
+								reaction.comment_id == commentId &&
+								reaction.comment_json == commentJson &&
+								reaction[object + "_id"] == id &&
+								reaction[object + "_json"] == json &&
+								reaction.reaction == name
+							);
+						}
+					);
+				}
+			});
+	}
 	getObjectActions(object, id, json) {
 		let comments;
 		return this.getObjectComments(object, id, json)
