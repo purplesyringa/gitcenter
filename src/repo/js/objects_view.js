@@ -204,6 +204,18 @@ function showAction(action, context) {
 
 			let node = document.createElement("div");
 			node.className = "comment-reaction" + (reactionOwned ? " comment-reaction-owned" : "");
+			node.onclick = () => {
+				repo.issues.toggleObjectReaction(
+					context,
+					comment[context + "_id"], comment[context + "_json"],
+					comment.id, comment.json,
+					reaction, !reactionOwned
+				)
+					.then(() => {
+						reactionOwned = !reactionOwned;
+						node.classList.toggle("comment-reaction-owned", reactionOwned);
+					});
+			};
 
 			let icon = document.createElement("div");
 			icon.className = "comment-reaction-icon comment-reaction-icon-" + reaction;
