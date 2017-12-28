@@ -198,15 +198,16 @@ function showAction(action, context) {
 		let footer = document.createElement("div");
 		footer.className = "comment-footer";
 		["thumbs-up", "thumbs-down", "smile", "heart"].forEach(reaction => {
+			let obj = comment.reactions.find(obj => obj.reaction == reaction);
+			let reactionCount = obj ? obj.count : 0;
+			let reactionOwned = obj && obj.owned;
+
 			let node = document.createElement("div");
-			node.className = "comment-reaction";
+			node.className = "comment-reaction" + (reactionOwned ? " comment-reaction-owned" : "");
 
 			let icon = document.createElement("div");
 			icon.className = "comment-reaction-icon comment-reaction-icon-" + reaction;
 			node.appendChild(icon);
-
-			let obj = comment.reactions.find(obj => obj.reaction == reaction);
-			let reactionCount = obj ? obj.count : 0;
 
 			let count = document.createElement("div");
 			count.className = "comment-reaction-count";

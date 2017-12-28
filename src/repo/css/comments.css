@@ -167,6 +167,9 @@
 	border-radius: 4px;
 	cursor: pointer;
 }
+.comment-reaction-owned {
+	background-color: #FFC;
+}
 .comment-reaction:hover {
 	background-color: #DDD;
 }
