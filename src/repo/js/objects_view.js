@@ -205,9 +205,12 @@ function showAction(action, context) {
 			icon.className = "comment-reaction-icon comment-reaction-icon-" + reaction;
 			node.appendChild(icon);
 
+			let obj = comment.reactions.find(obj => obj.reaction == reaction);
+			let reactionCount = obj ? obj.count : 0;
+
 			let count = document.createElement("div");
 			count.className = "comment-reaction-count";
-			count.innerHTML = "10";
+			count.innerHTML = reactionCount;
 			node.appendChild(count);
 
 			footer.appendChild(node);
