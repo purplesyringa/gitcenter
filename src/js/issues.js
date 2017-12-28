@@ -300,7 +300,6 @@ class RepositoryIssues {
 		return this.zeroAuth.requestAuth()
 			.then(auth => {
 				if(value) {
-					insertRow(dataFile, contentFile, table, row, autoIncrement)
 					return this.zeroDB.insertRow(
 						"merged-GitCenter/" + this.address + "/data/users/" + auth.address + "/data.json",
 						"merged-GitCenter/" + this.address + "/data/users/" + auth.address + "/content.json",
