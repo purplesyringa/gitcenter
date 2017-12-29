@@ -112,6 +112,7 @@ class Repository {
 		this.zeroFS = new ZeroFS(zeroPage);
 		this.zeroAuth = new ZeroAuth(zeroPage);
 		this.zeroDB = new ZeroDB(zeroPage);
+		this.zeroID = new ZeroID(zeroPage);
 		this.issues = new RepositoryIssues(this);
 	}
 
@@ -1331,27 +1332,9 @@ class Repository {
 
 	/*********************************** ZeroID ***********************************/
 
-	// Reads `name` file of ZeroID and caches it
-	getZeroIdFile(name, cache, property) {
-		if(this[cache]) {
-			return Promise.resolve(this[cache]);
-		}
-
-		let worker = new WorkerOut();
-
-		return this.zeroFS.readFile("cors-1iD5ZQJMNXu43w1qLB8sfdHVKppVMduGz/" + name, false, true)
-			.then(users => {
-				return worker.JSON.parse(users);
-			})
-			.then(u => {
-				this[cache] = u[property];
-				return this[cache];
-			});
-	}
-
 	// Returns user info by auth address
 	findUserById(id) {
-		return this.getZeroIdFile("data/users.json", "_cached_users_json", "users")
+		return this.zeroID.getZeroIdFile("data/users.json", "_cached_users_json", "users")
 			.then(users => {
 				let userName = Object.keys(users).find(userName => {
 					return users[userName].split(",")[1] == id;
@@ -1366,7 +1349,7 @@ class Repository {
 					};
 				}
 
-				return this.getZeroIdFile("data/users_archive.json", "_cached_users_archive_json", "users")
+				return this.zeroID.getZeroIdFile("data/users_archive.json", "_cached_users_archive_json", "users")
 					.then(users => {
 						let userName = Object.keys(users).find(userName => {
 							return users[userName].split(",")[1] == id;
@@ -1398,7 +1381,7 @@ class Repository {
 
 						userNames.forEach(userName => {
 							let pack = users[userName].substr(1).split(",")[0];
-							this.getZeroIdFile("data/certs_" + pack + ".json", "_cached_pack_" + pack, "certs")
+							this.zeroID.getZeroIdFile("data/certs_" + pack + ".json", "_cached_pack_" + pack, "certs")
 								.then(users => {
 									let userName = Object.keys(users).find(userName => {
 										return users[userName].split(",")[1] == id;
@@ -1429,7 +1412,7 @@ class Repository {
 
 	// Returns user info by ZeroID name
 	findUserByName(userName) {
-		return this.getZeroIdFile("data/users.json", "_cached_users_json", "users")
+		return this.zeroID.getZeroIdFile("data/users.json", "_cached_users_json", "users")
 			.then(users => {
 				if(users[userName]) {
 					return {
@@ -1440,7 +1423,7 @@ class Repository {
 					};
 				}
 
-				return this.getZeroIdFile("data/users_archive.json", "_cached_users_archive_json", "users")
+				return this.zeroID.getZeroIdFile("data/users_archive.json", "_cached_users_archive_json", "users")
 					.then(users => {
 						if(!users[userName]) {
 							return Promise.reject("User " + userName + " was not found");
@@ -1458,7 +1441,7 @@ class Repository {
 
 						let pack = users[userName].substr(1).split(",")[0];
 
-						return this.getZeroIdFile("data/certs_" + pack + ".json", "_cached_pack_" + pack, "certs")
+						return this.zeroID.getZeroIdFile("data/certs_" + pack + ".json", "_cached_pack_" + pack, "certs")
 							.then(users => {
 								if(users[userName]) {
 									let info = users[userName].split(",");
