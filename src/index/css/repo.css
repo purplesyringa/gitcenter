@@ -44,6 +44,19 @@
 	background-position: 8px 4px;
 }
 
+.repo-downloaded {
+	display: inline-block;
+	height: 24px;
+	width: 24px;
+	float: right;
+	margin-top: 4px;
+
+	background-image: url(../../img/download.svg);
+	background-size: auto 16px;
+	background-repeat: no-repeat;
+	background-position: 8px 4px;
+}
+
 
 .search {
 	display: block;

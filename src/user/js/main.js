@@ -12,7 +12,13 @@ let loadProfile = address => {
 
 let user = location.search.replace(/[?&]wrapper_nonce=.*/, "").replace("?", "");
 
-loadProfile(user)
+let downloaded;
+Repository.getDownloadedRepos(zeroPage)
+	.then(d => {
+		downloaded = d;
+
+		return loadProfile(user);
+	})
 	.then(profile => {
 		if(profile.commitName) {
 			return profile.commitName;
@@ -65,6 +71,12 @@ loadProfile(user)
 			stars.className = "repo-stars";
 			stars.innerHTML = repo.stars;
 			node.appendChild(stars);
+
+			if(downloaded.indexOf(repo.address) > -1) {
+				let downloaded = document.createElement("div");
+				downloaded.className = "repo-downloaded";
+				node.appendChild(downloaded);
+			}
 
 			let title = document.createElement("div");
 			title.className = "repo-title";

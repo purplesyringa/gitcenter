@@ -18,6 +18,7 @@ function updateIndex(search) {
 	let maybe = [];
 	let state = "";
 	let sort = "stars";
+	let isDownloaded = false;
 	search.split(/\s+/)
 		.filter(word => word.length)
 		.forEach(word => {
@@ -33,6 +34,8 @@ function updateIndex(search) {
 					OR\
 					repo_index.title LIKE " + escapeString("%" + word.substr(1) + "%") + "\
 				");
+			} else if(word == "is:downloaded") {
+				isDownloaded = true;
 			} else {
 				maybe.push("\
 					repo_index.description LIKE " + escapeString("%" + word + "%") + "\
@@ -57,7 +60,7 @@ function updateIndex(search) {
 		sort = "stars DESC";
 	}
 
-	link.promise = zeroDB.query("\
+	link.promise = zeroDB.query(("\
 		SELECT repo_index.*, json.cert_user_id, COUNT(repo_stars.address) AS stars\
 		FROM repo_index, json\
 		LEFT JOIN repo_stars ON repo_stars.address = repo_index.address\
@@ -66,10 +69,14 @@ function updateIndex(search) {
 			(required.length ? "(" + required.join(") AND (") + ")" : "1 = 1") + "\
 			AND " +
 			(maybe.length ? "(" + maybe.join(") OR (") + ")" : "1 = 1") + "\
+			AND " +
+			(isDownloaded ? "?" : "1 = 1") + "\
 		)\
 		GROUP BY repo_index.address\
 		ORDER BY " + sort + "\
-	")
+	").trim(), {
+		"repo_index.address": downloaded
+	})
 		.then(index => {
 			if(link.stop) {
 				return;
@@ -86,6 +93,12 @@ function updateIndex(search) {
 				stars.className = "repo-stars";
 				stars.textContent = repo.stars;
 				node.appendChild(stars);
+
+				if(downloaded.indexOf(repo.address) > -1) {
+					let downloaded = document.createElement("div");
+					downloaded.className = "repo-downloaded";
+					node.appendChild(downloaded);
+				}
 
 				let title = document.createElement("div");
 				title.className = "repo-title";
@@ -106,17 +119,24 @@ function updateIndex(search) {
 	return link;
 }
 
-let search = decodeURIComponent((location.search.match(/[?&]q=(.+?)(&|$)/) || ["", ""])[1]);
-document.getElementById("search").value = search;
-let link = updateIndex(search);
-link.promise.then(() => {
-	document.getElementById("search").oninput = () => {
-		link.stop = true;
-		link = updateIndex(document.getElementById("search").value);
+let downloaded;
+Repository.getDownloadedRepos(zeroPage)
+	.then(d => {
+		downloaded = d;
 
-		zeroPage.cmd("wrapperReplaceState", [null, "Search - Git Center", "?q=" + document.getElementById("search").value]);
-	};
-});
+		// Search
+		let search = decodeURIComponent((location.search.match(/[?&]q=(.+?)(&|$)/) || ["", ""])[1]);
+		document.getElementById("search").value = search;
+		let link = updateIndex(search);
+		link.promise.then(() => {
+			document.getElementById("search").oninput = () => {
+				link.stop = true;
+				link = updateIndex(document.getElementById("search").value);
+
+				zeroPage.cmd("wrapperReplaceState", [null, "Search - Git Center", "?q=" + document.getElementById("search").value]);
+			};
+		});
+	});
 
 window.addEventListener("load", () => {
 	setTitle("Repository Index");
