@@ -60,8 +60,6 @@ function updateIndex(search) {
 		sort = "stars DESC";
 	}
 
-	console.log(downloaded);
-
 	link.promise = zeroDB.query(("\
 		SELECT repo_index.*, json.cert_user_id, COUNT(repo_stars.address) AS stars\
 		FROM repo_index, json\
@@ -95,6 +93,12 @@ function updateIndex(search) {
 				stars.className = "repo-stars";
 				stars.textContent = repo.stars;
 				node.appendChild(stars);
+
+				if(downloaded.indexOf(repo.address) > -1) {
+					let downloaded = document.createElement("div");
+					downloaded.className = "repo-downloaded";
+					node.appendChild(downloaded);
+				}
 
 				let title = document.createElement("div");
 				title.className = "repo-title";
