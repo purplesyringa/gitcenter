@@ -1810,3 +1810,27 @@ class Repository {
 Repository.createRepo = zeroPage => {
 	return zeroPage.cmd("siteClone", ["1RepoXU8bQE9m7ssNwL4nnxBnZVejHCc6"]);
 };
+
+Repository.getDownloadedRepos = zeroPage => {
+	return zeroPage.cmd("mergerSiteList")
+		.then(merged => {
+			merged = Object.keys(merged);
+
+			return Promise.all(
+				merged.map(site => {
+					return zeroPage.cmd("fileRules", ["merged-GitCenter/" + site + "/content.json"])
+						.then(rules => {
+							return {
+								downloaded: rules.current_size > 0,
+								site: site
+							}
+						});
+				})
+			);
+		})
+		.then(merged => {
+			return merged
+				.filter(site => site.downloaded)
+				.map(site => site.site);
+		});
+};
