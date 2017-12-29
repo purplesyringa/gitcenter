@@ -429,6 +429,7 @@ class RepositoryIssues {
 			.then(jsonRow => {
 				row.cert_user_id = jsonRow[0].cert_user_id;
 				row.owned = true;
+				row.reactions = [];
 
 				return row;
 			});
