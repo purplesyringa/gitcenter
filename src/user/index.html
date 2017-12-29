@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>My Repos - Git Center</title>
+		<title>User - Git Center</title>
 		<meta charset="utf-8">
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<base href="" target="_top" id="base">
@@ -11,7 +11,9 @@
 		<link rel="stylesheet" type="text/css" href="../css/buttons.css">
 		<link rel="stylesheet" type="text/css" href="../css/header.css">
 		<link rel="stylesheet" type="text/css" href="../css/content.css">
-		<link rel="stylesheet" type="text/css" href="css/repo.css">
+		<link rel="stylesheet" type="text/css" href="../index/css/repo.css">
+		<link rel="stylesheet" type="text/css" href="../repo/settings/css/settings.css">
+		<link rel="stylesheet" type="text/css" href="css/user.css">
 	</head>
 	<body>
 		<header class="header">
@@ -22,8 +24,8 @@
 			<a href="../index/">
 				<div class="header-item">Repository Index</div>
 			</a>
-			<a href=".">
-				<div class="header-item header-item-active">My Repos</div>
+			<a href="../myrepos/">
+				<div class="header-item">My Repos</div>
 			</a>
 			<a href="../guide/">
 				<div class="header-item">Beginner's Guide</div>
@@ -37,12 +39,17 @@
 		</header>
 
 		<main class="content">
-			<h1>
-				<span>My Repos</span>
-				<a id="create_repository" class="button button-blue">New repository</a>
-			</h1>
+			<aside class="user-left">
+				<img src="../img/user.svg" class="user-avatar">
+				<div class="user-name" id="user_name"></div>
+				<div class="user-cert" id="user_cert">Loading...</div>
+			</aside>
 
-			<div id="repos"></div>
+			<main class="user-right">
+				<h2>Repositories</h2>
+
+				<div class="repos" id="repos"></div>
+			</main>
 		</main>
 
 		<script type="text/javascript" src="../ZeroLib/ZeroFrame.js"></script>
@@ -51,8 +58,7 @@
 		<script type="text/javascript" src="../ZeroLib/ZeroAuth.js"></script>
 		<script type="text/javascript" src="../ZeroLib/ZeroDB.js"></script>
 		<script type="text/javascript" src="../ZeroLib/ZeroID.js"></script>
-		<script type="text/javascript" src="../js/repo.js"></script>
-		<script type="text/javascript" src="../js/issues.js"></script>
+		<script type="text/javascript" src="../workerout/workerout.js"></script>
 		<script type="text/javascript" src="js/main.js"></script>
 		<script type="text/javascript" src="../js/root.js"></script>
 	</body>

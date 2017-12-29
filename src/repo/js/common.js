@@ -45,11 +45,29 @@ function showTabs(level) {
 function showTitle(title) {
 	let arrow = String.fromCharCode(8250);
 
+	let ownerLink;
+
 	let name = document.getElementById("repo_name");
-	name.textContent = title;
+
+	let titleLink = document.createElement("a");
+	titleLink.href = "/" + address;
+	titleLink.textContent = title;
+	name.appendChild(titleLink);
+
 	repo.getOwner()
 		.then(owner => {
-			name.textContent = owner + " " + arrow + " " + title;
+			name.innerHTML = "";
+
+			ownerLink = document.createElement("a");
+			ownerLink.textContent = owner;
+			name.appendChild(ownerLink);
+			name.appendChild(document.createTextNode(" " + arrow + " "));
+			name.appendChild(titleLink);
+
+			return repo.getOwnerAddress();
+		})
+		.then(json => {
+			ownerLink.href = "/1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t/user/?" + json;
 		});
 }
 function showHeader(level, gitAddress) {
