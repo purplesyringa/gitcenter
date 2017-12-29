@@ -51,6 +51,7 @@
 	padding-right: 8px;
 	border-right: 1px solid #888;
 	margin-right: 8px;
+	cursor: pointer;
 
 	text-align: right;
 }

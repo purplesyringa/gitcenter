@@ -65,6 +65,13 @@ repo.addMerger()
 				});
 				fileContent.innerHTML = lines.join("\n");
 
+				let lineNumbers = Array.from(document.getElementsByClassName("line-number"));
+				lineNumbers.forEach(lineNumber => {
+					lineNumber.onclick = () => {
+						location.hash = "#L" + parseInt(lineNumber.innerHTML);
+					};
+				});
+
 				document.getElementById("download").onclick = () => {
 					repo.download(path.split("/").slice(-1)[0], blob);
 				};
