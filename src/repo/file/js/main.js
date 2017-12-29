@@ -68,6 +68,7 @@ repo.addMerger()
 				let lineNumbers = Array.from(document.getElementsByClassName("line-number"));
 				lineNumbers.forEach(lineNumber => {
 					lineNumber.onclick = () => {
+						zeroPage.cmd("wrapperReplaceState", [null, "", "#L" + parseInt(lineNumber.innerHTML)]);
 						location.hash = "#L" + parseInt(lineNumber.innerHTML);
 					};
 				});
