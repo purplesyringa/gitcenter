@@ -45,7 +45,11 @@ function showObjects(context, objects) {
 
 		let comments = document.createElement("div");
 		comments.className = cssContext + "-comments";
-		comments.innerHTML = "No comments";
+		comments.innerHTML = (
+			object.comments == 0 ? "No comments" :
+			object.comments == 1 ? "1 comment" :
+			object.comments + " comments"
+		);
 		content.appendChild(comments);
 
 		let tags = document.createElement("div");
