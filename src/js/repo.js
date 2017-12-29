@@ -383,7 +383,7 @@ class Repository {
 					return Promise.reject(e);
 				}
 
-				return this.findUserById(address)
+				return this.zeroID.findUserById(address)
 					.then(user => {
 						return user.name;
 					});
@@ -1332,84 +1332,6 @@ class Repository {
 
 	/*********************************** ZeroID ***********************************/
 
-	// Returns user info by auth address
-	findUserById(id) {
-		return this.zeroID.getZeroIdFile("data/users.json", "_cached_users_json", "users")
-			.then(users => {
-				let userName = Object.keys(users).find(userName => {
-					return users[userName].split(",")[1] == id;
-				});
-				if(userName) {
-					let info = users[userName].split(",");
-					return {
-						name: userName,
-						type: info[0],
-						id: info[1],
-						hash: info[2]
-					};
-				}
-
-				return this.zeroID.getZeroIdFile("data/users_archive.json", "_cached_users_archive_json", "users")
-					.then(users => {
-						let userName = Object.keys(users).find(userName => {
-							return users[userName].split(",")[1] == id;
-						});
-						if(userName) {
-							let info = users[userName].split(",");
-							return {
-								name: userName,
-								type: info[0],
-								id: info[1],
-								hash: info[2]
-							};
-						}
-
-						let userNames = Object.keys(users).filter(userName => {
-							return users[userName][0] == "@" && id.indexOf(users[userName].split(",")[1]) == 0;
-						});
-
-						if(userNames.length == 0) {
-							return Promise.reject("ID " + id + " was not found");
-						}
-
-						let resolver, rejecter;
-						let resulted = 0;
-						let promise = new Promise((resolve, reject) => {
-							resolver = resolve;
-							rejecter = reject;
-						});
-
-						userNames.forEach(userName => {
-							let pack = users[userName].substr(1).split(",")[0];
-							this.zeroID.getZeroIdFile("data/certs_" + pack + ".json", "_cached_pack_" + pack, "certs")
-								.then(users => {
-									let userName = Object.keys(users).find(userName => {
-										return users[userName].split(",")[1] == id;
-									});
-									if(userName) {
-										let info = users[userName].split(",");
-										resolver({
-											name: userName,
-											type: info[0],
-											id: info[1],
-											hash: info[2]
-										});
-										return;
-									}
-
-
-									resulted++;
-									if(resulted == userNames.length) {
-										rejecter("ID " + id + " was not found");
-									}
-								});
-						});
-
-						return promise;
-					});
-			});
-	}
-
 	// Returns user info by ZeroID name
 	findUserByName(userName) {
 		return this.zeroID.getZeroIdFile("data/users.json", "_cached_users_json", "users")
@@ -1471,7 +1393,7 @@ class Repository {
 
 				return Promise.all(
 					signers.map(signer => {
-						return this.findUserById(signer).catch(() => null);
+						return this.zeroID.findUserById(signer).catch(() => null);
 					})
 				);
 			})
