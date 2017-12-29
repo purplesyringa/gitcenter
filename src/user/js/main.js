@@ -48,7 +48,8 @@ Repository.getDownloadedRepos(zeroPage)
 			LEFT JOIN\
 				repo_stars\
 			ON\
-				repo_stars.address = repo_index.address\
+				repo_stars.address = repo_index.address AND\
+				repo_stars.star = 1\
 			\
 			WHERE\
 				repo_index.json_id = json.json_id AND\

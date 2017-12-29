@@ -63,7 +63,7 @@ function updateIndex(search) {
 	link.promise = zeroDB.query(("\
 		SELECT repo_index.*, json.cert_user_id, COUNT(repo_stars.address) AS stars\
 		FROM repo_index, json\
-		LEFT JOIN repo_stars ON repo_stars.address = repo_index.address\
+		LEFT JOIN repo_stars ON repo_stars.address = repo_index.address AND repo_stars.star = 1\
 		\
 		WHERE repo_index.json_id = json.json_id AND (" +
 			(required.length ? "(" + required.join(") AND (") + ")" : "1 = 1") + "\
