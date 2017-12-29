@@ -11,8 +11,6 @@ let loadProfile = address => {
 
 let user = location.search.replace(/[?&]wrapper_nonce=.*/, "").replace("?", "");
 
-let userName;
-
 loadProfile(user)
 	.then(profile => {
 		if(profile.commitName) {
@@ -22,6 +20,12 @@ loadProfile(user)
 		return zeroID.findUserById(user)
 			.then(res => res.name);
 	})
-	.then(n => {
-		userName = n;
+	.then(userName => {
+		document.getElementById("user_name").textContent = userName;
+
+		return zeroID.findUserById(user)
+			.then(res => res.name);
+	})
+	.then(userCert => {
+		document.getElementById("user_cert").textContent = userCert + "@zeroid.bit";
 	});
