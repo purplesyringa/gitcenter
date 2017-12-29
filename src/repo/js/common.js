@@ -49,7 +49,13 @@ function showTitle(title) {
 	name.textContent = title;
 	repo.getOwner()
 		.then(owner => {
-			name.textContent = owner + " " + arrow + " " + title;
+			name.innerHTML = "";
+
+			let ownerLink = document.createElement("a");
+			ownerLink.textContent = owner;
+			name.appendChild(ownerLink);
+
+			name.appendChild(document.createTextNode(" " + arrow + " " + title));
 		});
 }
 function showHeader(level, gitAddress) {
