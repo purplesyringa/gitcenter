@@ -48,7 +48,12 @@ function showTitle(title) {
 	let ownerLink;
 
 	let name = document.getElementById("repo_name");
-	name.textContent = title;
+
+	let titleLink = document.createElement("a");
+	titleLink.href = "/" + address;
+	titleLink.textContent = title;
+	name.appendChild(titleLink);
+
 	repo.getOwner()
 		.then(owner => {
 			name.innerHTML = "";
@@ -56,8 +61,8 @@ function showTitle(title) {
 			ownerLink = document.createElement("a");
 			ownerLink.textContent = owner;
 			name.appendChild(ownerLink);
-
-			name.appendChild(document.createTextNode(" " + arrow + " " + title));
+			name.appendChild(document.createTextNode(" " + arrow + " "));
+			name.appendChild(titleLink);
 
 			return repo.getOwnerAddress();
 		})
