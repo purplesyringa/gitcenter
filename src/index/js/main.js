@@ -116,26 +116,9 @@ function updateIndex(search) {
 }
 
 let downloaded;
-zeroPage.cmd("mergerSiteList")
-	.then(merged => {
-		merged = Object.keys(merged);
-
-		return Promise.all(
-			merged.map(site => {
-				return zeroPage.cmd("fileRules", ["merged-GitCenter/" + site + "/content.json"])
-					.then(rules => {
-						return {
-							downloaded: rules.current_size > 0,
-							site: site
-						}
-					});
-			})
-		);
-	})
-	.then(merged => {
-		downloaded = merged
-			.filter(site => site.downloaded)
-			.map(site => site.site);
+Repository.getDownloadedRepos(zeroPage)
+	.then(d => {
+		downloaded = d;
 
 		// Search
 		let search = decodeURIComponent((location.search.match(/[?&]q=(.+?)(&|$)/) || ["", ""])[1]);
