@@ -521,22 +521,46 @@ class RepositoryIssues {
 
 			return ("\
 				SELECT\
-					'{object}' AS context," +
-					column("id") +
-					column("title") +
-					column("body") +
-					column("date_added") +
-					column("open") +
-					column("reopened") +
-					column("merged") +
-					column("tags") +
-					column("json_id") +
-					"json.directory AS json,\
-					json.cert_user_id\
-				FROM {object}s, json\
-				WHERE\
-					{object}s.json_id = json.json_id AND\
-					json.site = :address\
+					objects.*,\
+					COUNT(comments.id) AS comments\
+				FROM (\
+					SELECT\
+						'{object}' AS context," +
+						column("id") +
+						column("title") +
+						column("body") +
+						column("date_added") +
+						column("open") +
+						column("reopened") +
+						column("merged") +
+						column("tags") +
+						column("json_id") +
+						"json.directory AS json,\
+						json.cert_user_id\
+					FROM {object}s, json\
+					WHERE\
+						{object}s.json_id = json.json_id AND\
+						json.site = :address\
+				) AS objects\
+				\
+				LEFT JOIN\
+					(\
+						SELECT\
+							{object}_comments.*,\
+							json.directory AS json\
+						FROM\
+							{object}_comments, json\
+						WHERE\
+							json.site = :address AND\
+							json.json_id = {object}_comments.json_id\
+					) AS comments\
+				ON\
+					comments.{object}_id = objects.id AND\
+					comments.{object}_json = objects.json\
+				\
+				GROUP BY\
+					comments.{object}_id,\
+					comments.{object}_json\
 			").replace(/{object}/g, context);
 		};
 
