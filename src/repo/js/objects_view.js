@@ -103,6 +103,7 @@ function showAction(action, context) {
 
 				textarea.style.display = "";
 				save.style.display = "";
+				preview.style.display = "";
 				cancel.style.display = "";
 
 				textarea.value = comment.originalBody;
@@ -167,10 +168,16 @@ function showAction(action, context) {
 
 						textarea.style.display = "none";
 						save.style.display = "none";
+						preview.style.display = "none";
 						cancel.style.display = "none";
 					});
 			};
 			header.appendChild(save);
+
+			let preview = document.createElement("div");
+			preview.className = "comment-preview";
+			preview.style.display = "none";
+			header.appendChild(preview);
 
 			let cancel = document.createElement("div");
 			cancel.className = "comment-cancel";
@@ -184,6 +191,7 @@ function showAction(action, context) {
 
 						textarea.style.display = "none";
 						save.style.display = "none";
+						preview.style.display = "none";
 						cancel.style.display = "none";
 					});
 			};
