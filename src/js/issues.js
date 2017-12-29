@@ -102,16 +102,42 @@ class RepositoryIssues {
 	getObjects(object, page, query) {
 		return this.zeroDB.query(("\
 			SELECT\
-				{object}s.*,\
-				json.directory as json,\
-				json.cert_user_id\
-			FROM {object}s, json\
-			WHERE\
-				{object}s.json_id = json.json_id AND\
-				json.site = :address AND (" +
-			(query || "1 = 1") +
-			")\
-			ORDER BY {object}s.date_added DESC\
+				objects.*,\
+				COUNT(comments.id) AS comments\
+			FROM (\
+				SELECT\
+					{object}s.*,\
+					json.directory AS json,\
+					json.cert_user_id\
+				FROM {object}s, json\
+				\
+				WHERE\
+					{object}s.json_id = json.json_id AND\
+					json.site = :address AND (" +
+						(query || "1 = 1") + "\
+					)\
+			) AS objects\
+			\
+			LEFT JOIN\
+				(\
+					SELECT\
+						{object}_comments.*,\
+						json.directory AS json\
+					FROM\
+						{object}_comments, json\
+					WHERE\
+						json.site = :address AND\
+						json.json_id = {object}_comments.json_id\
+				) AS comments\
+			ON\
+				comments.{object}_id = objects.id AND\
+				comments.{object}_json = objects.json\
+			\
+			GROUP BY\
+				comments.{object}_id,\
+				comments.{object}_json\
+			\
+			ORDER BY objects.date_added DESC\
 			LIMIT " + (page * 10) + ", 11\
 		").replace(/{object}/g, object), {
 			address: this.address
@@ -235,8 +261,6 @@ class RepositoryIssues {
 
 				let savedIds = {};
 				comments.forEach(comment => {
-					console.log(comment);
-
 					let saved = savedIds[comment.id + "|" + comment.json];
 
 					if(saved) {
@@ -528,7 +552,6 @@ class RepositoryIssues {
 			address: this.address
 		})
 			.then(objects => {
-				console.log(objects);
 				return {
 					objects: objects.slice(0, 10)
 						.map(object => {

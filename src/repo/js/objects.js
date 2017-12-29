@@ -43,6 +43,15 @@ function showObjects(context, objects) {
 		title.textContent = object.title;
 		content.appendChild(title);
 
+		let comments = document.createElement("div");
+		comments.className = cssContext + "-comments";
+		comments.innerHTML = (
+			object.comments == 0 ? "No comments" :
+			object.comments == 1 ? "1 comment" :
+			object.comments + " comments"
+		);
+		content.appendChild(comments);
+
 		let tags = document.createElement("div");
 		tags.className = "tags";
 		object.tags.forEach(tag => {
