@@ -61,13 +61,23 @@ repo.addMerger()
 
 				let lines = fileContent.innerHTML.split("\n");
 				lines = lines.map((line, id) => {
-					return "<span class='line-number'>" + (id + 1) + "</span>" + line;
+					return "<span class='line' id='line_" + (id + 1) + "'><span class='line-number'>" + (id + 1) + "</span>" + line + "</span>";
 				});
 				fileContent.innerHTML = lines.join("\n");
 
 				document.getElementById("download").onclick = () => {
 					repo.download(path.split("/").slice(-1)[0], blob);
 				};
+
+				window.onhashchange = () => {
+					let hash = location.hash.replace("#", "");
+					if(hash[0] == "L" && !isNaN(hash.substr(1))) {
+						let line = parseInt(hash.substr(1));
+						let node = document.getElementById("line_" + line);
+						node.scrollIntoView();
+					}
+				};
+				return zeroPage.cmd("wrapperInnerLoaded");
 			}, () => {
 				// Blob doesn't exist
 				let fileContent = document.getElementById("file_content");
