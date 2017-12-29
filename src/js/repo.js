@@ -1330,57 +1330,6 @@ class Repository {
 			});
 	}
 
-	/*********************************** ZeroID ***********************************/
-
-	// Returns user info by ZeroID name
-	findUserByName(userName) {
-		return this.zeroID.getZeroIdFile("data/users.json", "_cached_users_json", "users")
-			.then(users => {
-				if(users[userName]) {
-					return {
-						name: userName,
-						type: info[0],
-						id: info[1],
-						hash: info[2]
-					};
-				}
-
-				return this.zeroID.getZeroIdFile("data/users_archive.json", "_cached_users_archive_json", "users")
-					.then(users => {
-						if(!users[userName]) {
-							return Promise.reject("User " + userName + " was not found");
-						}
-
-						if(users[userName][0] != "@") {
-							let info = users[userName].split(",");
-							return {
-								name: userName,
-								type: info[0],
-								id: info[1],
-								hash: info[2]
-							};
-						}
-
-						let pack = users[userName].substr(1).split(",")[0];
-
-						return this.zeroID.getZeroIdFile("data/certs_" + pack + ".json", "_cached_pack_" + pack, "certs")
-							.then(users => {
-								if(users[userName]) {
-									let info = users[userName].split(",");
-									return {
-										name: userName,
-										type: info[0],
-										id: info[1],
-										hash: info[2]
-									};
-								}
-
-								return Promise.reject("User " + userName + " was not found");
-							});
-					});
-			});
-	}
-
 	/********************************* Maintainers ********************************/
 
 	// Returns maintainer list as array of usernames (deprecated)
@@ -1403,7 +1352,7 @@ class Repository {
 	// Removes maintainer from list (deprecated)
 	removeMaintainer(name) {
 		let cert, content, signers;
-		return this.findUserByName(name)
+		return this.zeroID.findUserByName(name)
 			.then(c => {
 				cert = c;
 
@@ -1428,7 +1377,7 @@ class Repository {
 	// Adds maintainer to list (deprecated)
 	addMaintainer(name, signStyle) {
 		let cert, content, signers;
-		return this.findUserByName(name)
+		return this.zeroID.findUserByName(name)
 			.then(c => {
 				cert = c;
 
