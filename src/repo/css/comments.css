@@ -122,7 +122,7 @@
 }
 
 
-.comment-edit, .comment-save, .comment-remove, .comment-cancel {
+.comment-edit, .comment-save, .comment-preview, .comment-remove, .comment-cancel {
 	display: inline-block;
 	width: 16px;
 	height: 16px;
@@ -139,6 +139,9 @@
 }
 .comment-save {
 	background-image: url(../../img/tick.svg);
+}
+.comment-preview {
+	background-image: url(../../img/preview.svg);
 }
 .comment-remove {
 	background-image: url(../../img/remove.svg);

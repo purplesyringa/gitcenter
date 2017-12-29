@@ -103,6 +103,7 @@ function showAction(action, context) {
 
 				textarea.style.display = "";
 				save.style.display = "";
+				preview.style.display = "";
 				cancel.style.display = "";
 
 				textarea.value = comment.originalBody;
@@ -139,6 +140,30 @@ function showAction(action, context) {
 			};
 			header.appendChild(remove);
 
+			let preview = document.createElement("div");
+			preview.className = "comment-preview";
+			preview.style.display = "none";
+			preview.onclick = () => {
+				content.style.display = "";
+				content.innerHTML = repo.renderMarked(textarea.value);
+
+				textarea.style.display = "none";
+				save.style.display = "none";
+				cancel.style.display = "none";
+
+				let old = preview.onclick;
+				preview.onclick = () => {
+					content.style.display = "none";
+
+					textarea.style.display = "";
+					save.style.display = "";
+					cancel.style.display = "";
+
+					preview.onclick = old;
+				};
+			};
+			header.appendChild(preview);
+
 			let save = document.createElement("div");
 			save.className = "comment-save";
 			save.style.display = "none";
@@ -167,6 +192,7 @@ function showAction(action, context) {
 
 						textarea.style.display = "none";
 						save.style.display = "none";
+						preview.style.display = "none";
 						cancel.style.display = "none";
 					});
 			};
@@ -184,6 +210,7 @@ function showAction(action, context) {
 
 						textarea.style.display = "none";
 						save.style.display = "none";
+						preview.style.display = "none";
 						cancel.style.display = "none";
 					});
 			};
