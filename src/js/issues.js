@@ -261,8 +261,6 @@ class RepositoryIssues {
 
 				let savedIds = {};
 				comments.forEach(comment => {
-					console.log(comment);
-
 					let saved = savedIds[comment.id + "|" + comment.json];
 
 					if(saved) {
@@ -554,7 +552,6 @@ class RepositoryIssues {
 			address: this.address
 		})
 			.then(objects => {
-				console.log(objects);
 				return {
 					objects: objects.slice(0, 10)
 						.map(object => {
