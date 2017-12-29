@@ -140,6 +140,30 @@ function showAction(action, context) {
 			};
 			header.appendChild(remove);
 
+			let preview = document.createElement("div");
+			preview.className = "comment-preview";
+			preview.style.display = "none";
+			preview.onclick = () => {
+				content.style.display = "";
+				content.innerHTML = repo.renderMarked(textarea.value);
+
+				textarea.style.display = "none";
+				save.style.display = "none";
+				cancel.style.display = "none";
+
+				let old = preview.onclick;
+				preview.onclick = () => {
+					content.style.display = "none";
+
+					textarea.style.display = "";
+					save.style.display = "";
+					cancel.style.display = "";
+
+					preview.onclick = old;
+				};
+			};
+			header.appendChild(preview);
+
 			let save = document.createElement("div");
 			save.className = "comment-save";
 			save.style.display = "none";
@@ -173,11 +197,6 @@ function showAction(action, context) {
 					});
 			};
 			header.appendChild(save);
-
-			let preview = document.createElement("div");
-			preview.className = "comment-preview";
-			preview.style.display = "none";
-			header.appendChild(preview);
 
 			let cancel = document.createElement("div");
 			cancel.className = "comment-cancel";
