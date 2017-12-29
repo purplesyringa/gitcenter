@@ -59,6 +59,12 @@ repo.addMerger()
 				fileContent.textContent = repo.git.decodeUTF8(blob);
 				hljs.highlightBlock(fileContent);
 
+				let lines = fileContent.innerHTML.split("\n");
+				lines = lines.map((line, id) => {
+					return "<span class='line-number'>" + (id + 1) + "</span>" + line;
+				});
+				fileContent.innerHTML = lines.join("\n");
+
 				document.getElementById("download").onclick = () => {
 					repo.download(path.split("/").slice(-1)[0], blob);
 				};
