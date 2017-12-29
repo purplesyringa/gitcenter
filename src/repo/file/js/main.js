@@ -75,6 +75,12 @@ repo.addMerger()
 						let line = parseInt(hash.substr(1));
 						let node = document.getElementById("line_" + line);
 						node.scrollIntoView();
+
+						let selected = Array.from(document.getElementsByClassName("line-selected"));
+						selected.forEach(line => {
+							line.classList.remove("line-selected");
+						});
+						node.classList.add("line-selected");
 					}
 				};
 				return zeroPage.cmd("wrapperInnerLoaded");

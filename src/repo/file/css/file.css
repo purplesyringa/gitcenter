@@ -41,6 +41,10 @@
 }
 
 /* Line numbers */
+.line {
+	display: inline-block;
+	width: 100%;
+}
 .line-number {
 	display: inline-block;
 	width: 50px;
@@ -49,4 +53,7 @@
 	margin-right: 8px;
 
 	text-align: right;
+}
+.line-selected {
+	background-color: #FFD;
 }
