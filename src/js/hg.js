@@ -1219,5 +1219,14 @@ Hg.init = (root, zeroPage, name, email) => {
 		})
 		.then(h => {
 			hg = h;
-		});
+
+			return hg.writeCommit({
+				changes: [],
+				parents: [],
+				author: name + " <" + email + ">",
+				date: Math.floor(Date.now() / 1000),
+				message: "Initial commit"
+			});
+		})
+		.then(() => hg);
 };
