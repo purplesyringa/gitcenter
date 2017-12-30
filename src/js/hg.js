@@ -918,17 +918,24 @@ class HgIndex {
 	}
 
 	delta(rev) {
-		let baseRev = this.getMetaData(rev).baseRev;
-		if(baseRev != -1 && baseRev != rev) {
-			return this.delta(baseRev)
-				.then(base => {
-					return this.mpatch(rev, base);
-				});
-		}
+		return this.getRevCache(rev)
+			.then(cache => {
+				if(cache !== null) {
+					return cache;
+				}
 
-		return this.getCompressedData(rev)
-			.then(data => {
-				return this.hg.decompress(data);
+				let baseRev = this.getMetaData(rev).baseRev;
+				if(baseRev != -1 && baseRev != rev) {
+					return this.delta(baseRev)
+						.then(base => {
+							return this.mpatch(rev, base);
+						});
+				}
+
+				return this.getCompressedData(rev)
+					.then(data => {
+						return this.hg.decompress(data);
+					});
 			});
 	}
 	mpatch(deltaRev, source) {
@@ -952,6 +959,12 @@ class HgIndex {
 					dstOffset += length;
 
 					pos += 12 + length;
+				}
+
+				if(deltaRev % 100 == 0) {
+					// Cache
+					return this.cacheRev(deltaRev, dst)
+						.then(() => dst);
 				}
 
 				return dst;
@@ -1041,6 +1054,57 @@ class HgIndex {
 		} else {
 			return this.hg.sha(this.hg.concat(nullId, nullId, data));
 		}
+	}
+
+	cacheRev(rev, data) {
+		return this.hg.zeroPage.cmd("wrapperGetLocalStorage")
+			.then(storage => {
+				if(!storage) {
+					storage = {
+						repoCache: {}
+					};
+				} else if(!storage.repoCache) {
+					storage.repoCache = {};
+				}
+
+				if(!storage.repoCache[this.address]) {
+					storage.repoCache[this.address] = {
+						hgCache: {
+							revisions: {}
+						}
+					};
+				}
+
+				storage.repoCache[this.address].hgCache.revisions[this.name] = data;
+
+				if(JSON.stringify(storage).length > 1024 * 1024) {
+					storage.repoCache[this.address].hgCache = {
+						revisions: {}
+					};
+				}
+
+				return this.hg.zeroPage.cmd("wrapperSetLocalStorage", storage);
+			});
+	}
+	getRevCache(rev) {
+		return this.hg.zeroPage.cmd("wrapperGetLocalStorage")
+			.then(storage => {
+				if(!storage) {
+					return null;
+				} else if(!storage.repoCache) {
+					return null;
+				} else if(!storage.repoCache[this.address]) {
+					return null;
+				} else if(!storage.repoCache[this.address].hgCache) {
+					return null;
+				} else if(!storage.repoCache[this.address].hgCache.revisions) {
+					return null;
+				} else if(typeof storage.repoCache[this.address].hgCache.revisions[this.name] == "undefined") {
+					return null;
+				}
+
+				return storage.repoCache[this.address].hgCache.revisions[this.name];
+			});
 	}
 };
 
