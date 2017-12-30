@@ -1230,5 +1230,6 @@ Hg.init = (root, zeroPage, name, email) => {
 				message: "Initial commit"
 			});
 		})
+		.then(commit => hg.setRef("refs/heads/default", commit))
 		.then(() => hg);
 };
