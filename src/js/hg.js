@@ -867,6 +867,7 @@ class HgIndex {
 				if(this.virtual) {
 					// Add to fncache
 					return this.hg.readFile("store/fncache")
+						.catch(() => [])
 						.then(cache => {
 							cache = this.hg.arrayToString(cache).split("\n");
 							cache = cache.filter(line => line);
