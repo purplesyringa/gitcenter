@@ -268,6 +268,7 @@ class Hg {
 				branches = branches.concat(b);
 
 				return branches
+					.map(branch => branch.name)
 					.filter((val, i, arr) => arr.indexOf(val) == i)
 					.sort();
 			});
@@ -284,9 +285,12 @@ class Hg {
 				return branches
 					.map(line => {
 						line = line.split(" ");
-						return line[2] || line[1];
+						return {
+							name: line[2] || line[1],
+							id: line[0]
+						};
 					})
-					.filter(name => name);
+					.filter(name => name.name);
 			}, () => []);
 	}
 	findInBranchList(file, name, shift) {
