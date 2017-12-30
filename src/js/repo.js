@@ -1172,6 +1172,28 @@ class Repository {
 			let pullRequestParser = "<a href=\"/1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t/repo/pull-requests/view/?" + this.address + "/$1@$2\">#P$1@$2</a>";
 
 			let renderer = new marked.Renderer();
+			renderer.image = function(href, title, text) {
+				if(href.indexOf("./") == 0) {
+					// Relative to current file showing
+					href = href.replace("./", "");
+					href = root ? root + "/" + href : href;
+					if(window.branch) {
+						href = "/1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t/repo/file/?" + address + "/" + link + "@" + branch;
+					} else {
+						href = "/1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t/repo/file/?" + address + "/" + link + "@";
+					}
+				} else if(href[0] == "/") {
+					// Relative to repository root
+					href = href.replace("/", "");
+					if(window.branch) {
+						href = "/1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t/repo/file/?" + address + "/" + link + "@" + branch;
+					} else {
+						href = "/1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t/repo/file/?" + address + "/" + link + "@";
+					}
+				}
+
+				return this.__proto__.image.call(this, href, title, text); // super() analog
+			};
 			renderer.text = function(text) {
 				return text
 					.replace(/#(\d+)@(1[A-Za-z0-9]{25,34})/g, "[ISSUEID]$1|$2[/ISSUEID]")
