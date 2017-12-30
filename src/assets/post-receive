@@ -83,6 +83,9 @@ if [ $? -eq 0 ]; then
 		python_path="$zeronet_home/Python/python"
 		zeronet_py="\"$python_path\" \"$zeronet_home/zeronet.py\""
 	# Windows dist
+	elif [ ! -z "$zeronet_home" ] && [ -f "$zeronet_home/ZeroNet.exe" ]; then
+		zeronet_py="\"$zeronet_home/ZeroNet.exe\""
+	# Windows dist core
 	elif [ ! -z "$zeronet_home" ] && [ -f "$zeronet_home/../ZeroNet.exe" ]; then
 		zeronet_py="\"$zeronet_home/../ZeroNet.exe\""
 	else
@@ -95,8 +98,17 @@ fi
 
 site=`basename $(realpath "$GIT_DIR/..")`
 
+echo "Retrieving data directory..."
+data_dir=`eval $zeronet_py --silent getConfig | "$python_path" -c "import sys, json; config = json.load(sys.stdin); print(config['data_dir'])"`
+
+privatekey=`cat "$data_dir/users.json" | "$python_path" -c "import sys, json; users = json.load(sys.stdin); print(users[list(users.keys())[0]]['sites']['$site']['privatekey'])" 2>/dev/null`
+if [ $? -ne 0 ]; then
+	echo "Failed to get signing key, rejecting to sign."
+	exit 0
+fi
+
 echo "Signing..."
-eval $zeronet_py siteSign "$site" "stored" 2>&1 | grep "Private key invalid" >/dev/null 2>&1
+eval $zeronet_py siteSign "$site" "$privatekey" 2>&1 | grep "Private key invalid" >/dev/null 2>&1
 if [ $? -eq 0 ]; then
 	echo "Failed to sign, invalid private key. Probably you are not a maintainer."
 	exit 0

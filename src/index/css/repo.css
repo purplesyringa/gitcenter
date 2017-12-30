@@ -6,7 +6,6 @@
 	border-radius: 4px;
 	cursor: pointer;
 
-	box-shadow: 0 4px 4px #DDD;
 	background-color: #FCFCFC;
 	background-repeat: no-repeat;
 
@@ -40,6 +39,19 @@
 	color: black;
 
 	background-image: url(../../img/star.svg);
+	background-size: auto 16px;
+	background-repeat: no-repeat;
+	background-position: 8px 4px;
+}
+
+.repo-downloaded {
+	display: inline-block;
+	height: 24px;
+	width: 24px;
+	float: right;
+	margin-top: 4px;
+
+	background-image: url(../../img/download.svg);
 	background-size: auto 16px;
 	background-repeat: no-repeat;
 	background-position: 8px 4px;

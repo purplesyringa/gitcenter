@@ -26,7 +26,10 @@ function addTag(context, object, tag) {
 		let remove = document.createElement("div");
 		remove.className = "tag-remove";
 		remove.innerHTML = "&times;";
-		remove.onclick = () => {
+		remove.onclick = e => {
+			e.preventDefault();
+			e.stopPropagation();
+
 			node.parentNode.removeChild(node);
 			object.tags.splice(object.tags.indexOf(tag), 1);
 
@@ -100,6 +103,7 @@ function showAction(action, context) {
 
 				textarea.style.display = "";
 				save.style.display = "";
+				preview.style.display = "";
 				cancel.style.display = "";
 
 				textarea.value = comment.originalBody;
@@ -136,6 +140,30 @@ function showAction(action, context) {
 			};
 			header.appendChild(remove);
 
+			let preview = document.createElement("div");
+			preview.className = "comment-preview";
+			preview.style.display = "none";
+			preview.onclick = () => {
+				content.style.display = "";
+				content.innerHTML = repo.renderMarked(textarea.value);
+
+				textarea.style.display = "none";
+				save.style.display = "none";
+				cancel.style.display = "none";
+
+				let old = preview.onclick;
+				preview.onclick = () => {
+					content.style.display = "none";
+
+					textarea.style.display = "";
+					save.style.display = "";
+					cancel.style.display = "";
+
+					preview.onclick = old;
+				};
+			};
+			header.appendChild(preview);
+
 			let save = document.createElement("div");
 			save.className = "comment-save";
 			save.style.display = "none";
@@ -164,6 +192,7 @@ function showAction(action, context) {
 
 						textarea.style.display = "none";
 						save.style.display = "none";
+						preview.style.display = "none";
 						cancel.style.display = "none";
 					});
 			};
@@ -181,6 +210,7 @@ function showAction(action, context) {
 
 						textarea.style.display = "none";
 						save.style.display = "none";
+						preview.style.display = "none";
 						cancel.style.display = "none";
 					});
 			};
@@ -191,6 +221,48 @@ function showAction(action, context) {
 		content.className = "comment-content";
 		content.innerHTML = comment.body;
 		node.appendChild(content);
+
+		let footer = document.createElement("div");
+		footer.className = "comment-footer";
+		["thumbs-up", "thumbs-down", "smile", "heart"].forEach(reaction => {
+			let obj = comment.reactions.find(obj => obj.reaction == reaction);
+			let reactionCount = obj ? obj.count : 0;
+			let reactionOwned = obj && obj.owned;
+
+			let node = document.createElement("div");
+			node.className = "comment-reaction" + (reactionOwned ? " comment-reaction-owned" : "");
+			node.onclick = () => {
+				repo.issues.toggleObjectReaction(
+					context,
+					comment[context + "_id"], comment[context + "_json"],
+					comment.id, comment.json,
+					reaction, !reactionOwned
+				)
+					.then(() => {
+						reactionOwned = !reactionOwned;
+						if(reactionOwned) {
+							reactionCount++;
+						} else {
+							reactionCount--;
+						}
+
+						node.classList.toggle("comment-reaction-owned", reactionOwned);
+						count.innerHTML = reactionCount;
+					});
+			};
+
+			let icon = document.createElement("div");
+			icon.className = "comment-reaction-icon comment-reaction-icon-" + reaction;
+			node.appendChild(icon);
+
+			let count = document.createElement("div");
+			count.className = "comment-reaction-count";
+			count.innerHTML = reactionCount;
+			node.appendChild(count);
+
+			footer.appendChild(node);
+		});
+		node.appendChild(footer);
 
 		document.getElementById("comments").appendChild(node);
 	}

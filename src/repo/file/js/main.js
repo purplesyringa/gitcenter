@@ -59,9 +59,39 @@ repo.addMerger()
 				fileContent.textContent = repo.vcs.decodeUTF8(blob);
 				hljs.highlightBlock(fileContent);
 
+				let lines = fileContent.innerHTML.split("\n");
+				lines = lines.map((line, id) => {
+					return "<span class='line' id='line_" + (id + 1) + "'><span class='line-number'>" + (id + 1) + "</span>" + line + "</span>";
+				});
+				fileContent.innerHTML = lines.join("\n");
+
+				let lineNumbers = Array.from(document.getElementsByClassName("line-number"));
+				lineNumbers.forEach(lineNumber => {
+					lineNumber.onclick = () => {
+						zeroPage.cmd("wrapperReplaceState", [null, "", "#L" + parseInt(lineNumber.innerHTML)]);
+						location.hash = "#L" + parseInt(lineNumber.innerHTML);
+					};
+				});
+
 				document.getElementById("download").onclick = () => {
 					repo.download(path.split("/").slice(-1)[0], blob);
 				};
+
+				window.onhashchange = () => {
+					let hash = location.hash.replace("#", "");
+					if(hash[0] == "L" && !isNaN(hash.substr(1))) {
+						let line = parseInt(hash.substr(1));
+						let node = document.getElementById("line_" + line);
+						node.scrollIntoView();
+
+						let selected = Array.from(document.getElementsByClassName("line-selected"));
+						selected.forEach(line => {
+							line.classList.remove("line-selected");
+						});
+						node.classList.add("line-selected");
+					}
+				};
+				return zeroPage.cmd("wrapperInnerLoaded");
 			}, () => {
 				// Blob doesn't exist
 				let fileContent = document.getElementById("file_content");

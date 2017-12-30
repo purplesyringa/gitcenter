@@ -112,6 +112,7 @@ class Repository {
 		this.zeroFS = new ZeroFS(zeroPage);
 		this.zeroAuth = new ZeroAuth(zeroPage);
 		this.zeroDB = new ZeroDB(zeroPage);
+		this.zeroID = new ZeroID(zeroPage);
 		this.issues = new RepositoryIssues(this);
 	}
 
@@ -391,7 +392,7 @@ class Repository {
 					return Promise.reject(e);
 				}
 
-				return this.findUserById(address)
+				return this.zeroID.findUserById(address)
 					.then(user => {
 						return user.name;
 					});
@@ -1268,18 +1269,59 @@ class Repository {
 	}
 
 	// Sets options for marked
-	setUpMarked() {
+	setUpMarked(root) {
 		if(!this.markedOptions) {
 			let issueParser = "<a href=\"/1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t/repo/issues/view/?" + this.address + "/$1@$2\">#$1@$2</a>";
 			let pullRequestParser = "<a href=\"/1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t/repo/pull-requests/view/?" + this.address + "/$1@$2\">#P$1@$2</a>";
 
 			let renderer = new marked.Renderer();
+			renderer.image = function(href, title, text) {
+				if(href.indexOf("./") == 0) {
+					// Relative to current file showing
+					href = href.replace("./", "");
+					href = root ? root + "/" + href : href;
+					if(window.branch) {
+						href = "/1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t/repo/file/?" + address + "/" + link + "@" + branch;
+					} else {
+						href = "/1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t/repo/file/?" + address + "/" + link + "@";
+					}
+				} else if(href[0] == "/") {
+					// Relative to repository root
+					href = href.replace("/", "");
+					if(window.branch) {
+						href = "/1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t/repo/file/?" + address + "/" + link + "@" + branch;
+					} else {
+						href = "/1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t/repo/file/?" + address + "/" + link + "@";
+					}
+				}
+
+				return this.__proto__.image.call(this, href, title, text); // super() analog
+			};
 			renderer.text = function(text) {
 				return text
 					.replace(/#(\d+)@(1[A-Za-z0-9]{25,34})/g, "[ISSUEID]$1|$2[/ISSUEID]")
 					.replace(/#[Pp](\d+)@(1[A-Za-z0-9]{25,34})/g, "[PULLREQUESTID]$1|$2[/PULLREQUESTID]");
 			};
 			renderer.link = function(link, title, text) {
+				if(link.indexOf("./") == 0) {
+					// Relative to current file showing
+					link = link.replace("./", "");
+					link = root ? root + "/" + link : link;
+					if(window.branch) {
+						link = "/1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t/repo/file/?" + address + "/" + link + "@" + branch;
+					} else {
+						link = "/1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t/repo/file/?" + address + "/" + link + "@";
+					}
+				} else if(link[0] == "/") {
+					// Relative to repository root
+					link = link.replace("/", "");
+					if(window.branch) {
+						link = "/1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t/repo/file/?" + address + "/" + link + "@" + branch;
+					} else {
+						link = "/1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t/repo/file/?" + address + "/" + link + "@";
+					}
+				}
+
 				let res = this.__proto__.link.call(this, link, title, text); // super() analog
 				return res
 					.replace(/\[ISSUEID\](.+?)\|(.+?)\[\/ISSUEID\]/g, "#$1@$2")
@@ -1330,8 +1372,8 @@ class Repository {
 	}
 
 	// Renders markdown using marked (first sets it up)
-	renderMarked(text) {
-		this.setUpMarked();
+	renderMarked(text, root) {
+		this.setUpMarked(root);
 		return this.markedOptions.renderer.all(marked(text));
 	}
 
@@ -1432,153 +1474,6 @@ class Repository {
 			});
 	}
 
-	/*********************************** ZeroID ***********************************/
-
-	// Reads `name` file of ZeroID and caches it
-	getZeroIdFile(name, cache, property) {
-		if(this[cache]) {
-			return Promise.resolve(this[cache]);
-		}
-
-		let worker = new WorkerOut();
-
-		return this.zeroFS.readFile("cors-1iD5ZQJMNXu43w1qLB8sfdHVKppVMduGz/" + name, false, true)
-			.then(users => {
-				return worker.JSON.parse(users);
-			})
-			.then(u => {
-				this[cache] = u[property];
-				return this[cache];
-			});
-	}
-
-	// Returns user info by auth address
-	findUserById(id) {
-		return this.getZeroIdFile("data/users.json", "_cached_users_json", "users")
-			.then(users => {
-				let userName = Object.keys(users).find(userName => {
-					return users[userName].split(",")[1] == id;
-				});
-				if(userName) {
-					let info = users[userName].split(",");
-					return {
-						name: userName,
-						type: info[0],
-						id: info[1],
-						hash: info[2]
-					};
-				}
-
-				return this.getZeroIdFile("data/users_archive.json", "_cached_users_archive_json", "users")
-					.then(users => {
-						let userName = Object.keys(users).find(userName => {
-							return users[userName].split(",")[1] == id;
-						});
-						if(userName) {
-							let info = users[userName].split(",");
-							return {
-								name: userName,
-								type: info[0],
-								id: info[1],
-								hash: info[2]
-							};
-						}
-
-						let userNames = Object.keys(users).filter(userName => {
-							return users[userName][0] == "@" && id.indexOf(users[userName].split(",")[1]) == 0;
-						});
-
-						if(userNames.length == 0) {
-							return Promise.reject("ID " + id + " was not found");
-						}
-
-						let resolver, rejecter;
-						let resulted = 0;
-						let promise = new Promise((resolve, reject) => {
-							resolver = resolve;
-							rejecter = reject;
-						});
-
-						userNames.forEach(userName => {
-							let pack = users[userName].substr(1).split(",")[0];
-							this.getZeroIdFile("data/certs_" + pack + ".json", "_cached_pack_" + pack, "certs")
-								.then(users => {
-									let userName = Object.keys(users).find(userName => {
-										return users[userName].split(",")[1] == id;
-									});
-									if(userName) {
-										let info = users[userName].split(",");
-										resolver({
-											name: userName,
-											type: info[0],
-											id: info[1],
-											hash: info[2]
-										});
-										return;
-									}
-
-
-									resulted++;
-									if(resulted == userNames.length) {
-										rejecter("ID " + id + " was not found");
-									}
-								});
-						});
-
-						return promise;
-					});
-			});
-	}
-
-	// Returns user info by ZeroID name
-	findUserByName(userName) {
-		return this.getZeroIdFile("data/users.json", "_cached_users_json", "users")
-			.then(users => {
-				if(users[userName]) {
-					return {
-						name: userName,
-						type: info[0],
-						id: info[1],
-						hash: info[2]
-					};
-				}
-
-				return this.getZeroIdFile("data/users_archive.json", "_cached_users_archive_json", "users")
-					.then(users => {
-						if(!users[userName]) {
-							return Promise.reject("User " + userName + " was not found");
-						}
-
-						if(users[userName][0] != "@") {
-							let info = users[userName].split(",");
-							return {
-								name: userName,
-								type: info[0],
-								id: info[1],
-								hash: info[2]
-							};
-						}
-
-						let pack = users[userName].substr(1).split(",")[0];
-
-						return this.getZeroIdFile("data/certs_" + pack + ".json", "_cached_pack_" + pack, "certs")
-							.then(users => {
-								if(users[userName]) {
-									let info = users[userName].split(",");
-									return {
-										name: userName,
-										type: info[0],
-										id: info[1],
-										hash: info[2]
-									};
-								}
-
-								return Promise.reject("User " + userName + " was not found");
-							});
-					});
-			});
-	}
-
 	/********************************* Maintainers ********************************/
 
 	// Returns maintainer list as array of usernames (deprecated)
@@ -1591,7 +1486,7 @@ class Repository {
 
 				return Promise.all(
 					signers.map(signer => {
-						return this.findUserById(signer).catch(() => null);
+						return this.zeroID.findUserById(signer).catch(() => null);
 					})
 				);
 			})
@@ -1601,7 +1496,7 @@ class Repository {
 	// Removes maintainer from list (deprecated)
 	removeMaintainer(name) {
 		let cert, content, signers;
-		return this.findUserByName(name)
+		return this.zeroID.findUserByName(name)
 			.then(c => {
 				cert = c;
 
@@ -1626,7 +1521,7 @@ class Repository {
 	// Adds maintainer to list (deprecated)
 	addMaintainer(name, signStyle) {
 		let cert, content, signers;
-		return this.findUserByName(name)
+		return this.zeroID.findUserByName(name)
 			.then(c => {
 				cert = c;
 
@@ -2134,4 +2029,28 @@ class Repository {
 
 Repository.createRepo = zeroPage => {
 	return zeroPage.cmd("siteClone", ["1RepoXU8bQE9m7ssNwL4nnxBnZVejHCc6"]);
+};
+
+Repository.getDownloadedRepos = zeroPage => {
+	return zeroPage.cmd("mergerSiteList")
+		.then(merged => {
+			merged = Object.keys(merged);
+
+			return Promise.all(
+				merged.map(site => {
+					return zeroPage.cmd("fileRules", ["merged-GitCenter/" + site + "/content.json"])
+						.then(rules => {
+							return {
+								downloaded: rules.current_size > 0,
+								site: site
+							}
+						});
+				})
+			);
+		})
+		.then(merged => {
+			return merged
+				.filter(site => site.downloaded)
+				.map(site => site.site);
+		});
 };

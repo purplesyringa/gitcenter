@@ -70,6 +70,16 @@
 	display: inline;
 }
 
+.object-comments {
+	display: inline-block;
+	background-color: #DDD;
+	padding: 4px 8px;
+	border-radius: 4px;
+	margin-left: 8px;
+
+	font-size: 16px;
+}
+
 
 .navigation {
 	width: 896px;

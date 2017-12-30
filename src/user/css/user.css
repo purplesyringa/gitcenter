@@ -1,0 +1,35 @@
+.user-left {
+	display: block;
+	width: 192px;
+	padding-right: 16px;
+	border-right: 1px solid #888;
+
+	float: left;
+}
+
+.user-avatar {
+	display: block;
+	width: 192px;
+}
+.user-name {
+	display: block;
+
+	font-size: 28px;
+	font-weight: bold;
+}
+.user-cert {
+	display: block;
+
+	font-size: 22px;
+	color: #888;
+}
+
+.user-right {
+	display: block;
+	width: calc(100% - 225px);
+	padding-left: 16px;
+	border-left: 1px solid #888;
+	margin-left: -1px;
+
+	float: left;
+}

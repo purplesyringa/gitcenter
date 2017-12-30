@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>Repository Index - Git Center</title>
+		<title>User - Git Center</title>
 		<meta charset="utf-8">
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<base href="" target="_top" id="base">
@@ -11,7 +11,9 @@
 		<link rel="stylesheet" type="text/css" href="../css/buttons.css">
 		<link rel="stylesheet" type="text/css" href="../css/header.css">
 		<link rel="stylesheet" type="text/css" href="../css/content.css">
-		<link rel="stylesheet" type="text/css" href="css/repo.css">
+		<link rel="stylesheet" type="text/css" href="../index/css/repo.css">
+		<link rel="stylesheet" type="text/css" href="../repo/settings/css/settings.css">
+		<link rel="stylesheet" type="text/css" href="css/user.css">
 	</head>
 	<body>
 		<header class="header">
@@ -19,8 +21,8 @@
 				<img src="../img/logo-white.svg" class="header-logo">
 				<div class="header-name">Git Center</div>
 			</a>
-			<a href=".">
-				<div class="header-item header-item-active">Repository Index</div>
+			<a href="../index/">
+				<div class="header-item">Repository Index</div>
 			</a>
 			<a href="../myrepos/">
 				<div class="header-item">My Repos</div>
@@ -37,20 +39,17 @@
 		</header>
 
 		<main class="content">
-			<h1>Repository Index</h1>
-			<input type="text" id="search" class="search" placeholder="Search repository index...">
+			<aside class="user-left">
+				<img src="../img/user.svg" class="user-avatar">
+				<div class="user-name" id="user_name"></div>
+				<div class="user-cert" id="user_cert">Loading...</div>
+			</aside>
 
-			<div class="hint">
-				<b>a b c</b> matches <b>a</b> or <b>b</b> or <b>c</b><br>
-				<b>+a +b +c</b> matches <b>a</b> and <b>b</b> and <b>c</b><br>
-				<b>+a b c</b> matches <b>a</b> and (<b>b</b> or <b>c</b>)<br>
-				<b>sort:date</b> sorts by publish date<br>
-				<b>sort:stars</b> (default) sorts by star count<br>
-				<b>sort:random</b> uses random order<br>
-				<b>is:downloaded</b> shows only downloaded
-			</div>
+			<main class="user-right">
+				<h2>Repositories</h2>
 
-			<div id="repos"></div>
+				<div class="repos" id="repos"></div>
+			</main>
 		</main>
 
 		<script type="text/javascript" src="../ZeroLib/ZeroFrame.js"></script>
@@ -58,6 +57,8 @@
 		<script type="text/javascript" src="../ZeroLib/ZeroFS.js"></script>
 		<script type="text/javascript" src="../ZeroLib/ZeroAuth.js"></script>
 		<script type="text/javascript" src="../ZeroLib/ZeroDB.js"></script>
+		<script type="text/javascript" src="../ZeroLib/ZeroID.js"></script>
+		<script type="text/javascript" src="../workerout/workerout.js"></script>
 		<script type="text/javascript" src="../js/repo.js"></script>
 		<script type="text/javascript" src="js/main.js"></script>
 		<script type="text/javascript" src="../js/root.js"></script>

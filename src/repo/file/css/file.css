@@ -39,3 +39,22 @@
 .edit {
 	display: none;
 }
+
+/* Line numbers */
+.line {
+	display: inline-block;
+	width: 100%;
+}
+.line-number {
+	display: inline-block;
+	width: 50px;
+	padding-right: 8px;
+	border-right: 1px solid #888;
+	margin-right: 8px;
+	cursor: pointer;
+
+	text-align: right;
+}
+.line-selected {
+	background-color: #FFD;
+}
