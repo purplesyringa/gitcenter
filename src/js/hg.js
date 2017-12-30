@@ -268,6 +268,7 @@ class Hg {
 				branches = branches.concat(b);
 
 				return branches
+					.filter((val, i, arr) => arr.map(branch => branch.name + "@" + branch.id).indexOf(val.name + "@" + val.id) == i)
 					.map((branch, i, arr) => {
 						let several = arr
 							.map(branch => branch.name)
