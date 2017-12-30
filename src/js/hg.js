@@ -1046,6 +1046,7 @@ class HgIndex {
 		let promise = Promise.resolve();
 		if(!this.isInline) {
 			promise = this.hg.readFile(this.name + ".d")
+				.catch(data => [])
 				.then(data => {
 					data = this.hg.concat(data, this.hg.stringToArray("u"), info.data);
 					return this.hg.writeFile(this.name + ".d", data);
