@@ -199,6 +199,34 @@ class Hg {
 	readFile(path) {
 		return this.zeroFS.readFile(this.root + "/" + path, "arraybuffer");
 	}
+	peekFile(path, offset, length) {
+		// Split file by 1 KB
+		let chunkSize = 1024; // 1 KB
+
+		let newOffset = offset - offset % chunkSize;
+		let newLength = Math.ceil((offset + length) / chunkSize) * chunkSize - newOffset;
+
+		if(!this.peekFile.cache) {
+			this.peekFile.cache = {};
+		}
+		if(!this.peekFile.cache[path]) {
+			this.peekFile.cache[path] = {};
+		}
+
+		let promise = Promise.resolve();
+		if(!this.peekFile.cache[path][newOffset + "|" + newLength]) {
+			promise = this.zeroFS.peekFile(this.root + "/" + path, newOffset, newLength, "arraybuffer")
+				.then(res => {
+					this.peekFile.cache[path][newOffset + "|" + newLength] = res;
+				});
+		}
+
+		return promise
+			.then(() => {
+				let cache = this.peekFile.cache[path][newOffset + "|" + newLength];
+				return this.subArray(cache, offset - newOffset, length);
+			});
+	}
 	readDirectory(path, recursive) {
 		return this.zeroFS.readDirectory(this.root + "/" + path, recursive);
 	}
@@ -790,19 +818,9 @@ class HgIndex {
 						offset += chunk.compressedLength;
 					}
 				}
-
-				if(this.isInline) {
-					this.cachedData = this.cachedIndex;
-				} else {
-					return this.hg.readFile(this.name + ".d")
-						.then(data => {
-							this.cachedData = data;
-						});
-				}
 			}, () => {
 				// Create index
 				this.cachedIndex = [];
-				this.cachedData = [];
 
 				this.isInline = false;
 				this.generalDelta = this.guessGeneralDelta();
@@ -848,14 +866,7 @@ class HgIndex {
 				}
 			})
 			.then(() => {
-				if(this.isInline) {
-					return this.hg.writeFile(this.name + ".i", this.cachedIndex);
-				} else {
-					return Promise.all([
-						this.hg.writeFile(this.name + ".i", this.cachedIndex),
-						this.hg.writeFile(this.name + ".d", this.cachedData)
-					]);
-				}
+				return this.hg.writeFile(this.name + ".i", this.cachedIndex);
 			});
 	}
 
@@ -901,7 +912,9 @@ class HgIndex {
 		return this.getChunk(start, end - start);
 	}
 	getChunk(offset, length) {
-		return Promise.resolve(this.hg.subArray(this.cachedData, offset, length));
+		let path = this.name + (this.isInline ? ".i" : ".d");
+
+		return this.hg.peekFile(path, offset, length);
 	}
 
 	delta(rev) {
@@ -999,10 +1012,19 @@ class HgIndex {
 			this.cachedIndex = this.hg.concat(this.cachedIndex, code, this.hg.stringToArray("u"), info.data);
 		} else {
 			this.cachedIndex = this.hg.concat(this.cachedIndex, code);
-			this.cachedData = this.hg.concat(this.cachedData, this.hg.stringToArray("u"), info.data);
 		}
 
-		return this.writeIndex()
+		let promise = Promise.resolve();
+		if(!this.isInline) {
+			promise = this.hg.readFile(this.name + ".d")
+				.then(data => {
+					data = this.hg.concat(data, this.hg.stringToArray("u"), info.data);
+					return this.hg.writeFile(this.name + ".d", data);
+				});
+		}
+
+		return promise
+			.then(() => this.writeIndex())
 			.then(() => rev);
 	}
 	hash(data, parents) {
