@@ -1178,6 +1178,16 @@ class Repository {
 					.replace(/#[Pp](\d+)@(1[A-Za-z0-9]{25,34})/g, "[PULLREQUESTID]$1|$2[/PULLREQUESTID]");
 			};
 			renderer.link = function(link, title, text) {
+				if(link.indexOf("./") == 0) {
+					// Relative to current file showing
+					link = link.replace("./", "");
+					if(window.branch) {
+						link = "/1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t/repo/file/?" + address + "/" + link + "@" + branch;
+					} else {
+						link = "/1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t/repo/file/?" + address + "/" + link + "@";
+					}
+				}
+
 				let res = this.__proto__.link.call(this, link, title, text); // super() analog
 				return res
 					.replace(/\[ISSUEID\](.+?)\|(.+?)\[\/ISSUEID\]/g, "#$1@$2")
