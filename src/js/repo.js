@@ -1166,7 +1166,7 @@ class Repository {
 	}
 
 	// Sets options for marked
-	setUpMarked() {
+	setUpMarked(root) {
 		if(!this.markedOptions) {
 			let issueParser = "<a href=\"/1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t/repo/issues/view/?" + this.address + "/$1@$2\">#$1@$2</a>";
 			let pullRequestParser = "<a href=\"/1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t/repo/pull-requests/view/?" + this.address + "/$1@$2\">#P$1@$2</a>";
@@ -1181,6 +1181,7 @@ class Repository {
 				if(link.indexOf("./") == 0) {
 					// Relative to current file showing
 					link = link.replace("./", "");
+					link = root ? root + "/" + link : link;
 					if(window.branch) {
 						link = "/1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t/repo/file/?" + address + "/" + link + "@" + branch;
 					} else {
@@ -1238,8 +1239,8 @@ class Repository {
 	}
 
 	// Renders markdown using marked (first sets it up)
-	renderMarked(text) {
-		this.setUpMarked();
+	renderMarked(text, root) {
+		this.setUpMarked(root);
 		return this.markedOptions.renderer.all(marked(text));
 	}
 
