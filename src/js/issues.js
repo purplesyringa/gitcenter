@@ -134,8 +134,8 @@ class RepositoryIssues {
 				comments.{object}_json = objects.json\
 			\
 			GROUP BY\
-				comments.{object}_id,\
-				comments.{object}_json\
+				objects.id,\
+				objects.json\
 			\
 			ORDER BY objects.date_added DESC\
 			LIMIT " + (page * 10) + ", 11\
