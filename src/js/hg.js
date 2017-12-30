@@ -905,32 +905,18 @@ class HgIndex {
 	}
 
 	delta(rev) {
-		// Build chain
-		let chain = [];
-		let baseRev = rev;
-		while(baseRev != -1 && baseRev != this.getMetaData(baseRev).baseRev) {
-			chain.push(baseRev);
-			if(this.generalDelta) {
-				baseRev = this.getMetaData(baseRev).baseRev;
-			} else {
-				baseRev--;
-			}
-		}
-
-		let data;
-		if(baseRev == -1) {
-			data = Promise.resolve([]);
-		} else {
-			data = this.getCompressedData(baseRev)
-				.then(data => {
-					return this.hg.decompress(data);
+		let baseRev = this.getMetaData(rev).baseRev;
+		if(baseRev != -1 && baseRev != rev) {
+			return this.delta(baseRev)
+				.then(base => {
+					return this.mpatch(rev, base);
 				});
 		}
 
-		data = chain.reverse().reduce((source, deltaRev) => {
-			return source.then(source => this.mpatch(deltaRev, source));
-		}, data);
-		return data;
+		return this.getCompressedData(rev)
+			.then(data => {
+				return this.hg.decompress(data);
+			});
 	}
 	mpatch(deltaRev, source) {
 		return this.getCompressedData(deltaRev)
