@@ -71,6 +71,9 @@ if [ $? -eq 0 ]; then
 		python_path="$zeronet_home/Python/python"
 		zeronet_py="\"$python_path\" \"$zeronet_home/zeronet.py\""
 	# Windows dist
+	elif [ ! -z "$zeronet_home" ] && [ -f "$zeronet_home/ZeroNet.exe" ]; then
+		zeronet_py="\"$zeronet_home/ZeroNet.exe\""
+	# Windows dist core
 	elif [ ! -z "$zeronet_home" ] && [ -f "$zeronet_home/../ZeroNet.exe" ]; then
 		zeronet_py="\"$zeronet_home/../ZeroNet.exe\""
 	else
