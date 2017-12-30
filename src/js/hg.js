@@ -661,7 +661,7 @@ class Hg {
 				);
 			})
 			.then(parentManifests => {
-				let data = Array.from(parentManifests[0]) || [];
+				let data = Array.from(parentManifests[0] || []);
 				changes.forEach((change, i) => {
 					let existing = data.find(file => file.name == change.name);
 					if(existing) {
