@@ -354,6 +354,28 @@ class Hg {
 				return this.writeFile(file, branches);
 			});
 	}
+	addToBranchList(file, name, commit, shift) {
+		return this.readFile(file)
+			.catch(() => shift ? this.stringToArray(commit + " 0") : [])
+			.then(branches => {
+				branches = this.arrayToString(branches);
+				branches = branches.split("\n");
+
+				let shifted;
+				if(shift) {
+					shifted = branches.shift();
+				}
+
+				branches.push(commit + " o " + name);
+
+				if(shift) {
+					branches.unshift(shifted);
+				}
+
+				branches = this.stringToArray(branches.join("\n"));
+				return this.writeFile(file, branches);
+			});
+	}
 	getBookmarkList() {
 		return this.loadBranchList("bookmarks", false)
 			.then(bookmarks => bookmarks.sort())
@@ -437,6 +459,7 @@ class Hg {
 				.catch(() => this.changeInBranchList("cache/branch2-immutable", branch, commit, true))
 				.catch(() => this.changeInBranchList("cache/branch2-base", branch, commit, true))
 				.catch(() => this.changeInBranchList("bookmarks", branch, commit, false))
+				.catch(() => this.addToBranchList("cache/branch2-base", branch, commit, true))
 				.catch(() => Promise.reject("Cannot find branch " + branch));
 		}
 	}
