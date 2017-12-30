@@ -268,7 +268,18 @@ class Hg {
 				branches = branches.concat(b);
 
 				return branches
-					.map(branch => branch.name)
+					.map((branch, i, arr) => {
+						let several = arr
+							.map(branch => branch.name)
+							.filter(name => name == branch.name)
+							.length > 1;
+
+						if(several) {
+							return branch.name + " @ " + branch.id.substr(0, 7);
+						} else {
+							return branch.name;
+						}
+					})
 					.filter((val, i, arr) => arr.indexOf(val) == i)
 					.sort();
 			});
