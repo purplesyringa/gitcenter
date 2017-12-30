@@ -1166,18 +1166,59 @@ class Repository {
 	}
 
 	// Sets options for marked
-	setUpMarked() {
+	setUpMarked(root) {
 		if(!this.markedOptions) {
 			let issueParser = "<a href=\"/1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t/repo/issues/view/?" + this.address + "/$1@$2\">#$1@$2</a>";
 			let pullRequestParser = "<a href=\"/1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t/repo/pull-requests/view/?" + this.address + "/$1@$2\">#P$1@$2</a>";
 
 			let renderer = new marked.Renderer();
+			renderer.image = function(href, title, text) {
+				if(href.indexOf("./") == 0) {
+					// Relative to current file showing
+					href = href.replace("./", "");
+					href = root ? root + "/" + href : href;
+					if(window.branch) {
+						href = "/1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t/repo/file/?" + address + "/" + link + "@" + branch;
+					} else {
+						href = "/1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t/repo/file/?" + address + "/" + link + "@";
+					}
+				} else if(href[0] == "/") {
+					// Relative to repository root
+					href = href.replace("/", "");
+					if(window.branch) {
+						href = "/1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t/repo/file/?" + address + "/" + link + "@" + branch;
+					} else {
+						href = "/1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t/repo/file/?" + address + "/" + link + "@";
+					}
+				}
+
+				return this.__proto__.image.call(this, href, title, text); // super() analog
+			};
 			renderer.text = function(text) {
 				return text
 					.replace(/#(\d+)@(1[A-Za-z0-9]{25,34})/g, "[ISSUEID]$1|$2[/ISSUEID]")
 					.replace(/#[Pp](\d+)@(1[A-Za-z0-9]{25,34})/g, "[PULLREQUESTID]$1|$2[/PULLREQUESTID]");
 			};
 			renderer.link = function(link, title, text) {
+				if(link.indexOf("./") == 0) {
+					// Relative to current file showing
+					link = link.replace("./", "");
+					link = root ? root + "/" + link : link;
+					if(window.branch) {
+						link = "/1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t/repo/file/?" + address + "/" + link + "@" + branch;
+					} else {
+						link = "/1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t/repo/file/?" + address + "/" + link + "@";
+					}
+				} else if(link[0] == "/") {
+					// Relative to repository root
+					link = link.replace("/", "");
+					if(window.branch) {
+						link = "/1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t/repo/file/?" + address + "/" + link + "@" + branch;
+					} else {
+						link = "/1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t/repo/file/?" + address + "/" + link + "@";
+					}
+				}
+
 				let res = this.__proto__.link.call(this, link, title, text); // super() analog
 				return res
 					.replace(/\[ISSUEID\](.+?)\|(.+?)\[\/ISSUEID\]/g, "#$1@$2")
@@ -1228,8 +1269,8 @@ class Repository {
 	}
 
 	// Renders markdown using marked (first sets it up)
-	renderMarked(text) {
-		this.setUpMarked();
+	renderMarked(text, root) {
+		this.setUpMarked(root);
 		return this.markedOptions.renderer.all(marked(text));
 	}
 

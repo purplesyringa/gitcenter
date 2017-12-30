@@ -141,6 +141,7 @@ repo.addMerger()
 					document.getElementById("readme").innerHTML = repo.renderMarked(readme);
 				});
 		} else {
-			document.getElementById("readme").innerHTML = repo.renderMarked("# " + content.title + "\n" + content.description);
+			let root = path == "/" ? "" : path;
+			document.getElementById("readme").innerHTML = repo.renderMarked("# " + content.title + "\n" + content.description, root);
 		}
 	});
