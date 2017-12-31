@@ -917,6 +917,10 @@ class HgIndex {
 	}
 
 	getData(rev) {
+		if(rev == -1) {
+			return Promise.resolve([]);
+		}
+
 		return this.delta(rev);
 	}
 	getCompressedData(rev) {
