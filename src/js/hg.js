@@ -535,7 +535,10 @@ class Hg {
 					};
 				});
 
-				if(items.slice(-1)[0].name == "") {
+				if(items.length && items.slice(-1)[0].name == "") {
+					items.pop();
+				}
+				if(items.length && items.slice(-1)[0].name == "") {
 					items.pop();
 				}
 
