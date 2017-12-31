@@ -360,7 +360,7 @@ class Hg {
 		return this.readBranchCommit(branch)
 			.then(commit => {
 				return this.readTreeItem(commit.content.tree, ".hgtags")
-					.catch(() => []);
+					.catch(() => ({content: []}));
 			})
 			.then(hgTags => {
 				return this.arrayToString(hgTags.content)
