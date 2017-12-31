@@ -1011,7 +1011,7 @@ class HgIndex {
 
 		if(rev == 0) {
 			// First revision, file was empty until now - let's write header
-			offset = this.version;
+			offset = this.version << 16;
 		}
 
 		let code = this.hg.concat(
