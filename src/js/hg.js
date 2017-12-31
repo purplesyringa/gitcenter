@@ -1227,7 +1227,8 @@ Hg.init = (root, zeroPage, name, email) => {
 		.then(h => {
 			hg = h;
 
-			return hg.writeCommit({
+			return hg.writePlainCommit({
+				tree: "0000000000000000000000000000000000000000",
 				changes: [],
 				parents: [],
 				author: name + " <" + email + ">",
