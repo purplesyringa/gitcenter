@@ -843,7 +843,7 @@ class HgIndex {
 				this.generalDelta = this.guessGeneralDelta();
 				this.version = 0;
 				this.version |= (this.isInline ? 1 : 0) << 16;
-				this.version |= (this.generalDelta ? 1 : 0) << 16;
+				this.version |= (this.generalDelta ? 1 : 0) << 17;
 				this.chunkCacheSize = 65536; // Should be 65536 on remote repo
 				this.chunks = [];
 				this.nodeIds = {};
