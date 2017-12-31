@@ -1109,17 +1109,17 @@ class HgIndex {
 					return null;
 				} else if(!storage.repoCache) {
 					return null;
-				} else if(!storage.repoCache[this.address]) {
+				} else if(!storage.repoCache[this.hg.root]) {
 					return null;
-				} else if(!storage.repoCache[this.address].hgCache) {
+				} else if(!storage.repoCache[this.hg.root].hgCache) {
 					return null;
-				} else if(!storage.repoCache[this.address].hgCache.revisions) {
+				} else if(!storage.repoCache[this.hg.root].hgCache.revisions) {
 					return null;
-				} else if(typeof storage.repoCache[this.address].hgCache.revisions[this.name] == "undefined") {
+				} else if(typeof storage.repoCache[this.hg.root].hgCache.revisions[this.name] == "undefined") {
 					return null;
 				}
 
-				return storage.repoCache[this.address].hgCache.revisions[this.name];
+				return storage.repoCache[this.hg.root].hgCache.revisions[this.name];
 			});
 	}
 };
