@@ -54,6 +54,15 @@ function showTitle(title) {
 	titleLink.textContent = title;
 	name.appendChild(titleLink);
 
+	let label = document.createElement("div");
+	label.className = "repo-label";
+	if(repo.git) {
+		label.innerHTML = "GIT";
+	} else if(repo.hg) {
+		label.innerHTML = "HG";
+	}
+	name.appendChild(label);
+
 	repo.getOwner()
 		.then(owner => {
 			name.innerHTML = "";
@@ -63,6 +72,7 @@ function showTitle(title) {
 			name.appendChild(ownerLink);
 			name.appendChild(document.createTextNode(" " + arrow + " "));
 			name.appendChild(titleLink);
+			name.appendChild(label);
 
 			return repo.getOwnerAddress();
 		})
