@@ -420,6 +420,9 @@ class Repository {
 				content.hooks = hooks;
 				return this.setContent(content);
 			})
+			.then(() => {
+				return this.git.changeHooks(hooks);
+			})
 			.then(() => this.sign());
 	}
 
