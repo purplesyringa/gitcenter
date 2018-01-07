@@ -424,7 +424,8 @@ class Repository {
 
 	// Adds or removes hooks from repository
 	changeHooks(hooks) {
-		return this.getContent()
+		return this.git.changeHooks(hooks)
+			.then(() => this.getContent())
 			.then(content => {
 				content.hooks = hooks;
 				return this.setContent(content);

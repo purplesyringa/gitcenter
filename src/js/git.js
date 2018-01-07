@@ -977,6 +977,26 @@ class Git {
 			.catch(() => []);
 	}
 
+	changeHooks(hooks) {
+		if(hooks) {
+			return Promise.all([
+				this.zeroFS.readFile("assets/pre-receive")
+					.then(preReceive => {
+						return this.zeroFS.writeFile(this.root + "/hooks/pre-receive", preReceive);
+					}),
+				this.zeroFS.readFile("assets/post-receive")
+					.then(postReceive => {
+						return this.zeroFS.writeFile(this.root + "/hooks/post-receive", postReceive);
+					})
+			]);
+		} else {
+			return Promise.all([
+				this.zeroFS.deleteFile(this.root + "/hooks/pre-receive"),
+				this.zeroFS.deleteFile(this.root + "/hooks/post-receive")
+			]);
+		}
+	}
+
 	toString() {
 		return "<Git " + this.root + ">";
 	}
@@ -1018,18 +1038,6 @@ Git.init = (root, zeroPage, name, email) => {
 		})
 		.then(id => {
 			return git.setRef("refs/heads/master", id);
-		})
-		.then(() => {
-			return zeroFS.readFile("assets/post-receive");
-		})
-		.then(postReceive => {
-			return zeroFS.writeFile(root + "/hooks/post-receive", postReceive);
-		})
-		.then(() => {
-			return zeroFS.readFile("assets/pre-receive");
-		})
-		.then(preReceive => {
-			return zeroFS.writeFile(root + "/hooks/pre-receive", preReceive);
 		})
 		.then(() => git);
 };
