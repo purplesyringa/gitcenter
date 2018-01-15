@@ -201,9 +201,18 @@ class Repository {
 				content = c;
 				if(content.git) {
 					this.git = new Git("merged-GitCenter/" + this.address + "/" + content.git, zeroPage);
+					this.hg = null;
+					this.vcs = this.git;
 					return this.git.init();
+				} else if(content.hg) {
+					this.git = null;
+					this.hg = new Hg("merged-GitCenter/" + this.address + "/" + content.hg, zeroPage);
+					this.vcs = this.hg;
+					return this.hg.init();
 				} else {
 					this.git = null;
+					this.hg = null;
+					this.vcs = null;
 				}
 			})
 			.then(() => {
@@ -425,7 +434,16 @@ class Repository {
 	}
 
 	// Sets up new repository (not fork). Sets title, description, signers.
-	install(title, description, address) {
+	install(title, description, address, type) {
+		if(type == "git") {
+			return this.installGit(title, description, address);
+		} else if(type == "hg") {
+			return this.installHg(title, description, address);
+		}
+	}
+
+	// Set up Git repository
+	installGit(title, description, address) {
 		let auth, content;
 		return this.getContent()
 			.then(c => {
@@ -454,10 +472,45 @@ class Repository {
 				profile.commitName = profile.commitName || auth.user[0].toUpperCase() + auth.user.substr(1).replace(/@.*/, "");
 				profile.commitEmail = profile.commitEmail || auth.user;
 
-				return Git.init("merged-GitCenter/" + this.address + "/" + address + (address.endsWith(".git") ? "" : ".git"), this.zeroPage, profile.commitName, profile.commitEmail);
+				return Git.init("merged-GitCenter/" + this.address + "/" + address, this.zeroPage, profile.commitName, profile.commitEmail);
 			})
 			.then(git => {
 				this.git = git;
+				return this.signContent("site");
+			});
+	}
+	installHg(title, description, address) {
+		let auth, content;
+		return this.getContent()
+			.then(c => {
+				content = c;
+
+				return this.zeroAuth.requestAuth();
+			})
+			.then(a => {
+				auth = a;
+
+				content.title = title;
+				content.description = description;
+				content.signers = [auth.address];
+				content.installed = true;
+				content.hg = address;
+				content.hooks = false;
+				return this.setContent(content);
+			})
+			.then(() => {
+				return this.zeroFS.readFile("data/users/" + auth.address + "/data.json").catch(() => "{}");
+			})
+			.then(profile => {
+				profile = JSON.parse(profile);
+
+				profile.commitName = profile.commitName || auth.user[0].toUpperCase() + auth.user.substr(1).replace(/@.*/, "");
+				profile.commitEmail = profile.commitEmail || auth.user;
+
+				return Hg.init("merged-GitCenter/" + this.address + "/" + address, this.zeroPage, profile.commitName, profile.commitEmail);
+			})
+			.then(hg => {
+				this.hg = hg;
 				return this.signContent("site");
 			});
 	}
@@ -506,7 +559,7 @@ class Repository {
 
 	// Returns list of files in directory
 	getFiles(branch, dir) {
-		return this.git.readBranchCommit(branch)
+		return this.vcs.readBranchCommit(branch)
 			.then(commit => {
 				return this.getTree(commit.content.tree, dir);
 			});
@@ -516,11 +569,11 @@ class Repository {
 	getTree(tree, dir) {
 		let submodules;
 
-		return this.git.getSubmodules(tree)
+		return (this.git ? this.git.getSubmodules(tree) : Promise.resolve([]))
 			.then(s => {
 				submodules = s;
 
-				return this.git.readTreeItem(tree, dir);
+				return this.vcs.readTreeItem(tree, dir);
 			})
 			.then(tree => {
 				if(tree.type != "tree") {
@@ -550,9 +603,9 @@ class Repository {
 
 	// Returns file content
 	getFile(branch, path) {
-		return this.git.readBranchCommit(branch)
+		return this.vcs.readBranchCommit(branch)
 			.then(commit => {
-				return this.git.readTreeItem(commit.content.tree, path);
+				return this.vcs.readTreeItem(commit.content.tree, path);
 			})
 			.then(blob => {
 				if(blob.type != "blob") {
@@ -565,7 +618,7 @@ class Repository {
 
 	// Returns branch list
 	getBranches() {
-		return this.git.getRefList()
+		return this.vcs.getRefList()
 			.then(refs => {
 				return refs
 					.filter(ref => (
@@ -577,7 +630,7 @@ class Repository {
 
 	// Changes file content. Commits with message `message` on branch `base`
 	saveFile(path, content, base, message) {
-		let auth, author, commit, parent;
+		let auth, author, commitDate, commit, parent;
 		return this.zeroAuth.requestAuth()
 			.then(a => {
 				auth = a;
@@ -593,42 +646,64 @@ class Repository {
 				let minutes = Math.abs((tz + 60) % 60);
 				tz = (tz > 0 ? "+" : "-") + (hours < 10 ? "0" : "") + hours + (minutes < 10 ? "0" : "") + minutes;
 
-				author = profile.commitName || auth.user[0].toUpperCase() + auth.user.substr(1).replace(/@.*/, "");
-				author += " <" + (profile.commitEmail || auth.user) + ">";
-				author += " " + Math.floor(+date / 1000);
-				author += " " + tz;
+				if(this.git) {
+					author = profile.commitName || auth.user[0].toUpperCase() + auth.user.substr(1).replace(/@.*/, "");
+					author += " <" + (profile.commitEmail || auth.user) + ">";
+					author += " " + Math.floor(+date / 1000);
+					author += " " + tz;
+					date = null;
+				} else if(this.hg) {
+					author = profile.commitName || auth.user[0].toUpperCase() + auth.user.substr(1).replace(/@.*/, "");
+					author += " <" + (profile.commitEmail || auth.user) + ">";
+					commitDate = Math.floor(+date / 1000);
+				}
 
-				return this.git.getBranchCommit(base);
+				return this.vcs.getBranchCommit(base);
 			})
 			.then(commitId => {
 				parent = commitId;
-				return this.git.readUnknownObject(commitId);
+				return this.vcs.readUnknownObject(commitId);
 			})
 			.then(commit => {
-				return this.git.readUnknownObject(commit.content.tree);
+				return this.vcs.readUnknownObject(commit.content.tree);
 			})
 			.then(base => {
-				return this.git.makeTreeDeltaPath(base.content, [
-					{
-						path: path,
-						type: "blob",
-						content: content
-					}
-				]);
-			})
-			.then(delta => {
-				return this.git.writeCommit({
-					tree: delta,
-					parents: [parent],
-					author: author,
-					committer: author,
-					message: message
-				});
+				if(this.git) {
+					return this.git.makeTreeDeltaPath(base.content, [
+						{
+							path: path,
+							type: "blob",
+							content: content
+						}
+					])
+						.then(delta => {
+							return this.git.writeCommit({
+								tree: delta,
+								parents: [parent],
+								author: author,
+								committer: author,
+								message: message
+							});
+						});
+				} else if(this.hg) {
+					return this.hg.writeCommit({
+						changes: [
+							{
+								name: path,
+								content: content
+							}
+						],
+						parents: [parent],
+						author: author,
+						date: commitDate,
+						message: message
+					});
+				}
 			})
 			.then(c => {
 				commit = c;
-				if(!this.git.isSha(base)) {
-					return this.git.setRef("refs/heads/" + base, commit);
+				if(!this.vcs.isSha(base)) {
+					return this.vcs.setRef("refs/heads/" + base, commit);
 				}
 			})
 			.then(() => commit);
@@ -656,7 +731,7 @@ class Repository {
 	// Returns diff between commit and its parent (on merge commits uses 1st parent)
 	diff(branch) {
 		let commit;
-		return this.git.readBranchCommit(branch)
+		return this.vcs.readBranchCommit(branch)
 			.then(c => {
 				commit = c;
 
@@ -668,10 +743,14 @@ class Repository {
 						}
 					};
 				}
-				return this.git.readBranchCommit(commit.content.parents[0]);
+				return this.vcs.readBranchCommit(commit.content.parents[0]);
 			})
 			.then(base => {
-				return this.diffTree(commit.content.tree, base.content.tree, "");
+				return this.diffTree({
+					tree: commit.content.tree,
+					base: base.content.tree,
+					root: ""
+				});
 			})
 			.then(diff => {
 				return Promise.all(
@@ -681,11 +760,11 @@ class Repository {
 
 							let promise;
 							if(item.action == "modified") {
-								promise = this.diffBlob(item.id, item.baseId);
+								promise = this.diffBlob(item.id, item.baseId, item.name);
 							} else if(item.action == "add") {
-								promise = this.diffBlob(item.id, null);
+								promise = this.diffBlob(item.id, null, item.name);
 							} else if(item.action == "remove") {
-								promise = this.diffBlob(null, item.id);
+								promise = this.diffBlob(null, item.id, item.name);
 							}
 
 							return promise
@@ -697,11 +776,11 @@ class Repository {
 							// Diff all submodules
 
 							if(item.action == "modified") {
-								item.content = this.diffSubmodule(item.id, item.baseId);
+								item.content = this.diffSubmodule(item.id, item.baseId, item.name);
 							} else if(item.action == "add") {
-								item.content = this.diffSubmodule(item.id, null);
+								item.content = this.diffSubmodule(item.id, null, item.name);
 							} else if(item.action == "remove") {
-								item.content = this.diffSubmodule(null, item.id);
+								item.content = this.diffSubmodule(null, item.id, item.name);
 							}
 
 							return Promise.resolve(item);
@@ -714,11 +793,11 @@ class Repository {
 	}
 
 	// Diff tree against `base`. `root` is current path (empty string usually)
-	diffTree(tree, base, root) {
+	diffTree(args) {
 		return Promise.all(
 			[
-				this.git.readUnknownObject(tree),
-				this.git.readUnknownObject(base)
+				this.vcs.readUnknownObject(args.tree),
+				this.vcs.readUnknownObject(args.base)
 			]
 		)
 			.then(([tree, base]) => {
@@ -738,7 +817,7 @@ class Repository {
 							return Promise.resolve();
 						} else if(item.type == "tree") {
 							// Tree was added
-							return this.diffTree(item.id, "4b825dc642cb6eb9a060e54bf8d69288fbee4904", root ? root + "/" + item.name : item.name)
+							return this.diffTree(this.diffCd(args, item.id, "4b825dc642cb6eb9a060e54bf8d69288fbee4904", item.name))
 								.then(diff => {
 									result = result.concat(diff);
 								});
@@ -765,7 +844,7 @@ class Repository {
 							return Promise.resolve();
 						} else if(item.type == "tree") {
 							// Tree was modified
-							return this.diffTree(item.id, baseItem.id, root ? root + "/" + item.name : item.name)
+							return this.diffTree(this.diffCd(args, item.id, baseItem.id, item.name))
 								.then(diff => {
 									result = result.concat(diff);
 								});
@@ -784,7 +863,7 @@ class Repository {
 						if(item.type == "blob") {
 							if(baseItem.type == "tree") {
 								// Tree -> Blob
-								return this.diffTree("4b825dc642cb6eb9a060e54bf8d69288fbee4904", baseItem.id, root ? root + "/" + item.name : item.name)
+								return this.diffTree(this.diffCd(args, "4b825dc642cb6eb9a060e54bf8d69288fbee4904", baseItem.id, item.name))
 									.then(diff => {
 										result = result.concat(diff);
 
@@ -811,7 +890,7 @@ class Repository {
 								});
 							}
 						} else if(item.type == "tree") {
-							return this.diffTree(item.id, "4b825dc642cb6eb9a060e54bf8d69288fbee4904", root ? root + "/" + item.name : item.name)
+							return this.diffTree(this.diffCd(args, item.id, "4b825dc642cb6eb9a060e54bf8d69288fbee4904", item.name))
 								.then(diff => {
 									if(baseItem.type == "blob") {
 										// Blob -> Tree
@@ -836,7 +915,7 @@ class Repository {
 						} else if(item.type == "submodule") {
 							if(baseItem.type == "tree") {
 								// Tree -> Submodule
-								return this.diffTree("4b825dc642cb6eb9a060e54bf8d69288fbee4904", baseItem.id, root ? root + "/" + item.name : item.name)
+								return this.diffTree(this.diffCd(args, "4b825dc642cb6eb9a060e54bf8d69288fbee4904", baseItem.id, item.name))
 									.then(diff => {
 										result = result.concat(diff);
 
@@ -882,7 +961,7 @@ class Repository {
 						return Promise.resolve();
 					} else if(baseItem.type == "tree") {
 						// Removed tree
-						return this.diffTree("4b825dc642cb6eb9a060e54bf8d69288fbee4904", baseItem.id, root ? root + "/" + baseItem.name : baseItem.name)
+						return this.diffTree(this.diffCd(args, "4b825dc642cb6eb9a060e54bf8d69288fbee4904", baseItem.id, baseItem.name))
 							.then(diff => {
 								result = result.concat(diff);
 							});
@@ -900,30 +979,54 @@ class Repository {
 
 				return Promise.all(promises.concat(promises2))
 					.then(() => result.map(item => {
-						item.name = root ? root + "/" + item.name : item.name;
+						item.name = args.root ? args.root + "/" + item.name : item.name;
 						return item;
 					}));
 			});
 	}
+	diffCd(prev, newTree, newBase, newName) {
+		if(this.git) {
+			return {
+				tree: newTree,
+				base: newBase,
+				root: prev.root ? prev.root + "/" + newName : newName
+			};
+		} else if(this.hg) {
+			return {
+				tree: prev.tree + "/" + newName,
+				base: prev.base + "/" + newName,
+				root: prev.root ? prev.root + "/" + newName : newName
+			}
+		}
+	}
 
 	// Diffs two blobs using jsdifflib
-	diffBlob(blob, base) {
+	diffBlob(blob, base, name) {
+		if(this.hg) {
+			if(blob) {
+				blob += "/" + name;
+			}
+			if(base) {
+				base += "/" + name;
+			}
+		}
+
 		let blobContent;
-		return (blob ? this.git.readUnknownObject(blob) : Promise.resolve({content: []}))
+		return (blob ? this.vcs.readUnknownObject(blob) : Promise.resolve({content: []}))
 			.then(b => {
 				if(b.content.length == 0) {
 					blobContent = [];
 				} else {
-					blobContent = difflib.stringAsLines(this.git.decodeUTF8(b.content));
+					blobContent = difflib.stringAsLines(this.vcs.decodeUTF8(b.content));
 				}
 
-				return base ? this.git.readUnknownObject(base) : {content: []};
+				return base ? this.vcs.readUnknownObject(base) : {content: []};
 			})
 			.then(baseContent => {
 				if(baseContent.content.length == 0) {
 					baseContent = [];
 				} else {
-					baseContent = difflib.stringAsLines(this.git.decodeUTF8(baseContent.content));
+					baseContent = difflib.stringAsLines(this.vcs.decodeUTF8(baseContent.content));
 				}
 
 				let blobHasNewLine = blobContent.slice(-1)[0] == "";
@@ -992,7 +1095,7 @@ class Repository {
 	getReleases() {
 		let tags, releases;
 
-		return this.git.getRefList()
+		return this.vcs.getRefList()
 			.then(refs => {
 				return refs
 					.filter(ref => ref.indexOf("refs/tags/") == 0)
@@ -1001,8 +1104,8 @@ class Repository {
 			.then(tags => {
 				return Promise.all(
 					tags.map(tag => {
-						return this.git.getRef("refs/tags/" + tag)
-							.then(commit => this.git.readUnknownObject(commit))
+						return this.vcs.getRef("refs/tags/" + tag)
+							.then(commit => this.vcs.readUnknownObject(commit))
 							.then(commit => {
 								let author = commit.content.committer || commit.content.tagger;
 								let name = author.substr(0, author.indexOf("<")).trim();
@@ -1769,10 +1872,10 @@ class Repository {
 		let heads = [];
 		let commits = [];
 
-		return this.git.getBranchCommit(leaf)
+		return this.vcs.getBranchCommit(leaf)
 			.then(l => {
 				leaf = l;
-				return this.git.toBidirectional([leaf], count);
+				return this.toBidirectional([leaf], count);
 			})
 			.then(bidirectional => {
 				let action = leaf => {
@@ -1800,6 +1903,82 @@ class Repository {
 				return action(bidirectional.leaves[0]);
 			})
 			.then(() => commits);
+	}
+
+	toBidirectional(leaves, depth) {
+		let cache = {};
+		let read = id => {
+			if(cache[id]) {
+				return cache[id];
+			}
+
+			return cache[id] = this.vcs.readUnknownObject(id);
+		};
+
+		let roots = [];
+
+		let handled = {};
+		let toChildren = (leaf, depth) => {
+			if(handled[leaf]) {
+				return;
+			}
+
+			handled[leaf] = true;
+
+			let leafObject;
+			return read(leaf)
+				.then(l => {
+					leafObject = l;
+
+					if(depth <= 0) {
+						leafObject.content.parents = [];
+						if(roots.indexOf(leafObject) == -1) {
+							roots.push(leafObject);
+						}
+						return;
+					}
+
+					if(!leafObject.content.children) {
+						leafObject.content.children = [];
+					}
+
+					if(leafObject.content.parents.length == 0) {
+						if(roots.indexOf(leafObject) == -1) {
+							roots.push(leafObject);
+						}
+					}
+
+					return Promise.all(
+						leafObject.content.parents.map((parent, i) => {
+							return read(parent)
+								.then(parentObject => {
+									if(!parentObject.content.children) {
+										parentObject.content.children = [];
+									}
+
+									if(parentObject.content.children.indexOf(leafObject) > -1) {
+										return;
+									}
+
+									parentObject.content.children.push(leafObject);
+
+									leafObject.content.parents[i] = parentObject;
+
+									return toChildren(parent, depth - 1);
+								});
+						})
+					);
+				})
+				.then(() => leafObject);
+		};
+
+		return Promise.all(leaves.map(leaf => toChildren(leaf, depth)))
+			.then(leaves => {
+				return {
+					leaves: leaves,
+					roots: roots
+				};
+			});
 	}
 
 	// Converts author (like "Name <email> timestamp") to text

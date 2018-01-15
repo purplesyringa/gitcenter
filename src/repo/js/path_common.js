@@ -16,7 +16,7 @@ if(address.indexOf("/") > -1) {
 	address = address.substr(0, address.indexOf("@"));
 }
 
-let branch = "master";
+let branch = "";
 if(path.indexOf("@") > -1) {
 	let tempPath = path.replace(/@@/g, "\0"); // @ is escaped
 	path = tempPath.substr(0, tempPath.indexOf("@")).replace(/\0/g, "@");

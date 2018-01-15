@@ -17,7 +17,7 @@ repo.addMerger()
 		}
 
 		if(!branch) {
-			return repo.git.getHead()
+			return repo.vcs.getHead()
 				.then(head => branch = head);
 		}
 	})
@@ -25,7 +25,7 @@ repo.addMerger()
 		setTitle("Log - " + content.title);
 
 		showTitle(content.title);
-		showHeader(1, content.git);
+		showHeader(1, content);
 		showTabs(1);
 		showBranches();
 

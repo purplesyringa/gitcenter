@@ -16,11 +16,11 @@ repo.addMerger()
 		setTitle(branch + " - " + content.title);
 
 		showTitle(content.title);
-		showHeader(1, content.git);
+		showHeader(1, content);
 		showLinks();
 		showTabs(1);
 
-		return repo.git.readBranchCommit(branch);
+		return repo.vcs.readBranchCommit(branch);
 	})
 	.then(commit => {
 		document.getElementById("commit_title").textContent = commit.content.message;

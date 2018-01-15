@@ -29,7 +29,7 @@ repo.addMerger()
 		setTitle("Issue - " + content.title);
 
 		showTitle(content.title);
-		showHeader(2, content.git);
+		showHeader(2, content);
 		showTabs(2);
 
 		return repo.getIssue(id, json);

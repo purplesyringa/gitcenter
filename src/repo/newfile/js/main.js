@@ -14,7 +14,7 @@ repo.addMerger()
 		setTitle("New file - " + content.title);
 
 		showTitle(content.title);
-		showHeader(1, content.git);
+		showHeader(1, content);
 		showBranches();
 		showPath(true, true);
 		showTabs(1);
@@ -35,9 +35,9 @@ repo.addMerger()
 
 			saveButton.classList.add("button-disabled");
 
-			repo.saveFile((path ? path + "/" : "") + fileName.value, repo.git.encodeUTF8(fileContent.value), branch, commitMessage.value)
+			repo.saveFile((path ? path + "/" : "") + fileName.value, repo.vcs.encodeUTF8(fileContent.value), branch, commitMessage.value)
 				.then(commit => {
-					location.href = "../?" + address + "/" + path.replace(/@/g, "@@") + "@" + (repo.git.isSha(branch) ? commit : branch).replace(/@/g, "@@");
+					location.href = "../?" + address + "/" + path.replace(/@/g, "@@") + "@" + (repo.vcs.isSha(branch) ? commit : branch).replace(/@/g, "@@");
 				});
 		};
 
@@ -50,7 +50,7 @@ repo.addMerger()
 
 			repo.uploadFile((path ? path + "/" : "") + fileName.value, branch, commitMessage.value)
 				.then(commit => {
-					location.href = "../?" + address + "/" + path.replace(/@/g, "@@") + "@" + (repo.git.isSha(branch) ? commit : branch).replace(/@/g, "@@");
+					location.href = "../?" + address + "/" + path.replace(/@/g, "@@") + "@" + (repo.vcs.isSha(branch) ? commit : branch).replace(/@/g, "@@");
 				});
 		};
 	});

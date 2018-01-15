@@ -54,6 +54,15 @@ function showTitle(title) {
 	titleLink.textContent = title;
 	name.appendChild(titleLink);
 
+	let label = document.createElement("div");
+	label.className = "repo-label";
+	if(repo.git) {
+		label.innerHTML = "GIT";
+	} else if(repo.hg) {
+		label.innerHTML = "HG";
+	}
+	name.appendChild(label);
+
 	repo.getOwner()
 		.then(owner => {
 			name.innerHTML = "";
@@ -63,6 +72,7 @@ function showTitle(title) {
 			name.appendChild(ownerLink);
 			name.appendChild(document.createTextNode(" " + arrow + " "));
 			name.appendChild(titleLink);
+			name.appendChild(label);
 
 			return repo.getOwnerAddress();
 		})
@@ -70,7 +80,7 @@ function showTitle(title) {
 			ownerLink.href = "/1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t/user/?" + json;
 		});
 }
-function showHeader(level, gitAddress) {
+function showHeader(level, content) {
 	document.getElementById("fork").onclick = () => {
 		repo.fork();
 	};
@@ -120,7 +130,13 @@ function showHeader(level, gitAddress) {
 		.catch(() => {}); // Who cares?
 
 	document.getElementById("git_button").onclick = () => {
-		let command = "git clone $path_to_data/" + address + "/" + gitAddress;
+		let command;
+		if(content.git) {
+			command = "git clone $path_to_data/" + address + "/" + content.git;
+		} else if(content.hg) {
+			command = "hg clone $path_to_data/" + address + "/" + content.hg;
+		}
+
 		if(copy(command)) {
 			zeroPage.alert("<b>" + command + "</b> was copied to the clipboard.<br>Replace <b>$path_to_data</b> with correct path to ZeroNet's data folder.");
 		} else {
@@ -130,7 +146,14 @@ function showHeader(level, gitAddress) {
 }
 
 function showBranches(noPath) {
-	return repo.getBranches()
+	let promise = Promise.resolve();
+	if(branch == "") {
+		promise = repo.vcs.getHead()
+			.then(head => branch = head);
+	}
+
+	return promise
+		.then(() => repo.getBranches())
 		.then(list => {
 			// Show branch list
 			let branches = document.getElementById("branches");
@@ -186,7 +209,7 @@ function copy(text) {
 }
 
 function showLinks() {
-	if(repo.git.isSha(branch)) {
+	if(repo.vcs.isSha(branch)) {
 		document.getElementById("permanent_link").textContent = branch;
 
 		document.getElementById("permanent_link").onclick = () => {
@@ -198,7 +221,7 @@ function showLinks() {
 			}
 		};
 	} else {
-		repo.git.getBranchCommit(branch)
+		repo.vcs.getBranchCommit(branch)
 			.then(commit => {
 				document.getElementById("permanent_link").onclick = () => {
 					let permanent = location.href.replace(/\?.*/, "") + "?" + address + "/" + path.replace(/@/g, "@@") + "@" + commit;

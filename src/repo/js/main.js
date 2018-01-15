@@ -18,7 +18,7 @@ repo.addMerger()
 		setTitle(content.title);
 
 		showTitle(content.title);
-		showHeader(0, content.git);
+		showHeader(0, content);
 		showBranches();
 		showPath(false);
 		showLinks();
@@ -32,16 +32,16 @@ repo.addMerger()
 				}
 			});
 
-		return branch || repo.git.getHead();
+		return branch || repo.vcs.getHead();
 	})
 	.then(h => {
 		head = h;
-		return repo.git.readBranchCommit(head);
+		return repo.vcs.readBranchCommit(head);
 	})
 	.then(commit => {
 		document.getElementById("commit_title").textContent = commit.content.message;
 
-		repo.git.getBranchCommit(head)
+		repo.vcs.getBranchCommit(head)
 			.then(c => {
 				let diff = document.createElement("a");
 				diff.textContent = "[diff]";
@@ -137,7 +137,7 @@ repo.addMerger()
 		if(readme && readme.type == "file") {
 			return repo.getFile(head, (path ? path + "/" : "") + readme.name)
 				.then(readme => {
-					readme = repo.git.decodeUTF8(readme);
+					readme = repo.vcs.decodeUTF8(readme);
 					document.getElementById("readme").innerHTML = repo.renderMarked(readme);
 				});
 		} else {

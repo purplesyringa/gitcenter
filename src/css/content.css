@@ -101,3 +101,15 @@ p, ul, ol {
 	display: none;
 	cursor: default;
 }
+
+.repo-label {
+	display: inline-block;
+	padding: 4px;
+	margin-left: 8px;
+	vertical-align: top;
+
+	background-color: #DDD;
+	border-radius: 4px;
+
+	font-size: 12px;
+}

@@ -61,7 +61,7 @@ repo.addMerger()
 		setTitle("Filter " + additional[0] + " - " + content.title);
 
 		showTitle(content.title);
-		showHeader(1, content.git);
+		showHeader(1, content);
 		showTabs(1);
 
 		return repo.issues.filterObjects(currentPage, query);

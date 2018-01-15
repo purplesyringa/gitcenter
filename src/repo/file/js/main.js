@@ -16,7 +16,7 @@ repo.addMerger()
 		setTitle("View " + path + " - " + content.title);
 
 		showTitle(content.title);
-		showHeader(1, content.git);
+		showHeader(1, content);
 		showBranches();
 		showPath(true);
 		showLinks();
@@ -30,16 +30,16 @@ repo.addMerger()
 				}
 			});
 
-		return branch || repo.git.getHead();
+		return branch || repo.vcs.getHead();
 	})
 	.then(h => {
 		head = h;
-		return repo.git.readBranchCommit(head);
+		return repo.vcs.readBranchCommit(head);
 	})
 	.then(commit => {
 		document.getElementById("commit_title").textContent = commit.content.message;
 
-		repo.git.getBranchCommit(head)
+		repo.vcs.getBranchCommit(head)
 			.then(c => {
 				let diff = document.createElement("a");
 				diff.textContent = "[diff]";
@@ -56,7 +56,7 @@ repo.addMerger()
 		return repo.getFile(head, path)
 			.then(blob => {
 				let fileContent = document.getElementById("file_content");
-				fileContent.textContent = repo.git.decodeUTF8(blob);
+				fileContent.textContent = repo.vcs.decodeUTF8(blob);
 				hljs.highlightBlock(fileContent);
 
 				let lines = fileContent.innerHTML.split("\n");
