@@ -134,7 +134,7 @@ function showHeader(level, content) {
 		if(content.git) {
 			command = "git clone $path_to_data/" + address + "/" + content.git;
 		} else if(content.hg) {
-			command = "hg clone $path_to_data/" + address + "/" + content.hg;
+			command = "hg clone $path_to_data/" + address + "/" + content.hg.replace(/\.hg$/, "");
 		}
 
 		if(copy(command)) {
