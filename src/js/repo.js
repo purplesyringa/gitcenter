@@ -1281,22 +1281,17 @@ class Repository {
 					// Relative to current file showing
 					href = href.replace("./", "");
 					href = root ? root + "/" + href : href;
-					if(window.branch) {
-						href = "/1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t/repo/file/?" + address + "/" + href + "@" + branch;
-					} else {
-						href = "/1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t/repo/file/?" + address + "/" + href + "@";
-					}
 				} else if(href[0] == "/") {
 					// Relative to repository root
 					href = href.replace("/", "");
-					if(window.branch) {
-						href = "/1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t/repo/file/?" + address + "/" + href + "@" + branch;
-					} else {
-						href = "/1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t/repo/file/?" + address + "/" + href + "@";
-					}
+				} else {
+					return this.__proto__.image.call(this, href, title, text); // super() analog
 				}
 
-				return this.__proto__.image.call(this, href, title, text); // super() analog
+				let node = document.createElement("div");
+				node.className = "image-placeholder";
+				node.textContent = "Loading " + (title || href);
+				return node.outerHTML;
 			};
 			renderer.text = function(text) {
 				return text
