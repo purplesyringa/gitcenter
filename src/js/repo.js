@@ -1275,6 +1275,8 @@ class Repository {
 			let issueParser = "<a href=\"/1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t/repo/issues/view/?" + this.address + "/$1@$2\">#$1@$2</a>";
 			let pullRequestParser = "<a href=\"/1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t/repo/pull-requests/view/?" + this.address + "/$1@$2\">#P$1@$2</a>";
 
+			let self = this;
+
 			let renderer = new marked.Renderer();
 			renderer.image = function(href, title, text) {
 				if(href.indexOf("./") == 0) {
@@ -1288,9 +1290,28 @@ class Repository {
 					return this.__proto__.image.call(this, href, title, text); // super() analog
 				}
 
+				let nodeId = "image_placeholder_" + Math.random().toString(36).substr(2);
+
 				let node = document.createElement("div");
 				node.className = "image-placeholder";
-				node.textContent = "Loading " + (title || href);
+				node.id = nodeId;
+				node.textContent = "Loading " + (title || href) + "...";
+
+				// Load image manually
+				self.getFile(branch, href)
+					.then(blob => {
+						blob = new Blob([blob], {type: "image/png"});
+						let url = URL.createObjectURL(blob);
+
+						let node = document.getElementById(nodeId);
+						if(node) {
+							let img = document.createElement("img");
+							img.src = url;
+							img.title = title;
+							node.parentNode.replaceChild(img, node);
+						}
+					});
+
 				return node.outerHTML;
 			};
 			renderer.text = function(text) {
