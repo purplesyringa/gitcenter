@@ -1,15 +1,14 @@
 <template>
-	<component :is="header" />
+	<div>
+		<gc-header />
+	</div>
 </template>
 
 <script>
-	var Router = require("../libs/router");
-
 	module.exports = {
 		props: [],
-		name: "home",
+		name: "root",
 		data: {
-			header: require("./header/header.vue")
 		}
 	};
 </script>

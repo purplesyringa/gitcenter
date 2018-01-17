@@ -26,3 +26,10 @@
 		</a>
 	</header>
 </template>
+
+<script>
+	module.exports = {
+		name: "header",
+		data: () => { return {}; }
+	};
+</script>
