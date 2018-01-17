@@ -1298,10 +1298,33 @@ class Repository {
 				node.id = nodeId;
 				node.textContent = "Loading " + (title || href) + "...";
 
+				let filename = href.split("/").slice(-1)[0] || "";
+				let extension = filename.split(".").slice(-1)[0] || "";
+				let type = {
+					tif: "image/tiff",
+					tiff: "image/tiff",
+					gif: "image/gif",
+					jpeg: "image/jpeg",
+					jpg: "image/jpeg",
+					jif: "image/jpeg",
+					jiff: "image/jpeg",
+					jp2: "image/jpeg",
+					jpx: "image/jpeg",
+					j2k: "image/jpeg",
+					j2c: "image/jpeg",
+					png: "image/png",
+					svg: "image/svg+xml",
+					webp: "image/webp"
+				}[extension];
+				if(!type) {
+					node.textContent = "Could not detect image type of " + (title || href);
+					return node.outerHTML;
+				}
+
 				// Load image manually
 				self.getFile(branch, href)
 					.then(blob => {
-						blob = new Blob([blob], {type: "image/png"});
+						blob = new Blob([blob], {type: type});
 						let url = URL.createObjectURL(blob);
 
 						let node = document.getElementById(nodeId);
