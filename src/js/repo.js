@@ -1274,6 +1274,9 @@ class Repository {
 		if(!this.markedOptions) {
 			let issueParser = "<a href=\"/1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t/repo/issues/view/?" + this.address + "/$1@$2\">#$1@$2</a>";
 			let pullRequestParser = "<a href=\"/1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t/repo/pull-requests/view/?" + this.address + "/$1@$2\">#P$1@$2</a>";
+			let allowed_prefixes = ["/gitcenter.bit", "/1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t"];
+
+			let self = this;
 
 			let renderer = new marked.Renderer();
 			renderer.image = function(href, title, text) {
@@ -1281,22 +1284,59 @@ class Repository {
 					// Relative to current file showing
 					href = href.replace("./", "");
 					href = root ? root + "/" + href : href;
-					if(window.branch) {
-						href = "/1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t/repo/file/?" + address + "/" + link + "@" + branch;
-					} else {
-						href = "/1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t/repo/file/?" + address + "/" + link + "@";
-					}
-				} else if(href[0] == "/") {
+				} else if(href[0] == "/" && !allowed_prefixes.some(prefix => link.indexOf(prefix) == 0)) {
 					// Relative to repository root
 					href = href.replace("/", "");
-					if(window.branch) {
-						href = "/1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t/repo/file/?" + address + "/" + link + "@" + branch;
-					} else {
-						href = "/1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t/repo/file/?" + address + "/" + link + "@";
-					}
+				} else {
+					return this.__proto__.image.call(this, href, title, text); // super() analog
 				}
 
-				return this.__proto__.image.call(this, href, title, text); // super() analog
+				let nodeId = "image_placeholder_" + Math.random().toString(36).substr(2);
+
+				let node = document.createElement("div");
+				node.className = "image-placeholder";
+				node.id = nodeId;
+				node.textContent = "Loading " + (title || href) + "...";
+
+				let filename = href.split("/").slice(-1)[0] || "";
+				let extension = filename.split(".").slice(-1)[0] || "";
+				let type = {
+					tif: "image/tiff",
+					tiff: "image/tiff",
+					gif: "image/gif",
+					jpeg: "image/jpeg",
+					jpg: "image/jpeg",
+					jif: "image/jpeg",
+					jiff: "image/jpeg",
+					jp2: "image/jpeg",
+					jpx: "image/jpeg",
+					j2k: "image/jpeg",
+					j2c: "image/jpeg",
+					png: "image/png",
+					svg: "image/svg+xml",
+					webp: "image/webp"
+				}[extension];
+				if(!type) {
+					node.textContent = "Could not detect image type of " + (title || href);
+					return node.outerHTML;
+				}
+
+				// Load image manually
+				self.getFile(branch, href)
+					.then(blob => {
+						blob = new Blob([blob], {type: type});
+						let url = URL.createObjectURL(blob);
+
+						let node = document.getElementById(nodeId);
+						if(node) {
+							let img = document.createElement("img");
+							img.src = url;
+							img.title = title;
+							node.parentNode.replaceChild(img, node);
+						}
+					});
+
+				return node.outerHTML;
 			};
 			renderer.text = function(text) {
 				return text
@@ -1313,7 +1353,7 @@ class Repository {
 					} else {
 						link = "/1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t/repo/file/?" + address + "/" + link + "@";
 					}
-				} else if(link[0] == "/") {
+				} else if(link[0] == "/" && !allowed_prefixes.some(prefix => link.indexOf(prefix) == 0)) {
 					// Relative to repository root
 					link = link.replace("/", "");
 					if(window.branch) {
