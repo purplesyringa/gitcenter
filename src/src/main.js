@@ -12,12 +12,10 @@ Vue.use(VueZeroFrameRouter.VueZeroFrameRouter);
 var app = new Vue({
 	el: "#app",
 	template: `<div>
-			<component ref="view" :is="currentView"></component>
-		</div>`,
+		<component :is="root" />
+	</div>`,
 	data: {
-		currentView: null,
-		userInfo: null,
-		siteInfo: null
+		root: require("./vue_components/root.vue")
 	}
 });
 

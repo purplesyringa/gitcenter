@@ -1,0 +1,49 @@
+.header {
+	display: block;
+	width: 896px;
+	height: 64px;
+	padding: 0 calc(50% - 448px);
+
+	background-color: #222;
+}
+
+.header-logo {
+	display: inline-block;
+	width: 32px;
+	height: 32px;
+	margin: 16px 0;
+	margin-right: 16px;
+}
+
+.header-name {
+	display: inline-block;
+	width: auto;
+	height: 32px;
+	margin: 16px 8px 16px 0;
+	vertical-align: top;
+
+	font-family: Verdana, Arial, sans-serif;
+	font-size: 24px;
+	line-height: 32px;
+	color: #FFF;
+}
+
+.header-item {
+	display: inline-block;
+	width: auto;
+	height: 24px;
+	margin: 0 10px;
+	padding: 20px 0;
+	vertical-align: top;
+
+	font-family: Verdana, Arial, sans-serif;
+	font-size: 16px;
+	line-height: 24px;
+	color: #888;
+}
+.header-item:hover {
+	color: #DDD;
+}
+.header-item-active, .header-item-active:hover {
+	color: #FFF;
+}

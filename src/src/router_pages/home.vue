@@ -1,16 +1,14 @@
 <template>
-  <div id="mainapp" class="container">
-    Hi
-  </div>
+	<header />
 </template>
 
 <script>
-  var Router = require("../libs/router.js");
-  module.exports = {
-    props: [],
-    name: "mainapp",
-    data: () => {
-      return {}
-    }
-  }
+	const Router = require("../libs/router");
+	module.exports = {
+		props: [],
+		name: "mainapp",
+		data: () => {
+			return {};
+		}
+	};
 </script>
