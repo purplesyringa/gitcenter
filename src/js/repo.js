@@ -1282,17 +1282,17 @@ class Repository {
 					href = href.replace("./", "");
 					href = root ? root + "/" + href : href;
 					if(window.branch) {
-						href = "/1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t/repo/file/?" + address + "/" + link + "@" + branch;
+						href = "/1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t/repo/file/?" + address + "/" + href + "@" + branch;
 					} else {
-						href = "/1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t/repo/file/?" + address + "/" + link + "@";
+						href = "/1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t/repo/file/?" + address + "/" + href + "@";
 					}
 				} else if(href[0] == "/") {
 					// Relative to repository root
 					href = href.replace("/", "");
 					if(window.branch) {
-						href = "/1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t/repo/file/?" + address + "/" + link + "@" + branch;
+						href = "/1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t/repo/file/?" + address + "/" + href + "@" + branch;
 					} else {
-						href = "/1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t/repo/file/?" + address + "/" + link + "@";
+						href = "/1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t/repo/file/?" + address + "/" + href + "@";
 					}
 				}
 
