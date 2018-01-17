@@ -34,6 +34,10 @@
 	background-color: #FFC;
 }
 
+.comment-content img {
+	max-width: 100%;
+}
+
 .comment-textarea {
 	display: block;
 	width: calc(100% - 32px);
