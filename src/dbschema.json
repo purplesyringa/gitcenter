@@ -1,0 +1,21 @@
+{
+	"db_name": "ZeroNetTemplate",
+	"db_file": "data/ZeroNetTemplate.db",
+	"version": 3,
+	"maps": {
+		
+	},
+	"tables": {
+		"json": {
+		    "cols": [
+		        ["json_id", "INTEGER PRIMARY KEY AUTOINCREMENT"],
+		        ["site", "TEXT"],
+		        ["directory", "TEXT"],
+		        ["file_name", "TEXT"],
+		        ["cert_user_id", "TEXT"]
+		    ],
+		    "indexes": ["CREATE UNIQUE INDEX path ON json(directory, site, file_name)"],
+		    "schema_changed": 3
+		}
+	}
+}
