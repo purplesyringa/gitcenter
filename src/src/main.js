@@ -5,10 +5,6 @@ var Router = require("./libs/router.js");
 
 var Vue = require("vue/dist/vue.min.js");
 
-var VueZeroFrameRouter = require("./libs/vue-zeroframe-router.js");
-
-Vue.use(VueZeroFrameRouter.VueZeroFrameRouter);
-
 var app = new Vue({
 	el: "#app",
 	template: `<div>
@@ -20,7 +16,3 @@ var app = new Vue({
 });
 
 var Home = require("./router_pages/home.vue");
-
-VueZeroFrameRouter.VueZeroFrameRouter_Init(Router, app, [
-	{ route: "", component: Home }
-]);
