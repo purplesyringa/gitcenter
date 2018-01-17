@@ -1274,6 +1274,7 @@ class Repository {
 		if(!this.markedOptions) {
 			let issueParser = "<a href=\"/1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t/repo/issues/view/?" + this.address + "/$1@$2\">#$1@$2</a>";
 			let pullRequestParser = "<a href=\"/1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t/repo/pull-requests/view/?" + this.address + "/$1@$2\">#P$1@$2</a>";
+			let allowed_prefixes = ["/gitcenter.bit", "/1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t"];
 
 			let self = this;
 
@@ -1283,7 +1284,7 @@ class Repository {
 					// Relative to current file showing
 					href = href.replace("./", "");
 					href = root ? root + "/" + href : href;
-				} else if(href[0] == "/") {
+				} else if(href[0] == "/" && !allowed_prefixes.some(prefix => link.indexOf(prefix) == 0)) {
 					// Relative to repository root
 					href = href.replace("/", "");
 				} else {
@@ -1329,7 +1330,7 @@ class Repository {
 					} else {
 						link = "/1GitLiXB6t5r8vuU2zC6a8GYj9ME6HMQ4t/repo/file/?" + address + "/" + link + "@";
 					}
-				} else if(link[0] == "/") {
+				} else if(link[0] == "/" && !allowed_prefixes.some(prefix => link.indexOf(prefix) == 0)) {
 					// Relative to repository root
 					link = link.replace("/", "");
 					if(window.branch) {
