@@ -113,3 +113,9 @@ p, ul, ol {
 
 	font-size: 12px;
 }
+
+
+.image-placeholder {
+	padding: 8px 16px;
+	background-color: #EEE;
+}
