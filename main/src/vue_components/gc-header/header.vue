@@ -8,9 +8,7 @@
 		</a>
 
 		<template v-for="item in items">
-			<a :href="'?/' + item.address">
-				<div class="header-item">{{item.name}}</div>
-			</a>
+			<div class="header-item" @click="$router.navigate(item.address)">{{item.name}}</div>
 		</template>
 	</header>
 </template>

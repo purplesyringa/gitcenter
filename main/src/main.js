@@ -1,13 +1,15 @@
-version = "0.1"
+import ZeroFrame from "./libs/ZeroFrame.js";
+const zf = new ZeroFrame();
 
-var ZeroFrame = require("./libs/ZeroFrame.js");
-var Router = require("./libs/router.js");
+import Router from "./libs/router.js";
+import VueRouter from "./libs/vuerouter.js";
 
-var Vue = require("vue/dist/vue.min.js");
+import Vue from "vue/dist/vue.min.js";
+Vue.use(VueRouter(zf));
 
-let root = require("./vue_components/root.vue");
+import root from "./vue_components/root.vue";
 
-const Header = require("./vue_components/gc-header/header.vue");
+import Header from "./vue_components/gc-header/header.vue";
 Vue.component("gc-header", Header);
 
 var app = new Vue({
@@ -15,4 +17,4 @@ var app = new Vue({
 	render: h => h(root)
 });
 
-var Home = require("./router_pages/home.vue");
+import Home from "./router_pages/home.vue";
