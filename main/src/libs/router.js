@@ -1,8 +1,9 @@
 module.exports = class Router {
-	constructor() {
+	constructor(zeroPage) {
 		this.routes = [];
 		this.currentRoute = [];
 		this.currentParams = {};
+		this.zeroPage = zeroPage;
 
 		this.check("");
 	}
@@ -79,7 +80,7 @@ module.exports = class Router {
 
 		let previousRoute = this.currentRoute;
 		if(doPush) {
-			page.cmd("wrapperPushState", [{route: path}, path, "/" + this.clearSlashes(path)])
+			this.zeroPage.cmd("wrapperPushState", [{route: path}, path, "/" + this.clearSlashes(path)])
 		}
 
 		this.check(path);
