@@ -2,7 +2,7 @@ const gulp = require("gulp");
 
 const paths = {
 	pages: ["src/**/*.html"],
-	styles: ["src/sass/**/*.sass"],
+	styles: ["src/**/*.sass"],
 	scripts: ["src/**/*.js"],
 	files: ["src/content.json", "src/dbschema.json"],
 	images: ["src/img/*"]
