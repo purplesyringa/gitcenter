@@ -1,13 +1,4 @@
-const vueify = require("vueify");
-
 const gulp = require("gulp");
-const browserify = require("browserify");
-const source = require("vinyl-source-stream");
-const sourcemaps = require("gulp-sourcemaps");
-const buffer = require("vinyl-buffer");
-
-const sass = require("gulp-sass");
-const minify = require("gulp-minify-css");
 
 const paths = {
 	pages: ["src/**/*.html"],
@@ -22,6 +13,9 @@ gulp.task("html", function() {
 });
 
 gulp.task("styles", function() {
+	const sass = require("gulp-sass");
+	const minify = require("gulp-minify-css");
+
 	return gulp.src(paths.styles)
 		.pipe(sass({
 			"includePaths": [
@@ -34,6 +28,12 @@ gulp.task("styles", function() {
 });
 
 gulp.task("scripts", function() {
+	const browserify = require("browserify");
+	const buffer = require("vinyl-buffer");
+	const source = require("vinyl-source-stream");
+	const sourcemaps = require("gulp-sourcemaps");
+	const vueify = require("vueify");
+
 	return browserify({
 		basedir: ".",
 		debug: true,
