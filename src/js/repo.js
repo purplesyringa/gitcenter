@@ -409,7 +409,7 @@ class Repository {
 				content.title = newName;
 				return this.setContent(content);
 			})
-			.then(() => this.sign());
+			.then(() => this.signContent("site"));
 	}
 
 	// Changes description of repository
@@ -419,7 +419,7 @@ class Repository {
 				content.description = description;
 				return this.setContent(content);
 			})
-			.then(() => this.sign());
+			.then(() => this.signContent("site"));
 	}
 
 	// Adds or removes hooks from repository
@@ -430,7 +430,7 @@ class Repository {
 				content.hooks = hooks;
 				return this.setContent(content);
 			})
-			.then(() => this.sign());
+			.then(() => this.signContent("site"));
 	}
 
 	// Sets up new repository (not fork). Sets title, description, signers.
