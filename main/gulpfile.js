@@ -31,7 +31,7 @@ gulp.task("styles", function() {
 });
 
 gulp.task("scripts", function() {
-	const babel = require("gulp-babel");
+	const babelify = require("babelify");
 	const browserify = require("browserify");
 	const buffer = require("vinyl-buffer");
 	const source = require("vinyl-source-stream");
@@ -46,6 +46,9 @@ gulp.task("scripts", function() {
 		packageCache: {},
 		insertGlobals: true
 	})
+		.transform(babelify, {
+			presets: ["env"]
+		})
 		.transform(vueify)
 		.bundle()
 		.pipe(source("bundle.js"))
