@@ -12,12 +12,13 @@ const minify = require("gulp-minify-css");
 const paths = {
 	pages: ["src/**/*.html"],
 	styles: ["src/sass/**/*.sass"],
-	scripts: ["src/**/*.js"]
+	scripts: ["src/**/*.js"],
+	files: ["src/content.json", "src/dbschema.json"]
 };
 
 gulp.task("html", function() {
 	return gulp.src(paths.pages)
-		.pipe(gulp.dest("."));
+		.pipe(gulp.dest("./dist/"));
 });
 
 gulp.task("styles", function() {
@@ -29,7 +30,7 @@ gulp.task("styles", function() {
 		})
 		.on("error", sass.logError))
 		.pipe(minify())
-		.pipe(gulp.dest("./css/"));
+		.pipe(gulp.dest("./dist/css/"));
 });
 
 gulp.task("scripts", function() {
@@ -47,13 +48,19 @@ gulp.task("scripts", function() {
 	.pipe(buffer())
 	.pipe(sourcemaps.init({ loadMaps: true }))
 	.pipe(sourcemaps.write("./"))
-	.pipe(gulp.dest("./js/"));
+	.pipe(gulp.dest("./dist/js/"));
+});
+
+gulp.task("files", function() {
+	return gulp.src(paths.files)
+		.pipe(gulp.dest("./dist/"));
 });
 
 gulp.task("watch", function() {
 	gulp.watch(paths.scripts, ["scripts"]);
 	gulp.watch(paths.styles, ["styles"]);
 	gulp.watch(paths.pages, ["html"]);
+	gulp.watch(paths.files, ["files"]);
 });
 
-gulp.task("default", ["scripts", "styles", "html"]);
+gulp.task("default", ["scripts", "styles", "html", "files"]);
