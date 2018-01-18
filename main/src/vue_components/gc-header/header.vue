@@ -6,30 +6,29 @@
 			<img src="img/logo-white.svg" class="header-logo">
 			<div class="header-name">Git Center</div>
 		</a>
-		<a href="index/">
-			<div class="header-item">Repository Index</div>
-		</a>
-		<a href="myrepos/">
-			<div class="header-item">My Repos</div>
-		</a>
-		<a href="guide/">
-			<div class="header-item">Beginner's Guide</div>
-		</a>
-		<a href="support/">
-			<div class="header-item">Support</div>
-		</a>
-		<a href="profile/">
-			<div class="header-item">Profile</div>
-		</a>
-		<a href="for-devs/">
-			<div class="header-item">For devs</div>
-		</a>
+
+		<template v-for="item in items">
+			<a :href="'?/' + item.address">
+				<div class="header-item">{{item.name}}</div>
+			</a>
+		</template>
 	</header>
 </template>
 
 <script language="text/javascript">
 	export default {
 		name: "header",
-		data: () => { return {}; }
+		data: () => {
+			return {
+				items: [
+					{name: "Repository Index", address: "index"},
+					{name: "My Repos",         address: "myrepos"},
+					{name: "Beginner's Guide", address: "guide"},
+					{name: "Support",          address: "support"},
+					{name: "Profile",          address: "profile"},
+					{name: "For devs",         address: "for-devs"}
+				]
+			};
+		}
 	};
 </script>
