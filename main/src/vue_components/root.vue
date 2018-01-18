@@ -5,7 +5,7 @@
 </template>
 
 <script language="text/javascript">
-	module.exports = {
+	export default {
 		props: [],
 		name: "root",
 		data: {

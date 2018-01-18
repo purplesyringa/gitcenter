@@ -1,10 +1,9 @@
 <template>
-	<header />
+	<gc-header />
 </template>
 
 <script>
-	const Router = require("../libs/router");
-	module.exports = {
+	export default {
 		props: [],
 		name: "mainapp",
 		data: () => {
