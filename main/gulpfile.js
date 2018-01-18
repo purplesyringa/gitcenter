@@ -4,7 +4,8 @@ const paths = {
 	pages: ["src/**/*.html"],
 	styles: ["src/sass/**/*.sass"],
 	scripts: ["src/**/*.js"],
-	files: ["src/content.json", "src/dbschema.json"]
+	files: ["src/content.json", "src/dbschema.json"],
+	images: ["src/img/*"]
 };
 
 gulp.task("html", function() {
@@ -59,11 +60,17 @@ gulp.task("files", function() {
 		.pipe(gulp.dest("./dist/"));
 });
 
+gulp.task("images", function() {
+	return gulp.src(paths.images)
+		.pipe(gulp.dest("./dist/img/"));
+});
+
 gulp.task("watch", function() {
 	gulp.watch(paths.scripts, ["scripts"]);
 	gulp.watch(paths.styles, ["styles"]);
 	gulp.watch(paths.pages, ["html"]);
 	gulp.watch(paths.files, ["files"]);
+	gulp.watch(paths.images, ["images"]);
 });
 
-gulp.task("default", ["scripts", "styles", "html", "files"]);
+gulp.task("default", ["scripts", "styles", "html", "files", "images"]);
