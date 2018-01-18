@@ -27,7 +27,7 @@
 	</header>
 </template>
 
-<script>
+<script language="text/javascript">
 	module.exports = {
 		name: "header",
 		data: () => { return {}; }

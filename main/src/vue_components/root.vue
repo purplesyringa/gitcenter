@@ -4,7 +4,7 @@
 	</div>
 </template>
 
-<script>
+<script language="text/javascript">
 	module.exports = {
 		props: [],
 		name: "root",
