@@ -17,17 +17,20 @@ gulp.task("styles", function() {
 	const minify = require("gulp-minify-css");
 
 	return gulp.src(paths.styles)
-		.pipe(sass({
-			"includePaths": [
-				"./node_modules"
-			]
-		})
-		.on("error", sass.logError))
+		.pipe(
+			sass({
+				"includePaths": [
+					"./node_modules"
+				]
+			})
+			.on("error", sass.logError)
+		)
 		.pipe(minify())
 		.pipe(gulp.dest("./dist/css/"));
 });
 
 gulp.task("scripts", function() {
+	const babel = require("gulp-babel");
 	const browserify = require("browserify");
 	const buffer = require("vinyl-buffer");
 	const source = require("vinyl-source-stream");
@@ -42,13 +45,13 @@ gulp.task("scripts", function() {
 		packageCache: {},
 		insertGlobals: true
 	})
-	.transform(vueify)
-	.bundle()
-	.pipe(source("bundle.js"))
-	.pipe(buffer())
-	.pipe(sourcemaps.init({ loadMaps: true }))
-	.pipe(sourcemaps.write("./"))
-	.pipe(gulp.dest("./dist/js/"));
+		.transform(vueify)
+		.bundle()
+		.pipe(source("bundle.js"))
+		.pipe(buffer())
+		.pipe(sourcemaps.init({ loadMaps: true }))
+		.pipe(sourcemaps.write("./"))
+		.pipe(gulp.dest("./dist/js/"));
 });
 
 gulp.task("files", function() {
