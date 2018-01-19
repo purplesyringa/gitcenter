@@ -1,9 +1,9 @@
-[submodule "src/jsdifflib"]
-	path = src/jsdifflib
-	url = https://github.com/cemerick/jsdifflib.git
 [submodule "main/dist/workerout"]
 	path = main/dist/workerout
 	url = C:/Users/Ivanq/Documents/ZeroNet/data/19onTt5fo8czADiefEoPhPigk281Z5dBXU/workerout.git/
 [submodule "main/dist/ZeroLib"]
 	path = main/dist/ZeroLib
 	url = git@github.com:imachug/ZeroDevLib.git
+[submodule "main/dist/jsdifflib"]
+	path = main/dist/jsdifflib
+	url = https://github.com/cemerick/jsdifflib.git
