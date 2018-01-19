@@ -1,23 +1,15 @@
-import ZeroFrame from "./libs/ZeroFrame.js";
-const zf = new ZeroFrame();
-
-import Router from "./libs/router.js";
-import VueRouter from "./libs/vuerouter.js";
-
-import Vue from "vue/dist/vue.min.js";
-Vue.use(VueRouter(zf));
-
-import root from "./vue_components/root.vue";
-
 import Header from "./vue_components/gc-header/header.vue";
 Vue.component("gc-header", Header);
 
+import Vue from "vue/dist/vue.min.js";
+import root from "./vue_components/root.vue";
 var app = new Vue({
 	el: "#app",
 	render: h => h(root),
 	data: {
-		currentView: Home
+		currentView: null
 	}
 });
 
-import Home from "./router_pages/home/home.vue";
+import {route} from "./route.js";
+route(app);
