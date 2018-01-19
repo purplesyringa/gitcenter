@@ -1,5 +1,7 @@
 <template>
-	<gc-header />
+	<div>
+		<gc-header />
+	</div>
 </template>
 
 <script language="text/javascript">
