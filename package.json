@@ -26,10 +26,13 @@
     "babelify": "^8.0.0",
     "browserify": "^14.4.0",
     "browserify-shim": "^3.8.14",
+    "css-loader": "^0.28.9",
     "patch-package": "^4.0.0",
+    "style-loader": "^0.19.1",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",
     "vue-loader": "^13.7.0",
+    "vue-style-loader": "^3.0.3",
     "webpack": "^3.10.0"
   },
   "dependencies": {
