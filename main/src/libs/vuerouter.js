@@ -13,5 +13,5 @@ export default zeroPage => {
 		}
 	};
 
-	return plugin;
+	return {plugin, router};
 };
