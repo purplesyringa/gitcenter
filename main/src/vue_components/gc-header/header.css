@@ -35,6 +35,8 @@
 	margin: 0 10px;
 	padding: 20px 0;
 	vertical-align: top;
+	cursor: pointer;
+	text-decoration: none;
 
 	font-family: Verdana, Arial, sans-serif;
 	font-size: 16px;
