@@ -17,7 +17,7 @@
 </style>
 
 <script language="text/javascript">
-	import Home from "../router_pages/home.vue";
+	import Home from "../router_pages/home/home.vue";
 
 	export default {
 		props: [],

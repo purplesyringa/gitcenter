@@ -17,4 +17,4 @@ var app = new Vue({
 	render: h => h(root)
 });
 
-import Home from "./router_pages/home.vue";
+import Home from "./router_pages/home/home.vue";
