@@ -3,7 +3,7 @@
 		<gc-header />
 
 		<div class="current-view">
-			<component :is="currentView"></component>
+			<component :is="$parent.currentView"></component>
 		</div>
 	</div>
 </template>
@@ -17,15 +17,8 @@
 </style>
 
 <script language="text/javascript">
-	import Home from "../router_pages/home/home.vue";
-
 	export default {
 		props: [],
-		name: "root",
-		data: () => {
-			return {
-				currentView: Home
-			};
-		}
+		name: "root"
 	};
 </script>

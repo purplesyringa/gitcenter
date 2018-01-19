@@ -14,7 +14,10 @@ Vue.component("gc-header", Header);
 
 var app = new Vue({
 	el: "#app",
-	render: h => h(root)
+	render: h => h(root),
+	data: {
+		currentView: Home
+	}
 });
 
 import Home from "./router_pages/home/home.vue";
