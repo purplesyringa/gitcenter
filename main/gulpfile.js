@@ -16,6 +16,7 @@ gulp.task("html", function() {
 gulp.task("styles", function() {
 	const sass = require("gulp-sass");
 	const minify = require("gulp-minify-css");
+	const concat = require("gulp-concat");
 
 	return gulp.src(paths.styles)
 		.pipe(
@@ -27,7 +28,8 @@ gulp.task("styles", function() {
 			.on("error", sass.logError)
 		)
 		.pipe(minify())
-		.pipe(gulp.dest("./dist/"));
+		.pipe(concat("bundle.css"))
+		.pipe(gulp.dest("./dist/css/"));
 });
 
 gulp.task("scripts", function() {
