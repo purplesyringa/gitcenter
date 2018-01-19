@@ -1,4 +1,4 @@
-<style type="text/css" src="header.css"></style>
+<style type="text/css" src="./header.css"></style>
 
 <template>
 	<header class="header">
