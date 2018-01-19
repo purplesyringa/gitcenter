@@ -4,7 +4,6 @@ export default vue => [
 	{
 		path: "",
 		controller: () => {
-			console.log("/");
 			vue.currentView = Home;
 		}
 	}
