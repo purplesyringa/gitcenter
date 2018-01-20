@@ -1,3 +1,6 @@
+import "./sass/main.sass";
+import "./sass/buttons.sass";
+
 import Vue from "vue/dist/vue.min.js";
 import Header from "./vue_components/gc-header/header.vue";
 Vue.component("gc-header", Header);
