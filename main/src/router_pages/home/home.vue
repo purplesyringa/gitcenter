@@ -9,7 +9,7 @@
 		</p>
 		<p>
 			<br>
-			<a class="button" href="guide/">Beginner's Guide</a>
+			<a class="button" href="?/guide" @click.prevent="$router.navigate('guide')">Beginner's Guide</a>
 			<a class="button button-blue" @click="init">New repository</a>
 		</p>
 
