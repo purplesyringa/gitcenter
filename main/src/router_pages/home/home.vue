@@ -5,7 +5,7 @@
 			<b>Git Center</b> is a decentralized hosting platform for Git repositories. We provide several collaboration features such as bug tracking for every project, and private and public repositories for free. Join us by creating a new repository.
 		</p>
 		<p>
-			<b>Git Center</b> is built using ZeroNet, so its workflow quite differs from GitHub. If you have any questions, <a href="support/">ask us for support</a>.
+			<b>Git Center</b> is built using ZeroNet, so its workflow quite differs from GitHub. If you have any questions, <a href="?/support" @click.prevent="$router.navigate('support')">ask us for support</a>.
 		</p>
 		<p>
 			<br>
