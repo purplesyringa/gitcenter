@@ -1,9 +1,9 @@
-<style type="text/css" src="header.css"></style>
+<style type="text/css" src="./header.css"></style>
 
 <template>
 	<header class="header">
 		<a href="?/" @click.prevent="$router.navigate('')">
-			<img src="img/logo-white.svg" class="header-logo">
+			<img src="./img/logo-white.svg" class="header-logo">
 			<div class="header-name">Git Center</div>
 		</a>
 
