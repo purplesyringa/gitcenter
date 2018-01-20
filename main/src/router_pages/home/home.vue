@@ -10,7 +10,7 @@
 		<p>
 			<br>
 			<a class="button" href="guide/">Beginner's Guide</a>
-			<a id="create_repository" class="button button-blue button-disabled">New repository</a>
+			<a class="button button-blue" @click="init">New repository</a>
 		</p>
 
 		<h2>Contributors</h2>
@@ -26,8 +26,33 @@
 	</div>
 </template>
 
-<script>
+<script type="text/javascript">
+	import Repository from "../../repo/repo.js";
+
 	export default {
-		name: "home"
+		name: "home",
+		methods: {
+			async init() {
+				const zp = this.$zeroPage;
+
+				const siteInfo = await zp.getSiteInfo();
+				if(siteInfo.settings.permissions.indexOf("Merger:GitCenter") == -1) {
+					await zp.cmd("wrapperPermissionAdd", ["Merger:GitCenter"]);
+				}
+				if(siteInfo.settings.permissions.indexOf("Cors:1iD5ZQJMNXu43w1qLB8sfdHVKppVMduGz") == -1) {
+					await zp.cmd("corsPermission", ["1iD5ZQJMNXu43w1qLB8sfdHVKppVMduGz"]);
+				}
+
+				const list = await zp.cmd("mergerSiteList");
+				if(!list["1RepoXU8bQE9m7ssNwL4nnxBnZVejHCc6"]) {
+					await zp.cmd("mergerSiteAdd", ["1RepoXU8bQE9m7ssNwL4nnxBnZVejHCc6"]);
+				}
+				if(!list["1iNDExENNBsfHc6SKmy1HaeasHhm3RPcL"]) {
+					await zp.cmd("mergerSiteAdd", ["1iNDExENNBsfHc6SKmy1HaeasHhm3RPcL"]);
+				}
+
+				Repository.createRepo(zp);
+			}
+		}
 	};
 </script>
