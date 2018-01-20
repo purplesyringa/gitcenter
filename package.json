@@ -46,7 +46,8 @@
     "node-sass": "^4.7.2",
     "vue": "^2.5.13",
     "vue-hot-reload-api": "^2.2.4",
-    "vueify": "^9.4.1"
+    "vueify": "^9.4.1",
+    "zero-dev-lib": "^1.0.0"
   },
   "browser": {
     "vue": "vue/dist/vue.common.js"
