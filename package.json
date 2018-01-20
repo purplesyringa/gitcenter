@@ -28,6 +28,7 @@
     "browserify": "^14.4.0",
     "browserify-shim": "^3.8.14",
     "css-loader": "^0.28.9",
+    "html-webpack-plugin": "^2.30.1",
     "patch-package": "^4.0.0",
     "style-loader": "^0.19.1",
     "vinyl-buffer": "^1.0.0",
