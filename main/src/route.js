@@ -1,9 +1,12 @@
 import ZeroFrame from "./libs/ZeroFrame.js";
 const zf = new ZeroFrame();
 
+import ZeroPage from "zero-dev-lib/ZeroPage";
+const zp = new ZeroPage(zf);
+
 import Vue from "vue/dist/vue.min.js";
 import VueRouter from "./libs/vuerouter.js";
-const router = VueRouter(zf);
+const router = VueRouter(zp);
 Vue.use(router.plugin);
 
 import Home from "./router_pages/home/home.vue";
