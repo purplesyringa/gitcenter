@@ -5,7 +5,8 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 
 module.exports = {
-	entry: "./src/main.js",
+	context: path.resolve(__dirname, "./src"),
+	entry: "./main.js",
 	output: {
 		path: path.resolve(__dirname, "./dist"),
 		publicPath: "./",
@@ -56,7 +57,7 @@ module.exports = {
 	plugins: [
 		new HtmlWebpackPlugin({
 			title: "Git Center",
-			template: "./src/index.html",
+			template: "./index.html",
 			seo: {
 				keywords: "gitcenter,git,repository",
 				description: "GitHub for ZeroNet"
@@ -64,7 +65,7 @@ module.exports = {
 		}),
 		new CopyWebpackPlugin([
 			{
-				from: "./src/dbschema.json",
+				from: "./dbschema.json",
 				to: "./dbschema.json"
 			}
 		])
