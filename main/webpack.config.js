@@ -2,6 +2,7 @@ const path = require("path");
 
 const webpack = require("webpack");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const CopyWebpackPlugin = require("copy-webpack-plugin");
 
 module.exports = {
 	entry: "./src/main.js",
@@ -60,6 +61,12 @@ module.exports = {
 				keywords: "gitcenter,git,repository",
 				description: "GitHub for ZeroNet"
 			}
-		})
+		}),
+		new CopyWebpackPlugin([
+			{
+				from: "./src/dbschema.json",
+				to: "./dbschema.json"
+			}
+		])
 	]
 };
