@@ -18,3 +18,5 @@ export const route = vue => {
 	vue.currentView = Home;
 	routes.forEach(route => router.router.add(route.path, route.controller));
 };
+
+export {zp as zeroPage};

@@ -10,9 +10,12 @@ var app = new Vue({
 	el: "#app",
 	render: h => h(root),
 	data: {
-		currentView: null
+		currentView: null,
+		zeroPage: null
 	}
 });
 
-import {route} from "./route.js";
+import {route, zeroPage} from "./route.js";
 route(app);
+
+Vue.prototype.$zeroPage = zeroPage;
