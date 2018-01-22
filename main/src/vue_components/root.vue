@@ -17,8 +17,13 @@
 </style>
 
 <script language="text/javascript">
+	import Header from "./gc-header/header.vue";
+
 	export default {
 		props: [],
-		name: "root"
+		name: "root",
+		components: {
+			"gc-header": Header
+		}
 	};
 </script>
