@@ -3,7 +3,7 @@
 <template>
 	<div>
 		<h1>Repository Index</h1>
-		<input type="text" id="search" class="search" placeholder="Search repository index...">
+		<input type="text" class="search" placeholder="Search repository index..." v-model="search">
 
 		<div class="hint">
 			<b>a b c</b> matches <b>a</b> or <b>b</b> or <b>c</b><br>
@@ -15,12 +15,38 @@
 			<b>is:downloaded</b> shows only downloaded
 		</div>
 
-		<div id="repos"></div>
+		<div>
+			<repository
+				v-for="repo in repos"
+				:key="repo.address"
+
+				:address="repo.address"
+				:stars="repo.stars"
+				:downloaded="repo.downloaded"
+				:title="repo.title"
+				:description="repo.description"
+			/>
+		</div>
 	</div>
 </template>
 
 <script type="text/javascript">
+	import {search} from "./index.js";
+
 	export default {
-		name: "index"
+		name: "index",
+		data() {
+			return {
+				search: ""
+			};
+		},
+		asyncComputed: {
+			repos: {
+				async get() {
+					return await search(this.search);
+				},
+				default: []
+			}
+		}
 	};
 </script>
