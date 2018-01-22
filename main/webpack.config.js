@@ -6,7 +6,7 @@ const CopyWebpackPlugin = require("copy-webpack-plugin");
 
 module.exports = {
 	context: path.resolve(__dirname, "./src"),
-	entry: "./main.js",
+	entry: ["babel-polyfill", "./main.js"],
 	output: {
 		path: path.resolve(__dirname, "./dist"),
 		publicPath: "./",
