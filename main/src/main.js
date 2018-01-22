@@ -13,6 +13,9 @@ var app = new Vue({
 	}
 });
 
+import Repository from "./vue_components/repository/repository.vue";
+Vue.component("repository", Repository);
+
 import {route, zeroPage} from "./route.js";
 route(app);
 
