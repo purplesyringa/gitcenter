@@ -1,4 +1,4 @@
-<style lang="sass" src="./index.sass" scoped />
+<style lang="sass" src="./index.sass" scoped></style>
 
 <template>
 	<div>
