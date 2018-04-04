@@ -1259,6 +1259,9 @@ class Repository {
 	changePullRequestStatus(...args) {
 		return this.issues.changePullRequestStatus(...args);
 	}
+	importPullRequest(...args) {
+		return this.issues.importPullRequest(...args);
+	}
 
 	/********************************** Markdown **********************************/
 
