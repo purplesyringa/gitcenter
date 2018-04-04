@@ -7,9 +7,9 @@
  "description": "Repository Index for Git Center",
  "favicon": "img/logo-yellow.png",
  "files": {
-  "data/users/1CvyxRucf7BbDvGtFe5LayTS2qX88VN7Er/data.json": {
-   "sha512": "d59f1332c6971ea78590243950c76d1672fec711d3b10f2d3319443c0a147e68",
-   "size": 83
+  "img/logo-yellow.png": {
+   "sha512": "665906822aa641ef406feb00f71e8ccb0d2a26f6fde82c7cb1c3f3b76e314bdd",
+   "size": 32243
   },
   "img/logo-yellow.svg": {
    "sha512": "c5e05d25c8bed9925de835319365b168d3d7ad66876a04303481fb5f91a4db66",
@@ -20,7 +20,7 @@
    "size": 542
   }
  },
- "ignore": "",
+ "ignore": "data/.*",
  "includes": {
   "data/users/content.json": {
    "signers": [],
@@ -29,14 +29,14 @@
  },
  "inner_path": "content.json",
  "merged_type": "GitCenter",
- "modified": 1506488093,
+ "modified": 1516086301,
  "postmessage_nonce_security": true,
  "signers_sign": "HKsMy57y3iIsurfPDcV9HfdYOu86640QOMlbssnj1zwmU613xBIl1JNl7Wy5Gf67C3cZa8VgvP9j6O3in4LjJHU=",
  "signs": {
-  "1iNDExENNBsfHc6SKmy1HaeasHhm3RPcL": "HNBL3pePRB5nNsWdTlKLXhAEPgMJY1SoAhoL/4Aj3nGscEof1yAyMXaJbjyyB/QtvRN9FozuNNbdUSwihgHtxDU="
+  "1iNDExENNBsfHc6SKmy1HaeasHhm3RPcL": "HFkUVM9JcgHnBG8Nmn8WyUVt6ASfw6Ekbh2X7HCV6asNF6eD2rFnmmmjcHSJ79XW3b8WiHC3DLF6/PLRpuJyb/g="
  },
  "signs_required": 1,
  "title": "Git Center Index",
  "translate": ["js/all.js"],
- "zeronet_version": "0.5.7"
+ "zeronet_version": "0.6.0"
 }

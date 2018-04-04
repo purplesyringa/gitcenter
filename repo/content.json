@@ -6,8 +6,12 @@
  "cloneable": true,
  "cloned_from": "1HeLLo4uzjaLetFx6NH3PMwFP3qbRbTf3D",
  "description": "Default Git Center Repo",
- "favicon": "img/logo-red.png",
+ "favicon": "img/logo-red.svg",
  "files": {
+  "content.json-default": {
+   "sha512": "1caf2792c8ac57b4f1ef9c5a74f16349b0fb58214ca771f91558dfec45a5cab5",
+   "size": 1347
+  },
   "data-default/users/content.json-default": {
    "sha512": "091029acc8d6ba0f1c8c19dbb0df97ec810b454d690668bbb844c334fae396c4",
    "size": 541
@@ -28,11 +32,11 @@
  "ignore": "",
  "inner_path": "content.json",
  "merged_type": "GitCenter",
- "modified": 1506873683,
+ "modified": 1506978316,
  "postmessage_nonce_security": true,
  "signers_sign": "HIbkXHjK35NbjH6FiPXQ6yWz6FagbYVIRVKKA+XdtHUwbgSErgTMH5KoEiJSm3UbygccjfySXI/qIH6C4I+xLAc=",
  "signs": {
-  "1RepoXU8bQE9m7ssNwL4nnxBnZVejHCc6": "HB2KACIS6D7DqE6yEa6CyrdX31sJHbhnX/BEyVAjdRSkJOv3s2KGrxjC9X0xse158wu6DzyXwoCkzh2F5mr1MZU="
+  "1RepoXU8bQE9m7ssNwL4nnxBnZVejHCc6": "G5RLdd/FqOQ2zyWdkQmRzSqOaC/UzALDcMRXerw7ZMd5RYeuAcVY1JbXIm0moCK8QMZHXxXvEuKfDa0BI9YWuks="
  },
  "signs_required": 1,
  "title": "Default Git Center Repo",
