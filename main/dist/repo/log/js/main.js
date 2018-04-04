@@ -85,8 +85,7 @@ repo.addMerger()
 		document.getElementById("commits").innerHTML = "";
 
 		commits.forEach(commit => {
-			let node = document.createElement("a");
-			node.href = "../?" + address + "/@" + commit.id;
+			let node = document.createElement("div");
 			node.className = "commit";
 
 			let title = document.createElement("div");
@@ -94,9 +93,23 @@ repo.addMerger()
 			title.textContent = commit.content.message;
 			node.appendChild(title);
 
+			let diffLink = document.createElement("a");
+			diffLink.innerHTML = "[diff]";
+			diffLink.href = "../commit/?" + address + "/" + commit.id;
+			title.appendChild(diffLink);
+
 			let description = document.createElement("div");
 			description.className = "commit-description";
-			description.textContent = repo.parseAuthor(commit.content.committer);
+
+			let commitLink = document.createElement("a");
+			commitLink.href = "../?" + address + "/@" + commit.id;
+			commitLink.textContent = commit.id;
+			description.appendChild(commitLink);
+
+			description.appendChild(document.createElement("br"));
+
+			description.appendChild(document.createTextNode(repo.parseAuthor(commit.content.committer)));
+
 			node.appendChild(description);
 
 			document.getElementById("commits").appendChild(node);
