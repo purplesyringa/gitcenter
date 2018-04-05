@@ -43,11 +43,12 @@ repo.addMerger()
 			.then(c => {
 				let diff = document.createElement("a");
 				diff.textContent = "[diff]";
-				diff.href = "../commit/?" + address + "/" + c;
-				document.getElementById("commit_title").appendChild(diff);
-			});
+				diff.href = "commit/?" + address + "/" + c;
+				document.getElementById("commit_description").appendChild(diff);
 
-		document.getElementById("commit_description").appendChild(document.createTextNode(repo.parseAuthor(commit.content.committer)));
+				document.getElementById("commit_description").appendChild(document.createElement("br"));
+				document.getElementById("commit_description").appendChild(document.createTextNode(repo.parseAuthor(commit.content.committer)));
+			});
 
 		return repo.getFiles(head, "");
 	})

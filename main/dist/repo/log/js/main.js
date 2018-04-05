@@ -93,11 +93,6 @@ repo.addMerger()
 			title.textContent = commit.content.message;
 			node.appendChild(title);
 
-			let diffLink = document.createElement("a");
-			diffLink.innerHTML = "[diff]";
-			diffLink.href = "../commit/?" + address + "/" + commit.id;
-			title.appendChild(diffLink);
-
 			let description = document.createElement("div");
 			description.className = "commit-description";
 
@@ -105,6 +100,13 @@ repo.addMerger()
 			commitLink.href = "../?" + address + "/@" + commit.id;
 			commitLink.textContent = commit.id;
 			description.appendChild(commitLink);
+
+			description.appendChild(document.createTextNode(" "));
+
+			let diffLink = document.createElement("a");
+			diffLink.innerHTML = "[diff]";
+			diffLink.href = "../commit/?" + address + "/" + commit.id;
+			description.appendChild(diffLink);
 
 			description.appendChild(document.createElement("br"));
 
