@@ -57,6 +57,15 @@ repo.addMerger()
 		return repo.getFile(head, path)
 			.then(blob => {
 				let fileContent = document.getElementById("file_content");
+
+				// Maybe this is a markdown file?
+				if(path.endsWith(".md") || path.endsWith(".markdown")) {
+					fileContent.classList.add("markdown");
+					fileContent.innerHTML = repo.renderMarked(repo.vcs.decodeUTF8(blob));
+					return;
+				}
+
+
 				fileContent.textContent = repo.vcs.decodeUTF8(blob);
 				hljs.highlightBlock(fileContent);
 

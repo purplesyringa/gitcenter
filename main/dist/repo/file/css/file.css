@@ -35,6 +35,10 @@
 	white-space: pre;
 	overflow: auto;
 }
+.file-content.markdown {
+	font-family: Arial;
+	white-space: normal;
+}
 
 .edit {
 	display: none;
